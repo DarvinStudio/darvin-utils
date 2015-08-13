@@ -1,7 +1,6 @@
 {
     "name":        "darvinstudio/darvin-utils",
-    "description": "This library contains set of useful utilities.",
-    "version":     "0.0.1",
+    "description": "A set of useful utilities.",
     "keywords":    ["utility"],
     "type":        "library",
     "license":     "MIT",
