@@ -16,6 +16,5 @@
     },
     "autoload": {
         "psr-4": { "Darvin\\Utils\\": "" }
-    },
-    "minimum-stability": "dev"
+    }
 }
