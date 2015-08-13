@@ -1,0 +1,20 @@
+{
+    "name":        "darvinstudio/darvin-utils",
+    "description": "This library contains set of useful utilities.",
+    "keywords":    ["utility"],
+    "type":        "library",
+    "license":     "MIT",
+    "authors": [
+        {
+            "name":     "Darvin Studio",
+            "email":    "info@darvin-studio.ru",
+            "homepage": "https://www.darvin-studio.ru"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": { "Darvin\\Utils\\": "" }
+    }
+}
