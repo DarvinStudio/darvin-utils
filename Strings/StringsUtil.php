@@ -19,6 +19,16 @@ class StringsUtil
      *
      * @return string
      */
+    public static function toCamelCase($string)
+    {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $string)));
+    }
+
+    /**
+     * @param string $string String
+     *
+     * @return string
+     */
     public static function toUnderscore($string)
     {
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $string));
