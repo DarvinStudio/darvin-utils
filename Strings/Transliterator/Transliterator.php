@@ -28,19 +28,19 @@ class Transliterator implements TransliteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function transliterate($string, $allowAllNonCyrillic = false, array $allowedSymbols = array('_'), $separator = '-')
+    public function transliterate($string, $sanitize = true, array $allowedSymbols = array('_'), $separator = '-')
     {
         $string = mb_strtolower(preg_replace('/\s+/', ' ', trim($string)));
 
         $transliterated = strtr($string, self::$replacePairs);
 
-        if ($allowAllNonCyrillic) {
+        if (!$sanitize) {
             return $transliterated;
         }
 
         $transliterated = str_replace(' ', $separator, $transliterated);
 
-        $transliterated = preg_replace(self::createReplacePattern($allowedSymbols, $separator), '', $transliterated);
+        $transliterated = preg_replace($this->createSanitizePattern($allowedSymbols, $separator), '', $transliterated);
 
         return $transliterated;
     }
@@ -51,7 +51,7 @@ class Transliterator implements TransliteratorInterface
      *
      * @return string
      */
-    private function createReplacePattern(array $allowedSymbols, $separator)
+    private function createSanitizePattern(array $allowedSymbols, $separator)
     {
         $allowedSymbols[] = $separator;
         $allowedSymbols = array_unique($allowedSymbols);

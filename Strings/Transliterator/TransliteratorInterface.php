@@ -14,10 +14,10 @@ namespace Darvin\Utils\Strings\Transliterator;
 interface TransliteratorInterface
 {
     /**
-     * @param string $string              String to transliterate
-     * @param bool   $allowAllNonCyrillic Whether to allow all non cyrillic symbols
-     * @param array  $allowedSymbols      Allowed symbols
-     * @param string $separator           Words separator
+     * @param string $string         String to transliterate
+     * @param bool   $sanitize       Whether to sanitize string
+     * @param array  $allowedSymbols Allowed symbols
+     * @param string $separator      Words separator
      */
-    public function transliterate($string, $allowAllNonCyrillic = false, array $allowedSymbols = array('_'), $separator = '-');
+    public function transliterate($string, $sanitize = true, array $allowedSymbols = array('_'), $separator = '-');
 }
