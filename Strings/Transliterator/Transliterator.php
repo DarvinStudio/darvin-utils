@@ -30,7 +30,7 @@ class Transliterator implements TransliteratorInterface
      */
     public function transliterate($string, $allowAllNonCyrillic = false, array $allowedSymbols = array('_'), $separator = '-')
     {
-        $string = mb_strtolower(trim($string));
+        $string = mb_strtolower(preg_replace('/\s+/', ' ', trim($string)));
 
         $transliterated = strtr($string, self::$replacePairs);
 
@@ -38,7 +38,7 @@ class Transliterator implements TransliteratorInterface
             return $transliterated;
         }
 
-        $transliterated = preg_replace('/\s+/', $separator, $transliterated);
+        $transliterated = str_replace(' ', $separator, $transliterated);
 
         $transliterated = preg_replace(self::createReplacePattern($allowedSymbols, $separator), '', $transliterated);
 
@@ -60,7 +60,7 @@ class Transliterator implements TransliteratorInterface
 
         $pattern .= implode('', $allowedSymbols);
 
-        $pattern .= ']/';
+        $pattern .= ']+/';
 
         return $pattern;
     }
