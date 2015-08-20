@@ -21,12 +21,12 @@ abstract class AbstractOnFlushListener
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var \Doctrine\ORM\UnitOfWork
      */
-    private $uow;
+    protected $uow;
 
     /**
      * @param \Doctrine\ORM\Event\OnFlushEventArgs $args Event arguments
