@@ -8,17 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Security\Authorization\Accessibility;
+namespace Darvin\Utils\Security\Authorization;
 
-use Darvin\Utils\Security\Authorization\AuthorizationCheckerProviderInterface;
-use Darvin\Utils\Security\Authorization\AuthorizationException;
 use Darvin\Utils\Security\SecurableInterface;
-use Doctrine\Common\Util\ClassUtils;
 
 /**
- * Securable accessibility checker
+ * Accessibility checker
  */
-class SecurableAccessibilityChecker implements AccessibilityCheckerInterface
+class AccessibilityChecker
 {
     /**
      * @var \Darvin\Utils\Security\Authorization\AuthorizationCheckerProviderInterface
@@ -34,18 +31,13 @@ class SecurableAccessibilityChecker implements AccessibilityCheckerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param \Darvin\Utils\Security\SecurableInterface $securable Securable
+     *
+     * @return bool
      */
-    public function isAccessible($object)
+    public function isAccessible(SecurableInterface $securable)
     {
-        if (!is_object($object)) {
-            throw new AuthorizationException(sprintf('Only objects can be checked, "%s" provided.', gettype($object)));
-        }
-        if (!$object instanceof SecurableInterface) {
-            throw new AuthorizationException(sprintf('Class "%s" is not supported.', ClassUtils::getClass($object)));
-        }
-
-        $allowedRoles = $object->getAllowedRoles();
+        $allowedRoles = $securable->getAllowedRoles();
 
         if (empty($allowedRoles)) {
             return true;
