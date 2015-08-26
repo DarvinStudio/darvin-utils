@@ -22,14 +22,14 @@ class ConfigInjector
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container DI container
      * @param string                                                    $prefix    Parameter name prefix
      */
-    public static function inject(array $config, ContainerInterface $container, $prefix)
+    public function inject(array $config, ContainerInterface $container, $prefix)
     {
         foreach ($config as $name => $value) {
             $name = $prefix.'.'.$name;
             $container->setParameter($name, $value);
 
             if (is_array($value)) {
-                self::inject($value, $container, $name);
+                $this->inject($value, $container, $name);
             }
         }
     }
