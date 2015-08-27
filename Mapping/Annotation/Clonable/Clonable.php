@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Mapping\Annotation;
+namespace Darvin\Utils\Mapping\Annotation\Clonable;
 
 /**
- * Clonable
+ * Clonable annotation
  *
  * @Annotation
  * @Target("CLASS")
@@ -19,4 +19,14 @@ namespace Darvin\Utils\Mapping\Annotation;
 final class Clonable
 {
     const ANNOTATION = __CLASS__;
+
+    const COPYING_POLICY_ALL  = 'ALL';
+    const COPYING_POLICY_NONE = 'NONE';
+
+    /**
+     * @var string
+     *
+     * @Enum({"ALL", "NONE"})
+     */
+    public $copyingPolicy = self::COPYING_POLICY_NONE;
 }
