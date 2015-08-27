@@ -10,11 +10,14 @@
 
 namespace Darvin\Utils\Cloner;
 
+use Darvin\Utils\Event\CloneEvent;
+use Darvin\Utils\Event\Events;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -22,6 +25,11 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class Cloner implements ClonerInterface
 {
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
@@ -38,11 +46,16 @@ class Cloner implements ClonerInterface
     private $clonedObjects;
 
     /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher  Event dispatcher
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
-    public function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        MetadataFactoryInterface $metadataFactory,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $this->eventDispatcher = $eventDispatcher;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
     }
@@ -136,7 +149,11 @@ class Cloner implements ClonerInterface
             throw new ClonerException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
         }
 
-        return $this->cloneObject($value);
+        $copy = $this->cloneObject($value);
+
+        $this->eventDispatcher->dispatch(Events::POST_CLONE, new CloneEvent($value, $copy));
+
+        return $copy;
     }
 
     /**
