@@ -74,7 +74,11 @@ class Cloner implements ClonerInterface
         $class = ClassUtils::getClass($object);
 
         if (false === strpos($class, '\\')) {
-            return clone $object;
+            $clone = clone $object;
+
+            $this->cloneObjects[$objectHash] = $clone;
+
+            return $clone;
         }
 
         $meta = $this->metadataFactory->getMetadata($class);
@@ -103,30 +107,30 @@ class Cloner implements ClonerInterface
 
             $value = $this->propertyAccessor->getValue($object, $property);
 
-            $valueClone = $this->cloneValue($value);
+            $valueCopy = $this->copyValue($value);
 
-            $this->propertyAccessor->setValue($clone, $property, $valueClone);
+            $this->propertyAccessor->setValue($clone, $property, $valueCopy);
         }
 
         return $clone;
     }
 
     /**
-     * @param mixed $value Value to clone
+     * @param mixed $value Value to copy
      *
      * @return mixed
      * @throws \Darvin\Utils\Cloner\ClonerException
      */
-    private function cloneValue($value)
+    private function copyValue($value)
     {
         if (is_array($value)) {
-            return $this->cloneArray($value);
+            return $this->copyArray($value);
         }
         if (!is_object($value)) {
             return $value;
         }
         if ($value instanceof Collection) {
-            return new ArrayCollection($this->cloneArray($value->toArray()));
+            return new ArrayCollection($this->copyArray($value->toArray()));
         }
         if ($value instanceof \Traversable) {
             throw new ClonerException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
@@ -136,18 +140,18 @@ class Cloner implements ClonerInterface
     }
 
     /**
-     * @param array $array Array to clone
+     * @param array $array Array to copy
      *
      * @return array
      */
-    private function cloneArray(array $array)
+    private function copyArray(array $array)
     {
-        $clone = array();
+        $copy = array();
 
         foreach ($array as $key => $value) {
-            $clone[$key] = $this->cloneValue($value);
+            $copy[$key] = $this->copyValue($value);
         }
 
-        return $clone;
+        return $copy;
     }
 }
