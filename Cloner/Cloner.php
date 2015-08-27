@@ -35,7 +35,7 @@ class Cloner implements ClonerInterface
     /**
      * @var array
      */
-    private $clones;
+    private $cloneObjects;
 
     /**
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
@@ -52,7 +52,7 @@ class Cloner implements ClonerInterface
      */
     public function createClone($object)
     {
-        $this->clones = array();
+        $this->cloneObjects = array();
 
         return $this->cloneObject($object);
     }
@@ -67,8 +67,8 @@ class Cloner implements ClonerInterface
     {
         $objectHash = spl_object_hash($object);
 
-        if (isset($this->clones[$objectHash])) {
-            return $this->clones[$objectHash];
+        if (isset($this->cloneObjects[$objectHash])) {
+            return $this->cloneObjects[$objectHash];
         }
 
         $class = ClassUtils::getClass($object);
@@ -91,7 +91,7 @@ class Cloner implements ClonerInterface
 
         $clone = new $class();
 
-        $this->clones[$objectHash] = $clone;
+        $this->cloneObjects[$objectHash] = $clone;
 
         foreach ($meta['clonable']['properties'] as $property) {
             if (!$this->propertyAccessor->isReadable($object, $property)) {
