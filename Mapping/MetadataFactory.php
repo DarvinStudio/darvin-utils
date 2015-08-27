@@ -62,10 +62,10 @@ class MetadataFactory implements MetadataFactoryInterface
 
         $meta = array();
 
-        $reflectionClass = $this->om->getClassMetadata($class)->getReflectionClass();
+        $doctrineMeta = $this->om->getClassMetadata($class);
 
         foreach ($this->annotationDrivers as $annotationDriver) {
-            $annotationDriver->readMetadata($reflectionClass, $meta);
+            $annotationDriver->readMetadata($doctrineMeta, $meta);
         }
 
         $this->loadedMeta[$class] = $meta;

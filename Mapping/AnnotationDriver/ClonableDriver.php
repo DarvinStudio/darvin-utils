@@ -13,6 +13,8 @@ namespace Darvin\Utils\Mapping\AnnotationDriver;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\Annotation\Clonable\Copy;
 use Darvin\Utils\Mapping\Annotation\Clonable\Skip;
+use Darvin\Utils\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * Clonable annotation driver
@@ -22,8 +24,10 @@ class ClonableDriver extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function readMetadata(\ReflectionClass $reflectionClass, array &$meta)
+    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
+        $reflectionClass = $doctrineMeta->getReflectionClass();
+
         /** @var \Darvin\Utils\Mapping\Annotation\Clonable\Clonable $clonableAnnotation */
         $clonableAnnotation = $this->reader->getClassAnnotation($reflectionClass, Clonable::ANNOTATION);
 
@@ -31,25 +35,31 @@ class ClonableDriver extends AbstractDriver
             return;
         }
 
+        $idProperties = $doctrineMeta->getIdentifier();
+
         $meta['clonable'] = array(
-            'properties' => $this->getPropertiesToCopy($reflectionClass, $clonableAnnotation->copyingPolicy),
+            'properties' => $this->getPropertiesToCopy($reflectionClass, $clonableAnnotation->copyingPolicy, $idProperties),
         );
     }
 
     /**
      * @param \ReflectionClass $reflectionClass Reflection class
      * @param string           $copyingPolicy   Copying policy
+     * @param array            $idProperties    Identifier properties
      *
      * @return array
+     * @throws \Darvin\Utils\Mapping\MappingException
      */
-    private function getPropertiesToCopy(\ReflectionClass $reflectionClass, $copyingPolicy)
+    private function getPropertiesToCopy(\ReflectionClass $reflectionClass, $copyingPolicy, array $idProperties)
     {
         $properties = array();
 
         switch ($copyingPolicy) {
             case Clonable::COPYING_POLICY_ALL:
                 foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-                    if (null === $this->reader->getPropertyAnnotation($reflectionProperty, Skip::ANNOTATION)) {
+                    if (null === $this->reader->getPropertyAnnotation($reflectionProperty, Skip::ANNOTATION)
+                        && !in_array($reflectionProperty->getName(), $idProperties)
+                    ) {
                         $properties[] = $reflectionProperty->getName();
                     }
                 }
@@ -58,6 +68,16 @@ class ClonableDriver extends AbstractDriver
             case Clonable::COPYING_POLICY_NONE:
                 foreach ($reflectionClass->getProperties() as $reflectionProperty) {
                     if (null !== $this->reader->getPropertyAnnotation($reflectionProperty, Copy::ANNOTATION)) {
+                        if (in_array($reflectionProperty->getName(), $idProperties)) {
+                            $message = sprintf(
+                                'Property "%s::$%s" is identifier and it\'s value must not be copied during cloning.',
+                                $reflectionClass->getName(),
+                                $reflectionProperty->getName()
+                            );
+
+                            throw new MappingException($message);
+                        }
+
                         $properties[] = $reflectionProperty->getName();
                     }
                 }
