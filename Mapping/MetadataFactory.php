@@ -12,6 +12,7 @@ namespace Darvin\Utils\Mapping;
 
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
  * Metadata factory
@@ -49,6 +50,14 @@ class MetadataFactory implements MetadataFactoryInterface
     public function addAnnotationDriver(AnnotationDriverInterface $annotationDriver)
     {
         $this->annotationDrivers[] = $annotationDriver;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadataByObject($object)
+    {
+        return $this->getMetadata(ClassUtils::getClass($object));
     }
 
     /**

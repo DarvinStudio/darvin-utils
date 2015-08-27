@@ -28,4 +28,11 @@ interface MetadataFactoryInterface
      * @return array
      */
     public function getMetadata($class);
+
+    /**
+     * @param object $object Object
+     *
+     * @return array
+     */
+    public function getMetadataByObject($object);
 }
