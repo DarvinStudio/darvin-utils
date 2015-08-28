@@ -46,6 +46,9 @@ class DoctrineStringifier implements StringifierInterface
      */
     public function stringify($value, $dataType)
     {
+        if (is_object($value) && method_exists($value, '__toString')) {
+            return (string) $value;
+        }
         switch ($dataType) {
             case Type::BIGINT:
             case Type::BLOB:
