@@ -19,7 +19,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * Default value event listener
  */
-class DefaultValueListener extends AbstractOnFlushListener
+class DefaultValueListener
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -66,8 +66,6 @@ class DefaultValueListener extends AbstractOnFlushListener
             $entityClass
         );
 
-        $recomputeChangeSet = false;
-
         foreach ($defaultValuesMap as $targetProperty => $sourcePropertyPath) {
             if (null === $sourcePropertyValues[$sourcePropertyPath]) {
                 continue;
@@ -77,11 +75,6 @@ class DefaultValueListener extends AbstractOnFlushListener
             }
 
             $this->propertyAccessor->setValue($entity, $targetProperty, $sourcePropertyValues[$sourcePropertyPath]);
-
-            $recomputeChangeSet = true;
-        }
-        if ($recomputeChangeSet) {
-            $this->recomputeChangeSet($entity);
         }
     }
 
