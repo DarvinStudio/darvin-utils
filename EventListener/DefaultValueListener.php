@@ -12,16 +12,14 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Default value event subscriber
+ * Default value event listener
  */
-class DefaultValueSubscriber implements EventSubscriber
+class DefaultValueListener extends AbstractOnFlushListener
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -34,17 +32,6 @@ class DefaultValueSubscriber implements EventSubscriber
     private $propertyAccessor;
 
     /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents()
-    {
-        return array(
-            'prePersist',
-            'preUpdate',
-        );
-    }
-
-    /**
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
@@ -55,32 +42,30 @@ class DefaultValueSubscriber implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args Event arguments
+     * {@inheritdoc}
      */
-    public function prePersist(LifecycleEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args)
     {
-        $this->setDefaultValues($args->getEntity(), $args->getEntityManager());
+        parent::onFlush($args);
+
+        foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
+            $this->setDefaultValues($entity);
+        }
+        foreach ($this->uow->getScheduledEntityUpdates() as $entity) {
+            $this->setDefaultValues($entity);
+        }
     }
 
     /**
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args Event arguments
-     */
-    public function preUpdate(LifecycleEventArgs $args)
-    {
-        $this->setDefaultValues($args->getEntity(), $args->getEntityManager());
-    }
-
-    /**
-     * @param object                      $entity Entity
-     * @param \Doctrine\ORM\EntityManager $em     Entity manager
+     * @param object $entity Entity
      *
      * @throws \Darvin\Utils\DefaultValue\DefaultValueException
      */
-    private function setDefaultValues($entity, EntityManager $em)
+    private function setDefaultValues($entity)
     {
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactory->getMetadata($em->getClassMetadata($entityClass));
+        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
         $defaultValuesMap = $meta['default_values'];
         $this->filterDefaultValuesMap($defaultValuesMap, $entity, $entityClass);
 
@@ -94,8 +79,10 @@ class DefaultValueSubscriber implements EventSubscriber
             $entityClass
         );
 
+        $recomputeChangeSet = false;
+
         foreach ($defaultValuesMap as $targetProperty => $sourcePropertyPath) {
-            if (empty($sourcePropertyValues[$sourcePropertyPath])) {
+            if (null === $sourcePropertyValues[$sourcePropertyPath]) {
                 continue;
             }
             if (!$this->propertyAccessor->isWritable($entity, $targetProperty)) {
@@ -103,6 +90,11 @@ class DefaultValueSubscriber implements EventSubscriber
             }
 
             $this->propertyAccessor->setValue($entity, $targetProperty, $sourcePropertyValues[$sourcePropertyPath]);
+
+            $recomputeChangeSet = true;
+        }
+        if ($recomputeChangeSet) {
+            $this->recomputeChangeSet($entity);
         }
     }
 
@@ -122,7 +114,7 @@ class DefaultValueSubscriber implements EventSubscriber
 
             $value = $this->propertyAccessor->getValue($entity, $targetProperty);
 
-            if (!empty($value)) {
+            if (null !== $value) {
                 unset($defaultValuesMap[$targetProperty]);
             }
         }
