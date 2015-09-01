@@ -12,14 +12,15 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Default value event listener
+ * Default value event subscriber
  */
-class DefaultValueListener
+class DefaultValueSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -30,6 +31,17 @@ class DefaultValueListener
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
      */
     private $propertyAccessor;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscribedEvents()
+    {
+        return array(
+            'prePersist' => 'setDefaultValues',
+            'preUpdate'  => 'setDefaultValues',
+        );
+    }
 
     /**
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
@@ -46,7 +58,7 @@ class DefaultValueListener
      *
      * @throws \Darvin\Utils\DefaultValue\DefaultValueException
      */
-    public function prePersist(LifecycleEventArgs $args)
+    public function setDefaultValues(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
 
