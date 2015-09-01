@@ -14,6 +14,7 @@ use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -38,8 +39,8 @@ class DefaultValueSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            'prePersist' => 'setDefaultValues',
-            'preUpdate'  => 'setDefaultValues',
+            'prePersist',
+            'preUpdate',
         );
     }
 
@@ -55,16 +56,31 @@ class DefaultValueSubscriber implements EventSubscriber
 
     /**
      * @param \Doctrine\ORM\Event\LifecycleEventArgs $args Event arguments
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        $this->setDefaultValues($args->getEntity(), $args->getEntityManager());
+    }
+
+    /**
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args Event arguments
+     */
+    public function preUpdate(LifecycleEventArgs $args)
+    {
+        $this->setDefaultValues($args->getEntity(), $args->getEntityManager());
+    }
+
+    /**
+     * @param object                      $entity Entity
+     * @param \Doctrine\ORM\EntityManager $em     Entity manager
      *
      * @throws \Darvin\Utils\DefaultValue\DefaultValueException
      */
-    public function setDefaultValues(LifecycleEventArgs $args)
+    private function setDefaultValues($entity, EntityManager $em)
     {
-        $entity = $args->getEntity();
-
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactory->getMetadata($args->getEntityManager()->getClassMetadata($entityClass));
+        $meta = $this->metadataFactory->getMetadata($em->getClassMetadata($entityClass));
         $defaultValuesMap = $meta['default_values'];
         $this->filterDefaultValuesMap($defaultValuesMap, $entity, $entityClass);
 
