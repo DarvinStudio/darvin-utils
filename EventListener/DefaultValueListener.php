@@ -67,7 +67,7 @@ class DefaultValueListener
         );
 
         foreach ($defaultValuesMap as $targetProperty => $sourcePropertyPath) {
-            if (null === $sourcePropertyValues[$sourcePropertyPath]) {
+            if (empty($sourcePropertyValues[$sourcePropertyPath])) {
                 continue;
             }
             if (!$this->propertyAccessor->isWritable($entity, $targetProperty)) {
@@ -94,7 +94,7 @@ class DefaultValueListener
 
             $value = $this->propertyAccessor->getValue($entity, $targetProperty);
 
-            if (null !== $value) {
+            if (!empty($value)) {
                 unset($defaultValuesMap[$targetProperty]);
             }
         }
