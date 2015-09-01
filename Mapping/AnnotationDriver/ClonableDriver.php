@@ -28,10 +28,9 @@ class ClonableDriver extends AbstractDriver
     {
         $reflectionClass = $doctrineMeta->getReflectionClass();
 
-        /** @var \Darvin\Utils\Mapping\Annotation\Clonable\Clonable $clonableAnnotation */
         $clonableAnnotation = $this->reader->getClassAnnotation($reflectionClass, Clonable::ANNOTATION);
 
-        if (empty($clonableAnnotation)) {
+        if (!$clonableAnnotation instanceof Clonable) {
             return;
         }
 
