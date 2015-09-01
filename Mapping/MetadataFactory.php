@@ -11,19 +11,13 @@
 namespace Darvin\Utils\Mapping;
 
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * Metadata factory
  */
 class MetadataFactory implements MetadataFactoryInterface
 {
-    /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    private $om;
-
     /**
      * @var \Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface[]
      */
@@ -35,11 +29,10 @@ class MetadataFactory implements MetadataFactoryInterface
     private $loadedMeta;
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $om Object manager
+     * Constructor
      */
-    public function __construct(ObjectManager $om)
+    public function __construct()
     {
-        $this->om = $om;
         $this->annotationDrivers = array();
         $this->loadedMeta = array();
     }
@@ -55,30 +48,18 @@ class MetadataFactory implements MetadataFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function getMetadataByObject($object)
+    public function getMetadata(ClassMetadata $doctrineMeta)
     {
-        return $this->getMetadata(ClassUtils::getClass($object));
-    }
+        if (!isset($this->loadedMeta[$doctrineMeta->getName()])) {
+            $meta = array();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMetadata($class)
-    {
-        if (isset($this->loadedMeta[$class])) {
-            return $this->loadedMeta[$class];
+            foreach ($this->annotationDrivers as $annotationDriver) {
+                $annotationDriver->readMetadata($doctrineMeta, $meta);
+            }
+
+            $this->loadedMeta[$doctrineMeta->getName()] = $meta;
         }
 
-        $meta = array();
-
-        $doctrineMeta = $this->om->getClassMetadata($class);
-
-        foreach ($this->annotationDrivers as $annotationDriver) {
-            $annotationDriver->readMetadata($doctrineMeta, $meta);
-        }
-
-        $this->loadedMeta[$class] = $meta;
-
-        return $meta;
+        return $this->loadedMeta[$doctrineMeta->getName()];
     }
 }

@@ -11,7 +11,7 @@
 namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\DefaultValue\DefaultValueException;
-use Darvin\Utils\Mapping\MetadataFactoryProviderInterface;
+use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -22,9 +22,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class DefaultValueListener extends AbstractOnFlushListener
 {
     /**
-     * @var \Darvin\Utils\Mapping\MetadataFactoryProviderInterface
+     * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactoryProvider;
+    private $metadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -32,14 +32,12 @@ class DefaultValueListener extends AbstractOnFlushListener
     private $propertyAccessor;
 
     /**
-     * @param \Darvin\Utils\Mapping\MetadataFactoryProviderInterface      $metadataFactoryProvider Metadata factory provider
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
-    public function __construct(
-        MetadataFactoryProviderInterface $metadataFactoryProvider,
-        PropertyAccessorInterface $propertyAccessor
-    ) {
-        $this->metadataFactoryProvider = $metadataFactoryProvider;
+    public function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
+    {
+        $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
     }
 
@@ -67,7 +65,7 @@ class DefaultValueListener extends AbstractOnFlushListener
     {
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactoryProvider->getMetadataFactory()->getMetadata($entityClass);
+        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
         $defaultValuesMap = $meta['default_values'];
         $this->filterDefaultValuesMap($defaultValuesMap, $entity, $entityClass);
 
