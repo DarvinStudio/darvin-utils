@@ -13,7 +13,7 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -42,30 +42,17 @@ class DefaultValueListener extends AbstractOnFlushListener
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function onFlush(OnFlushEventArgs $args)
-    {
-        parent::onFlush($args);
-
-        foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
-            $this->setDefaultValues($entity);
-        }
-        foreach ($this->uow->getScheduledEntityUpdates() as $entity) {
-            $this->setDefaultValues($entity);
-        }
-    }
-
-    /**
-     * @param object $entity Entity
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $args Event arguments
      *
      * @throws \Darvin\Utils\DefaultValue\DefaultValueException
      */
-    protected function setDefaultValues($entity)
+    public function prePersist(LifecycleEventArgs $args)
     {
+        $entity = $args->getEntity();
+
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
+        $meta = $this->metadataFactory->getMetadata($args->getEntityManager()->getClassMetadata($entityClass));
         $defaultValuesMap = $meta['default_values'];
         $this->filterDefaultValuesMap($defaultValuesMap, $entity, $entityClass);
 
