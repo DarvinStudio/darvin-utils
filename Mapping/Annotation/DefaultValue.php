@@ -16,7 +16,7 @@ namespace Darvin\Utils\Mapping\Annotation;
  * @Annotation
  * @Target("PROPERTY")
  */
-class DefaultValue
+final class DefaultValue
 {
     const ANNOTATION = __CLASS__;
 
