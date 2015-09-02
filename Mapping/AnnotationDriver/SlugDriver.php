@@ -26,8 +26,10 @@ class SlugDriver extends AbstractDriver
         $meta['slugs'] = array();
 
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            if (null !== $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION)) {
-                $meta['slugs'][] = $reflectionProperty->getName();
+            $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION);
+
+            if ($slugAnnotation instanceof Slug) {
+                $meta['slugs'][$reflectionProperty->getName()] = get_object_vars($slugAnnotation);
             }
         }
     }

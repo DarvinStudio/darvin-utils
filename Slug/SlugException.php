@@ -8,25 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Mapping\Annotation;
+namespace Darvin\Utils\Slug;
+
+use Darvin\Utils\Exception\DarvinUtilsException;
 
 /**
- * Slug annotation
- *
- * @Annotation
- * @Target("PROPERTY")
+ * Slug exception
  */
-final class Slug
+class SlugException extends DarvinUtilsException
 {
-    const ANNOTATION = __CLASS__;
 
-    /**
-     * @var array
-     */
-    public $sourcePropertyPaths = array();
-
-    /**
-     * @var string
-     */
-    public $separator = '/';
 }
