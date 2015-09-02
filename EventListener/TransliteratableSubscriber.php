@@ -11,8 +11,8 @@
 namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Darvin\Utils\Strings\Transliterator\TransliteratableException;
-use Darvin\Utils\Strings\Transliterator\TransliteratorInterface;
+use Darvin\Utils\Transliteratable\TransliteratableException;
+use Darvin\Utils\Transliteratable\TransliteratorInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -35,14 +35,14 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     private $propertyAccessor;
 
     /**
-     * @var \Darvin\Utils\Strings\Transliterator\TransliteratorInterface
+     * @var \Darvin\Utils\Transliteratable\TransliteratorInterface
      */
     private $transliterator;
 
     /**
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface               $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface  $propertyAccessor Property accessor
-     * @param \Darvin\Utils\Strings\Transliterator\TransliteratorInterface $transliterator   Transliterator
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
+     * @param \Darvin\Utils\Transliteratable\TransliteratorInterface      $transliterator   Transliterator
      */
     public function __construct(
         MetadataFactoryInterface $metadataFactory,
@@ -81,7 +81,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     /**
      * @param object $entity Entity
      *
-     * @throws \Darvin\Utils\Strings\Transliterator\TransliteratableException
+     * @throws \Darvin\Utils\Transliteratable\TransliteratableException
      */
     protected function transliterate($entity)
     {

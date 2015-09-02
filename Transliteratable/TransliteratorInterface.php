@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Strings\Transliterator;
+namespace Darvin\Utils\Transliteratable;
 
 /**
  * Transliterator
