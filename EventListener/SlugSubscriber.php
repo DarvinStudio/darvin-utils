@@ -17,7 +17,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
-use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -85,14 +84,10 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
 
     /**
      * @param object $entity Entity
-     *
-     * @throws \Darvin\Utils\Slug\SlugException
      */
     protected function updateSlugs($entity)
     {
-        $entityClass = ClassUtils::getClass($entity);
-
-        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
+        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata(ClassUtils::getClass($entity)));
 
         if (!isset($meta['slugs']) || empty($meta['slugs'])) {
             return;
@@ -101,30 +96,11 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
         $recomputeChangeSet = false;
 
         foreach ($meta['slugs'] as $slugProperty => $params) {
-            if (!$this->propertyAccessor->isReadable($entity, $slugProperty)) {
-                throw new SlugException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $slugProperty));
-            }
+            $sourcePropertyPaths = $params['sourcePropertyPaths'];
 
-            $oldSlug = $this->propertyAccessor->getValue($entity, $slugProperty);
+            $oldSlug = $this->getPropertyValue($entity, $slugProperty);
 
-            $slugParts = array();
-
-            foreach ($params['sourcePropertyPaths'] as $propertyPath) {
-                try {
-                    $slugParts[] = $this->propertyAccessor->getValue($entity, $propertyPath);
-                } catch (UnexpectedTypeException $ex) {
-                }
-            }
-            if (empty($slugParts)) {
-                $message = sprintf(
-                    'Unable to generate slug "%s::$%s": unable to get any of slug parts using property paths "%s".',
-                    $entityClass,
-                    $slugProperty,
-                    implode('", "', $params['sourcePropertyPaths'])
-                );
-
-                throw new SlugException($message);
-            }
+            $slugParts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths);
 
             $newSlug = $originalNewSlug = implode($params['separator'], $slugParts);
             $slugSuffix = $slugParts[count($slugParts) - 1];
@@ -132,28 +108,97 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             foreach ($this->slugHandlers as $slugHandler) {
                 $slugHandler->handle($newSlug, $slugSuffix, $this->em);
             }
-            if ($newSlug == $oldSlug) {
+            if ($newSlug === $oldSlug) {
                 continue;
             }
             if ($newSlug !== $originalNewSlug) {
-                $suffixPropertyPath = $params['sourcePropertyPaths'][count($params['sourcePropertyPaths']) - 1];
-
-                if (!$this->propertyAccessor->isWritable($entity, $suffixPropertyPath)) {
-                    throw new SlugException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $suffixPropertyPath));
-                }
-
-                $this->propertyAccessor->setValue($entity, $suffixPropertyPath, $slugSuffix);
-            }
-            if (!$this->propertyAccessor->isWritable($entity, $slugProperty)) {
-                throw new SlugException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $slugProperty));
+                $suffixPropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
+                $this->setPropertyValue($entity, $suffixPropertyPath, $slugSuffix);
             }
 
-            $this->propertyAccessor->setValue($entity, $slugProperty, $newSlug);
+            $this->setPropertyValue($entity, $slugProperty, $newSlug);
 
             $recomputeChangeSet = true;
         }
         if ($recomputeChangeSet) {
             $this->recomputeChangeSet($entity);
         }
+    }
+
+    /**
+     * @param object $entity              Entity
+     * @param string $slugProperty        Slug property
+     * @param array  $sourcePropertyPaths Source property paths
+     *
+     * @return array
+     * @throws \Darvin\Utils\Slug\SlugException
+     */
+    private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths)
+    {
+        $slugParts = array();
+
+        foreach ($sourcePropertyPaths as $propertyPath) {
+            if (false !== strpos($propertyPath, '.')) {
+                $related = $this->getPropertyValue($entity, preg_replace('/\..*/', '', $propertyPath));
+
+                if (empty($related)) {
+                    continue;
+                }
+            }
+
+            $slugPart = $this->getPropertyValue($entity, $propertyPath);
+
+            if (!empty($slugPart)) {
+                $slugParts[] = $slugPart;
+            }
+        }
+        if (empty($slugParts)) {
+            $message = sprintf(
+                'Unable to generate slug "%s::$%s": unable to get any non empty slug parts using property paths "%s".',
+                ClassUtils::getClass($entity),
+                $slugProperty,
+                implode('", "', $sourcePropertyPaths)
+            );
+
+            throw new SlugException($message);
+        }
+
+        return $slugParts;
+    }
+
+    /**
+     * @param object $entity       Entity
+     * @param string $propertyPath Property path
+     * @param mixed  $value        Value
+     *
+     * @throws \Darvin\Utils\Slug\SlugException
+     */
+    private function setPropertyValue($entity, $propertyPath, $value)
+    {
+        if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
+            throw new SlugException(
+                sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
+            );
+        }
+
+        $this->propertyAccessor->setValue($entity, $propertyPath, $value);
+    }
+
+    /**
+     * @param object $entity       Entity
+     * @param string $propertyPath Property path
+     *
+     * @return mixed
+     * @throws \Darvin\Utils\Slug\SlugException
+     */
+    private function getPropertyValue($entity, $propertyPath)
+    {
+        if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
+            throw new SlugException(
+                sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
+            );
+        }
+
+        return $this->propertyAccessor->getValue($entity, $propertyPath);
     }
 }
