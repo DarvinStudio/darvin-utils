@@ -48,55 +48,57 @@ abstract class AbstractOnFlushListener
     }
 
     /**
-     * @param string   $entityClass Entity class filter
      * @param callable $callback    Callback
+     * @param string   $entityClass Entity class filter
      *
      * @return AbstractOnFlushListener
      */
-    protected function onDelete($entityClass, callable $callback)
+    protected function onDelete(callable $callback, $entityClass = null)
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityDeletions(), $entityClass, $callback);
+        return $this->processEntities($this->uow->getScheduledEntityDeletions(), $callback, $entityClass);
     }
 
     /**
-     * @param string   $entityClass Entity class filter
      * @param callable $callback    Callback
+     * @param string   $entityClass Entity class filter
      *
      * @return AbstractOnFlushListener
      */
-    protected function onInsert($entityClass, callable $callback)
+    protected function onInsert(callable $callback, $entityClass = null)
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityInsertions(), $entityClass, $callback);
+        return $this->processEntities($this->uow->getScheduledEntityInsertions(), $callback, $entityClass);
     }
 
     /**
-     * @param string   $entityClass Entity class filter
      * @param callable $callback    Callback
+     * @param string   $entityClass Entity class filter
      *
      * @return AbstractOnFlushListener
      */
-    protected function onUpdate($entityClass, callable $callback)
+    protected function onUpdate(callable $callback, $entityClass = null)
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityUpdates(), $entityClass, $callback);
+        return $this->processEntities($this->uow->getScheduledEntityUpdates(), $callback, $entityClass);
     }
 
     /**
      * @param array    $entities    Entities to process
-     * @param string   $entityClass Entity class filter
      * @param callable $callback    Callback
+     * @param string   $entityClass Entity class filter
      *
      * @return AbstractOnFlushListener
      */
-    private function processEntities($entities, $entityClass, callable $callback)
+    private function processEntities($entities, callable $callback, $entityClass = null)
     {
+        $filterByEntityClass = !empty($entityClass);
+
         foreach ($entities as $entity) {
-            if ($entity instanceof $entityClass) {
+            if (!$filterByEntityClass || $entity instanceof $entityClass) {
                 $callback($entity);
             }
         }

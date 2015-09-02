@@ -60,12 +60,11 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     {
         parent::onFlush($args);
 
-        foreach ($this->uow->getScheduledEntityInsertions() as $entity) {
-            $this->setDefaultValues($entity);
-        }
-        foreach ($this->uow->getScheduledEntityUpdates() as $entity) {
-            $this->setDefaultValues($entity);
-        }
+        $setDefaultValuesCallback = array($this, 'setDefaultValues');
+
+        $this
+            ->onInsert($setDefaultValuesCallback)
+            ->onUpdate($setDefaultValuesCallback);
     }
 
     /**
@@ -73,7 +72,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      *
      * @throws \Darvin\Utils\DefaultValue\DefaultValueException
      */
-    private function setDefaultValues($entity)
+    protected function setDefaultValues($entity)
     {
         $entityClass = ClassUtils::getClass($entity);
 
