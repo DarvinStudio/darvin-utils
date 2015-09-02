@@ -12,14 +12,16 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Default value event listener
+ * Default value event subscriber
  */
-class DefaultValueListener extends AbstractOnFlushListener
+class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -39,6 +41,16 @@ class DefaultValueListener extends AbstractOnFlushListener
     {
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscribedEvents()
+    {
+        return array(
+            Events::onFlush,
+        );
     }
 
     /**
