@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\Slug;
+use Darvin\Utils\Mapping\MappingException;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -29,8 +30,77 @@ class SlugDriver extends AbstractDriver
             $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION);
 
             if ($slugAnnotation instanceof Slug) {
+                $this->validateSourcePropertyPaths(
+                    $slugAnnotation->sourcePropertyPaths,
+                    $doctrineMeta->getName(),
+                    $reflectionProperty->getName()
+                );
+
                 $meta['slugs'][$reflectionProperty->getName()] = get_object_vars($slugAnnotation);
             }
         }
+    }
+
+    /**
+     * @param array  $sourcePropertyPaths Source property paths
+     * @param string $objectClass         Object class
+     * @param string $slugProperty        Slug property
+     *
+     * @throws \Darvin\Utils\Mapping\MappingException
+     */
+    private function validateSourcePropertyPaths(array $sourcePropertyPaths, $objectClass, $slugProperty)
+    {
+        if (empty($sourcePropertyPaths)) {
+            throw $this->createConfigurationInvalidException(
+                $objectClass,
+                $slugProperty,
+                'source property paths array must not be empty'
+            );
+        }
+
+        $lastSourcePropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
+
+        if (false !== strpos($lastSourcePropertyPath, '.')) {
+            throw $this->createConfigurationInvalidException(
+                $objectClass,
+                $slugProperty,
+                sprintf(
+                    'last source property path must not contain relations ("." symbols), "%s" provided',
+                    $lastSourcePropertyPath
+                )
+            );
+        }
+        foreach ($sourcePropertyPaths as $sourcePropertyPath) {
+            if (substr_count($sourcePropertyPath, '.') > 1) {
+                throw $this->createConfigurationInvalidException(
+                    $objectClass,
+                    $slugProperty,
+                    sprintf(
+                        'source property path can contain only single relation ("." symbol), "%s" provided',
+                        $sourcePropertyPath
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * @param string $objectClass  Object class
+     * @param string $slugProperty Slug property
+     * @param string $message      Error message
+     *
+     * @return \Darvin\Utils\Mapping\MappingException
+     */
+    private function createConfigurationInvalidException($objectClass, $slugProperty, $message)
+    {
+        $message = sprintf(
+            'Configuration of annotation "%s" on property "%s::$%s" is invalid: %s.',
+            Slug::ANNOTATION,
+            $objectClass,
+            $slugProperty,
+            $message
+        );
+
+        return new MappingException($message);
     }
 }
