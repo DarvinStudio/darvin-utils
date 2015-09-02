@@ -12,6 +12,7 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Slug\SlugException;
+use Darvin\Utils\Slug\SlugHandlerInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -35,6 +36,11 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     private $propertyAccessor;
 
     /**
+     * @var \Darvin\Utils\Slug\SlugHandlerInterface[]
+     */
+    private $slugHandlers;
+
+    /**
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
@@ -42,6 +48,15 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     {
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->slugHandlers = array();
+    }
+
+    /**
+     * @param \Darvin\Utils\Slug\SlugHandlerInterface $slugHandler Slug handler
+     */
+    public function addSlugHandler(SlugHandlerInterface $slugHandler)
+    {
+        $this->slugHandlers[] = $slugHandler;
     }
 
     /**
@@ -100,17 +115,40 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
                 } catch (UnexpectedTypeException $ex) {
                 }
             }
+            if (empty($slugParts)) {
+                $message = sprintf(
+                    'Unable to generate slug "%s::$%s": unable to get any of slug parts using property paths "%s".',
+                    $entityClass,
+                    $slugProperty,
+                    implode('", "', $params['sourcePropertyPaths'])
+                );
 
-            $slug = implode($params['separator'], $slugParts);
+                throw new SlugException($message);
+            }
 
-            if ($slug == $oldSlug) {
+            $newSlug = $originalNewSlug = implode($params['separator'], $slugParts);
+            $slugSuffix = $slugParts[count($slugParts) - 1];
+
+            foreach ($this->slugHandlers as $slugHandler) {
+                $slugHandler->handle($newSlug, $slugSuffix, $this->em);
+            }
+            if ($newSlug == $oldSlug) {
                 continue;
+            }
+            if ($newSlug !== $originalNewSlug) {
+                $suffixPropertyPath = $params['sourcePropertyPaths'][count($params['sourcePropertyPaths']) - 1];
+
+                if (!$this->propertyAccessor->isWritable($entity, $suffixPropertyPath)) {
+                    throw new SlugException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $suffixPropertyPath));
+                }
+
+                $this->propertyAccessor->setValue($entity, $suffixPropertyPath, $slugSuffix);
             }
             if (!$this->propertyAccessor->isWritable($entity, $slugProperty)) {
                 throw new SlugException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $slugProperty));
             }
 
-            $this->propertyAccessor->setValue($entity, $slugProperty, $slug);
+            $this->propertyAccessor->setValue($entity, $slugProperty, $newSlug);
 
             $recomputeChangeSet = true;
         }
