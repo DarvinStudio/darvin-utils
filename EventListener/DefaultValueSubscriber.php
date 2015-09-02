@@ -125,7 +125,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     {
         foreach ($defaultValuesMap as $targetProperty => $sourcePropertyPath) {
             if (!$this->propertyAccessor->isReadable($entity, $targetProperty)) {
-                throw new DefaultValueException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $targetProperty));
+                throw $this->createPropertyNotReadableException($entityClass, $targetProperty);
             }
 
             $value = $this->propertyAccessor->getValue($entity, $targetProperty);
@@ -150,14 +150,23 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
 
         foreach ($sourcePropertyPaths as $sourcePropertyPath) {
             if (!$this->propertyAccessor->isReadable($entity, $sourcePropertyPath)) {
-                throw new DefaultValueException(
-                    sprintf('Property "%s::$%s" is not readable.', $entityClass, $sourcePropertyPath)
-                );
+                throw $this->createPropertyNotReadableException($entityClass, $sourcePropertyPath);
             }
 
             $sourcePropertyValues[$sourcePropertyPath] = $this->propertyAccessor->getValue($entity, $sourcePropertyPath);
         }
 
         return $sourcePropertyValues;
+    }
+
+    /**
+     * @param string $entityClass Entity class
+     * @param string $property    Property
+     *
+     * @return \Darvin\Utils\DefaultValue\DefaultValueException
+     */
+    private function createPropertyNotReadableException($entityClass, $property)
+    {
+        return new DefaultValueException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $property));
     }
 }
