@@ -16,4 +16,6 @@ namespace Darvin\Utils\Event;
 final class Events
 {
     const POST_CLONE = 'darvin_utils.post_clone';
+
+    const POST_SLUGS_UPDATE = 'darvin_utils.post_slugs_update';
 }

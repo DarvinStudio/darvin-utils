@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\EventListener;
 
+use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Slug\SlugException;
 use Darvin\Utils\Slug\SlugHandlerInterface;
@@ -17,6 +18,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -24,6 +26,11 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
 {
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
@@ -40,11 +47,16 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     private $slugHandlers;
 
     /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher  Event dispatcher
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
-    public function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
-    {
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        MetadataFactoryInterface $metadataFactory,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $this->eventDispatcher = $eventDispatcher;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
         $this->slugHandlers = array();
@@ -83,9 +95,10 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     }
 
     /**
-     * @param object $entity Entity
+     * @param object $entity    Entity
+     * @param string $operation Operation type
      */
-    protected function updateSlugs($entity)
+    protected function updateSlugs($entity, $operation)
     {
         $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata(ClassUtils::getClass($entity)));
 
@@ -93,7 +106,7 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             return;
         }
 
-        $recomputeChangeSet = false;
+        $slugsChangeSet = array();
 
         foreach ($meta['slugs'] as $slugProperty => $params) {
             $sourcePropertyPaths = $params['sourcePropertyPaths'];
@@ -111,17 +124,27 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             if ($newSlug === $oldSlug) {
                 continue;
             }
+
+            $slugsChangeSet[$oldSlug] = $newSlug;
+
             if ($newSlug !== $originalNewSlug) {
                 $suffixPropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
                 $this->setPropertyValue($entity, $suffixPropertyPath, $slugSuffix);
             }
 
             $this->setPropertyValue($entity, $slugProperty, $newSlug);
-
-            $recomputeChangeSet = true;
         }
-        if ($recomputeChangeSet) {
-            $this->recomputeChangeSet($entity);
+        if (empty($slugsChangeSet)) {
+            return;
+        }
+
+        $this->recomputeChangeSet($entity);
+
+        if (AbstractOnFlushListener::OPERATION_UPDATE === $operation) {
+            $this->eventDispatcher->dispatch(
+                \Darvin\Utils\Event\Events::POST_SLUGS_UPDATE,
+                new SlugsUpdateEvent($slugsChangeSet, $this->em)
+            );
         }
     }
 

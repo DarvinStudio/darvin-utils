@@ -18,6 +18,10 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
  */
 abstract class AbstractOnFlushListener
 {
+    const OPERATION_DELETE = 'delete';
+    const OPERATION_INSERT = 'insert';
+    const OPERATION_UPDATE = 'update';
+
     /**
      * @var \Doctrine\ORM\EntityManager
      */
@@ -57,7 +61,7 @@ abstract class AbstractOnFlushListener
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityDeletions(), $callback, $entityClass);
+        return $this->processEntities($this->uow->getScheduledEntityDeletions(), self::OPERATION_DELETE, $callback, $entityClass);
     }
 
     /**
@@ -70,7 +74,7 @@ abstract class AbstractOnFlushListener
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityInsertions(), $callback, $entityClass);
+        return $this->processEntities($this->uow->getScheduledEntityInsertions(), self::OPERATION_INSERT, $callback, $entityClass);
     }
 
     /**
@@ -83,23 +87,24 @@ abstract class AbstractOnFlushListener
     {
         $this->checkIfInitialized();
 
-        return $this->processEntities($this->uow->getScheduledEntityUpdates(), $callback, $entityClass);
+        return $this->processEntities($this->uow->getScheduledEntityUpdates(), self::OPERATION_UPDATE, $callback, $entityClass);
     }
 
     /**
      * @param array    $entities    Entities to process
+     * @param string   $operation   Operation type
      * @param callable $callback    Callback
      * @param string   $entityClass Entity class filter
      *
      * @return AbstractOnFlushListener
      */
-    private function processEntities($entities, callable $callback, $entityClass = null)
+    private function processEntities($entities, $operation, callable $callback, $entityClass = null)
     {
         $filterByEntityClass = !empty($entityClass);
 
         foreach ($entities as $entity) {
             if (!$filterByEntityClass || $entity instanceof $entityClass) {
-                $callback($entity);
+                $callback($entity, $operation);
             }
         }
 
