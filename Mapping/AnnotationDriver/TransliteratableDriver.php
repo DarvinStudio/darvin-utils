@@ -11,7 +11,6 @@
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\Transliteratable;
-use Darvin\Utils\Mapping\MappingException;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -34,14 +33,12 @@ class TransliteratableDriver extends AbstractDriver
 
             if ($transliteratableAnnotation instanceof Transliteratable) {
                 if (!$doctrineMeta->hasField($reflectionProperty->getName())) {
-                    $message = sprintf(
-                        'Property "%s::$%s" annotated with "%s" annotation must be mapped field.',
+                    throw $this->createPropertyAnnotationInvalidException(
+                        Transliteratable::ANNOTATION,
                         $doctrineMeta->getName(),
                         $reflectionProperty->getName(),
-                        Transliteratable::ANNOTATION
+                        'property must be mapped field'
                     );
-
-                    throw new MappingException($message);
                 }
 
                 $meta['transliteratable'][$reflectionProperty->getName()] = get_object_vars(

@@ -11,7 +11,6 @@
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\Slug;
-use Darvin\Utils\Mapping\MappingException;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -51,7 +50,8 @@ class SlugDriver extends AbstractDriver
     private function validateSourcePropertyPaths(array $sourcePropertyPaths, $objectClass, $slugProperty)
     {
         if (empty($sourcePropertyPaths)) {
-            throw $this->createConfigurationInvalidException(
+            throw $this->createPropertyAnnotationInvalidException(
+                Slug::ANNOTATION,
                 $objectClass,
                 $slugProperty,
                 'source property paths array must not be empty'
@@ -61,7 +61,8 @@ class SlugDriver extends AbstractDriver
         $lastSourcePropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
 
         if (false !== strpos($lastSourcePropertyPath, '.')) {
-            throw $this->createConfigurationInvalidException(
+            throw $this->createPropertyAnnotationInvalidException(
+                Slug::ANNOTATION,
                 $objectClass,
                 $slugProperty,
                 sprintf(
@@ -72,7 +73,8 @@ class SlugDriver extends AbstractDriver
         }
         foreach ($sourcePropertyPaths as $sourcePropertyPath) {
             if (substr_count($sourcePropertyPath, '.') > 1) {
-                throw $this->createConfigurationInvalidException(
+                throw $this->createPropertyAnnotationInvalidException(
+                    Slug::ANNOTATION,
                     $objectClass,
                     $slugProperty,
                     sprintf(
@@ -82,25 +84,5 @@ class SlugDriver extends AbstractDriver
                 );
             }
         }
-    }
-
-    /**
-     * @param string $objectClass  Object class
-     * @param string $slugProperty Slug property
-     * @param string $message      Error message
-     *
-     * @return \Darvin\Utils\Mapping\MappingException
-     */
-    private function createConfigurationInvalidException($objectClass, $slugProperty, $message)
-    {
-        $message = sprintf(
-            'Configuration of annotation "%s" on property "%s::$%s" is invalid: %s.',
-            Slug::ANNOTATION,
-            $objectClass,
-            $slugProperty,
-            $message
-        );
-
-        return new MappingException($message);
     }
 }

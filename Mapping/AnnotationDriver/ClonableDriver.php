@@ -13,7 +13,6 @@ namespace Darvin\Utils\Mapping\AnnotationDriver;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\Annotation\Clonable\Copy;
 use Darvin\Utils\Mapping\Annotation\Clonable\Skip;
-use Darvin\Utils\Mapping\MappingException;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -68,13 +67,12 @@ class ClonableDriver extends AbstractDriver
                 foreach ($reflectionClass->getProperties() as $reflectionProperty) {
                     if (null !== $this->reader->getPropertyAnnotation($reflectionProperty, Copy::ANNOTATION)) {
                         if (in_array($reflectionProperty->getName(), $idProperties)) {
-                            $message = sprintf(
-                                'Property "%s::$%s" is identifier and it\'s value must not be copied during cloning.',
+                            throw $this->createPropertyAnnotationInvalidException(
+                                Copy::ANNOTATION,
                                 $reflectionClass->getName(),
-                                $reflectionProperty->getName()
+                                $reflectionProperty->getName(),
+                                'property is identifier and it\'s value must not be copied during cloning'
                             );
-
-                            throw new MappingException($message);
                         }
 
                         $properties[] = $reflectionProperty->getName();
