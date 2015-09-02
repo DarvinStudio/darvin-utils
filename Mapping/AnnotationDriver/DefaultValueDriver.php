@@ -23,13 +23,13 @@ class DefaultValueDriver extends AbstractDriver
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
-        $meta['default_values'] = array();
+        $meta['defaultValues'] = array();
 
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             $defaultValueAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, DefaultValue::ANNOTATION);
 
             if ($defaultValueAnnotation instanceof DefaultValue) {
-                $meta['default_values'][$reflectionProperty->getName()] = $defaultValueAnnotation->sourcePropertyPath;
+                $meta['defaultValues'][$reflectionProperty->getName()] = $defaultValueAnnotation->sourcePropertyPath;
             }
         }
     }

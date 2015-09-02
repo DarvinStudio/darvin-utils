@@ -78,11 +78,11 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
 
         $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
 
-        if (!isset($meta['default_values']) || empty($meta['default_values'])) {
+        if (!isset($meta['defaultValues']) || empty($meta['defaultValues'])) {
             return;
         }
 
-        $defaultValuesMap = $meta['default_values'];
+        $defaultValuesMap = $meta['defaultValues'];
         $this->filterDefaultValuesMap($defaultValuesMap, $entity, $entityClass);
 
         if (empty($defaultValuesMap)) {
