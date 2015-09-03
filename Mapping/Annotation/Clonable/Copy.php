@@ -16,7 +16,7 @@ namespace Darvin\Utils\Mapping\Annotation\Clonable;
  * @Annotation
  * @Target("PROPERTY")
  */
-class Copy
+final class Copy
 {
     const ANNOTATION = __CLASS__;
 }

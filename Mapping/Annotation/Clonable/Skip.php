@@ -16,7 +16,7 @@ namespace Darvin\Utils\Mapping\Annotation\Clonable;
  * @Annotation
  * @Target("PROPERTY")
  */
-class Skip
+final class Skip
 {
     const ANNOTATION = __CLASS__;
 }
