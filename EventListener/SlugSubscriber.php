@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\EventListener;
 
+use Darvin\Utils\Event\Events as DarvinUtilEvents;
 use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Slug\SlugException;
@@ -17,7 +18,7 @@ use Darvin\Utils\Slug\SlugHandlerInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Events;
+use Doctrine\ORM\Events as ORMEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -76,7 +77,7 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            Events::onFlush,
+            ORMEvents::onFlush,
         );
     }
 
@@ -118,11 +119,11 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             $newSlug = $originalNewSlug = implode($params['separator'], $slugParts);
             $slugSuffix = $slugParts[count($slugParts) - 1];
 
-            foreach ($this->slugHandlers as $slugHandler) {
-                $slugHandler->handle($newSlug, $slugSuffix, $this->em);
-            }
             if ($newSlug === $oldSlug) {
                 continue;
+            }
+            foreach ($this->slugHandlers as $slugHandler) {
+                $slugHandler->handle($newSlug, $slugSuffix, $this->em);
             }
 
             $slugsChangeSet[$oldSlug] = $newSlug;
@@ -142,7 +143,7 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
 
         if (AbstractOnFlushListener::OPERATION_UPDATE === $operation) {
             $this->eventDispatcher->dispatch(
-                \Darvin\Utils\Event\Events::POST_SLUGS_UPDATE,
+                DarvinUtilEvents::POST_SLUGS_UPDATE,
                 new SlugsUpdateEvent($slugsChangeSet, $this->em)
             );
         }
