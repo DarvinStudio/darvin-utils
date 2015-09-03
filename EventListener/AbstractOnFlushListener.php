@@ -11,7 +11,9 @@
 namespace Darvin\Utils\EventListener;
 
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Doctrine on flush event listener abstract implementation
@@ -33,12 +35,32 @@ abstract class AbstractOnFlushListener
     protected $uow;
 
     /**
+     * @var bool
+     */
+    private $initialized;
+
+    /**
      * @param \Doctrine\ORM\Event\OnFlushEventArgs $args Event arguments
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        $this->em = $em = $args->getEntityManager();
-        $this->uow = $uow = $em->getUnitOfWork();
+        $this->init($args->getEntityManager(), $args->getEntityManager()->getUnitOfWork());
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManager $em  Entity manager
+     * @param \Doctrine\ORM\UnitOfWork    $uow Unit of work
+     */
+    protected function init(EntityManager $em, UnitOfWork $uow)
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        $this->em = $em;
+        $this->uow = $uow;
+
+        $this->initialized = true;
     }
 
     /**
@@ -116,8 +138,8 @@ abstract class AbstractOnFlushListener
      */
     private function checkIfInitialized()
     {
-        if (empty($this->em) || empty($this->uow)) {
-            throw new EventListenerException('You forgot to call parent::onFlush().');
+        if (!$this->initialized) {
+            throw new EventListenerException(sprintf('You forgot to call "%s::init()".', __CLASS__));
         }
     }
 }
