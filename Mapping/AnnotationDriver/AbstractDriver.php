@@ -32,10 +32,10 @@ abstract class AbstractDriver implements AnnotationDriverInterface
     }
 
     /**
-     * @param string $annotation   Annotation
-     * @param string $objectClass  Object class
-     * @param string $property     Property
-     * @param string $message      Error message
+     * @param string $annotation  Annotation
+     * @param string $objectClass Object class
+     * @param string $property    Property
+     * @param string $message     Error message
      *
      * @return \Darvin\Utils\Mapping\MappingException
      */
