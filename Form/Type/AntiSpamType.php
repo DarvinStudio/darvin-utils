@@ -12,6 +12,7 @@ namespace Darvin\Utils\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Blank;
 
 /**
  * Anti-spam form type
@@ -24,11 +25,12 @@ class AntiSpamType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'attr'     => array(
+            'attr'        => array(
                 'class' => 'title_field',
             ),
-            'mapped'   => false,
-            'required' => false,
+            'constraints' => new Blank(),
+            'mapped'      => false,
+            'required'    => false,
         ));
     }
 
