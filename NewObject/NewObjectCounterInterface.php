@@ -21,4 +21,11 @@ interface NewObjectCounterInterface
      * @return int
      */
     public function count($objectClass);
+
+    /**
+     * @param string $objectClass Object class
+     *
+     * @return bool
+     */
+    public function isCountable($objectClass);
 }
