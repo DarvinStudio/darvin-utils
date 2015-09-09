@@ -26,6 +26,12 @@ interface FlashNotifierInterface
     public function formError();
 
     /**
+     * @param bool   $success Is success
+     * @param string $message Message
+     */
+    public function done($success, $message);
+
+    /**
      * @param string $message Message
      */
     public function error($message);

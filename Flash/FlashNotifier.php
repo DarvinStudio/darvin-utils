@@ -41,6 +41,14 @@ class FlashNotifier implements FlashNotifierInterface
     /**
      * {@inheritdoc}
      */
+    public function done($success, $message)
+    {
+        $success ? $this->success($message) : $this->error($message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function error($message)
     {
         $this->flashBag->add(FlashNotifierInterface::TYPE_ERROR, $message);
