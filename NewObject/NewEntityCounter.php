@@ -105,6 +105,6 @@ class NewEntityCounter implements NewObjectCounterInterface
 
         $meta = $this->metadataFactory->getMetadata($doctrineMeta);
 
-        return isset($meta['newObjectFlags'][$entityClass]) ? $meta['newObjectFlags'][$entityClass] : null;
+        return isset($meta['newObjectFlag']) ? $meta['newObjectFlag'] : null;
     }
 }

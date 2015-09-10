@@ -23,7 +23,7 @@ class NewObjectFlagDriver extends AbstractDriver
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
-        $meta['newObjectFlags'] = array();
+        $meta['newObjectFlag'] = null;
 
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             if (null === $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::ANNOTATION)) {
@@ -33,12 +33,12 @@ class NewObjectFlagDriver extends AbstractDriver
             $objectClass = $doctrineMeta->getName();
             $property = $reflectionProperty->getName();
 
-            if (isset($meta['newObjectFlags'][$objectClass])) {
+            if (!empty($meta['newObjectFlag'])) {
                 throw $this->createPropertyAnnotationInvalidException(
                     NewObjectFlag::ANNOTATION,
                     $objectClass,
                     $property,
-                    sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlags'][$objectClass])
+                    sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlag'])
                 );
             }
             if (!$doctrineMeta->hasField($property)) {
@@ -50,7 +50,7 @@ class NewObjectFlagDriver extends AbstractDriver
                 );
             }
 
-            $meta['newObjectFlags'][$objectClass] = $property;
+            $meta['newObjectFlag'] = $property;
         }
     }
 }
