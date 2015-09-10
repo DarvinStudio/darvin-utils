@@ -71,20 +71,20 @@ class CustomObjectDriver extends AbstractDriver
                 sprintf('class "%s" does not exist', $annotation->class)
             );
         }
-        if (empty($annotation->initByPropertyName)) {
+        if (empty($annotation->initProperty)) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::ANNOTATION,
                 $objectClass,
                 $property,
-                'init by property name must be provided'
+                'init property must be provided'
             );
         }
-        if (empty($annotation->initByPropertyValuePath)) {
+        if (empty($annotation->initPropertyValuePath)) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::ANNOTATION,
                 $objectClass,
                 $property,
-                'init by property value path must be provided'
+                'init property value path must be provided'
             );
         }
     }

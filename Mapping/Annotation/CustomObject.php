@@ -33,10 +33,10 @@ final class CustomObject
     /**
      * @var string
      */
-    public $initByPropertyName;
+    public $initProperty;
 
     /**
      * @var string
      */
-    public $initByPropertyValuePath;
+    public $initPropertyValuePath;
 }

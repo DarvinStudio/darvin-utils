@@ -38,6 +38,11 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $propertyAccessor;
 
     /**
+     * @var array
+     */
+    private $customObjectMeta;
+
+    /**
      * @var \Doctrine\ORM\Mapping\ClassMetadataInfo[]
      */
     private $doctrineMeta;
@@ -45,7 +50,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * @var array
      */
-    private $customObjectMeta;
+    private $identifiers;
 
     /**
      * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
@@ -60,8 +65,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->doctrineMeta = array();
-        $this->customObjectMeta = array();
+        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = array();
     }
 
     /**
@@ -81,150 +85,141 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
             return;
         }
 
-        $customObjectsMap = $this->buildCustomObjectsMap($objects);
+        $customEntitiesMap = $this->buildCustomEntitiesMap($objects);
 
-        $queriesData = $this->getQueriesData($customObjectsMap);
+        $queriesMap = $this->buildQueriesMap($customEntitiesMap);
 
-        $queryResults = $this->getQueryResults($queriesData);
+        $customEntities = $this->fetchCustomEntities($queriesMap);
 
-        $this->setCustomEntities($objects, $queryResults, $customObjectsMap);
+        $this->setCustomEntities($objects, $customEntities, $customEntitiesMap);
     }
 
     /**
-     * @param array $entities         Entities
-     * @param array $queryResults     Query results
-     * @param array $customObjectsMap Custom objects map
+     * @param array $entities          Entities
+     * @param array $customEntities    Custom entities
+     * @param array $customEntitiesMap Custom entities map
      */
-    private function setCustomEntities(array $entities, array $queryResults, array $customObjectsMap)
+    private function setCustomEntities(array $entities, array $customEntities, array $customEntitiesMap)
     {
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
+            $entityId = $this->getEntityId($entity);
 
-            foreach ($customObjectsMap[$entityClass] as $targetProperty => $params) {
-                $customObjectClass = $params['custom_object_class'];
-                $initByPropertyName = $params['init_by_property_name'];
-                $initByPropertyValue = $params['init_by_property_value'];
-                $initByPropertyValuePath = $params['init_by_property_value_path'];
+            if (!isset($customEntitiesMap[$entityClass][$entityId])) {
+                continue;
+            }
+            foreach ($customEntitiesMap[$entityClass][$entityId] as $targetProperty => $targetPropertyMap) {
+                $customEntityClass = $targetPropertyMap['class'];
+                $initProperty = $targetPropertyMap['initProperty'];
+                $initPropertyValue = $targetPropertyMap['initPropertyValue'];
 
-                if (!isset($queryResults[$customObjectClass][$initByPropertyName][$initByPropertyValuePath][$initByPropertyValue])
-                    || empty($queryResults[$customObjectClass][$initByPropertyName][$initByPropertyValuePath][$initByPropertyValue])) {
+                if (!isset($customEntities[$customEntityClass][$initProperty][$initPropertyValue])) {
                     continue;
                 }
 
                 $this->setPropertyValue(
                     $entity,
                     $targetProperty,
-                    $queryResults[$customObjectClass][$initByPropertyName][$initByPropertyValuePath][$initByPropertyValue]
+                    $customEntities[$customEntityClass][$initProperty][$initPropertyValue]
                 );
             }
         }
     }
 
     /**
-     * @param array $queriesData Queries data
+     * @param array $queriesMap Queries map
      *
      * @return array
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function getQueryResults(array $queriesData)
+    private function fetchCustomEntities(array $queriesMap)
     {
-        foreach ($queriesData as $customEntityClass => &$initByProperties) {
+        foreach ($queriesMap as $customEntityClass => &$initProperties) {
             $customEntityDoctrineMeta = $this->getDoctrineMeta($customEntityClass);
 
-            foreach ($initByProperties as $initByPropertyName => &$initByPropertyValues) {
-                if (!$customEntityDoctrineMeta->hasField($initByPropertyName)
-                    && !$customEntityDoctrineMeta->hasAssociation($initByPropertyName)
+            foreach ($initProperties as $initProperty => &$initPropertyValues) {
+                if (!$customEntityDoctrineMeta->hasField($initProperty)
+                    && !$customEntityDoctrineMeta->hasAssociation($initProperty)
                 ) {
                     throw new CustomObjectException(
-                        sprintf('Property "%s::$%s" is not mapped field or association.', $customEntityClass, $initByPropertyName)
+                        sprintf('Property "%s::$%s" is not mapped field or association.', $customEntityClass, $initProperty)
                     );
                 }
 
                 $customEntityRepository = $this->em->getRepository($customEntityClass);
 
-                if (1 === count($initByPropertyValues)) {
-                    $initByPropertyValue = reset($initByPropertyValues);
-
+                if (1 === count($initPropertyValues)) {
+                    $initPropertyValue = reset($initPropertyValues);
                     $customEntity = $customEntityRepository->findOneBy(array(
-                        $initByPropertyName => $initByPropertyValue,
+                        $initProperty => $initPropertyValue,
                     ));
 
-                    if (empty($customEntity)) {
+                    if (!empty($customEntity)) {
+                        $initPropertyValues[$initPropertyValue] = $customEntity;
+
                         continue;
                     }
 
-                    $targetProperties = array_keys($initByPropertyValues);
-
-                    $initByPropertyValues[$targetProperties[0]] = array(
-                        $initByPropertyValue => $customEntity,
-                    );
+                    unset($initPropertyValues[$initPropertyValue]);
 
                     continue;
                 }
 
                 $qb = $customEntityRepository->createQueryBuilder('o');
-                $customEntities = $qb
-                    ->andWhere($qb->expr()->in('o.'.$initByPropertyName, $initByPropertyValues))
-                    ->getQuery()
-                    ->getResult();
-
-                if (empty($customEntities)) {
-                    continue;
-                }
+                $customEntities = $qb->where($qb->expr()->in('o.'.$initProperty, $initPropertyValues))->getQuery()->getResult();
 
                 /** @var callable $getPropertyValueCallback */
                 $getPropertyValueCallback = array($this, 'getPropertyValue');
 
-                $customEntities = array_combine(array_map(function ($customEntity) use ($getPropertyValueCallback, $initByPropertyName) {
-                    return $getPropertyValueCallback($customEntity, $initByPropertyName);
+                $customEntities = array_combine(array_map(function ($customEntity) use ($getPropertyValueCallback, $initProperty) {
+                    return $getPropertyValueCallback($customEntity, $initProperty);
                 }, $customEntities), $customEntities);
 
-                foreach ($initByPropertyValues as &$initByPropertyValue) {
-                    if (isset($customEntities[$initByPropertyValue])) {
-                        $initByPropertyValue = array(
-                            $initByPropertyValue => $customEntities[$initByPropertyValue],
-                        );
+                foreach ($initPropertyValues as &$initPropertyValue) {
+                    if (isset($customEntities[$initPropertyValue])) {
+                        $initPropertyValue = $customEntities[$initPropertyValue];
+
+                        continue;
                     }
+
+                    unset($initPropertyValues[$initPropertyValue]);
                 }
-
-                unset($initByPropertyValue);
             }
-
-            unset($initByPropertyValues);
         }
 
-        unset($initByProperties);
-
-        return $queriesData;
+        return $queriesMap;
     }
 
     /**
-     * @param array $customObjectsMap Custom objects map
+     * @param array $customEntitiesMap Custom entities map
      *
      * @return array
      */
-    private function getQueriesData(array $customObjectsMap)
+    private function buildQueriesMap(array $customEntitiesMap)
     {
-        $data = array();
+        $map = array();
 
-        foreach ($customObjectsMap as $entityParams) {
-            foreach ($entityParams as $targetPropertyParams) {
-                $customObjectClass = $targetPropertyParams['custom_object_class'];
-                $initByPropertyName = $targetPropertyParams['init_by_property_name'];
+        foreach ($customEntitiesMap as $entitiesMap) {
+            foreach ($entitiesMap as $entityMap) {
+                foreach ($entityMap as $targetPropertyMap) {
+                    $customEntityClass = $targetPropertyMap['class'];
+                    $initProperty = $targetPropertyMap['initProperty'];
+                    $initPropertyValue = $targetPropertyMap['initPropertyValue'];
 
-                if (!isset($data[$customObjectClass])) {
-                    $data[$customObjectClass] = array();
+                    if (!isset($map[$customEntityClass])) {
+                        $map[$customEntityClass] = array();
+                    }
+                    if (!isset($map[$customEntityClass][$initProperty])) {
+                        $map[$customEntityClass][$initProperty] = array();
+                    }
+                    if (!in_array($initPropertyValue, $map[$customEntityClass][$initProperty])) {
+                        $map[$customEntityClass][$initProperty][$initPropertyValue] = $initPropertyValue;
+                    }
                 }
-                if (!isset($data[$customObjectClass][$initByPropertyName])) {
-                    $data[$customObjectClass][$initByPropertyName] = array();
-                }
-
-                $data[$customObjectClass][$initByPropertyName][$targetPropertyParams['init_by_property_value_path']] =
-                    $targetPropertyParams['init_by_property_value'];
             }
         }
 
-        return $data;
+        return $map;
     }
 
     /**
@@ -232,31 +227,34 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @return array
      */
-    private function buildCustomObjectsMap(array $entities)
+    private function buildCustomEntitiesMap(array $entities)
     {
         $map = array();
 
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
+            $entityId = $this->getEntityId($entity);
 
             foreach ($this->getCustomObjectMeta($entityClass) as $targetProperty => $params) {
-                $initByPropertyValue = $this->getPropertyValue($entity, $params['initByPropertyValuePath']);
+                $initPropertyValue = $this->getPropertyValue($entity, $params['initPropertyValuePath']);
 
-                if (empty($initByPropertyValue)) {
+                if (empty($initPropertyValue)) {
                     continue;
                 }
                 if (!isset($map[$entityClass])) {
                     $map[$entityClass] = array();
                 }
+                if (!isset($map[$entityClass][$entityId])) {
+                    $map[$entityClass][$entityId] = array();
+                }
 
-                $map[$entityClass][$targetProperty] = array(
-                    'custom_object_class' => !empty($params['class'])
+                $map[$entityClass][$entityId][$targetProperty] = array(
+                    'class' => !empty($params['class'])
                         ? $params['class']
                         : $this->getPropertyValue($entity, $params['classPropertyPath'])
                     ,
-                    'init_by_property_name'       => $params['initByPropertyName'],
-                    'init_by_property_value'      => $initByPropertyValue,
-                    'init_by_property_value_path' => $params['initByPropertyValuePath'],
+                    'initProperty'      => $params['initProperty'],
+                    'initPropertyValue' => $initPropertyValue,
                 );
             }
         }
@@ -289,6 +287,23 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         }
 
         return $this->customObjectMeta[$entityClass];
+    }
+
+    /**
+     * @param object $entity Entity
+     *
+     * @return mixed
+     */
+    private function getEntityId($entity)
+    {
+        $entityClass = ClassUtils::getClass($entity);
+
+        if (!isset($this->identifiers[$entityClass])) {
+            $identifiers = $this->getDoctrineMeta($entityClass)->getIdentifier();
+            $this->identifiers[$entityClass] = $identifiers[0];
+        }
+
+        return $this->getPropertyValue($entity, $this->identifiers[$entityClass]);
     }
 
     /**
