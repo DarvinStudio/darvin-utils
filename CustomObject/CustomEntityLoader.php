@@ -71,16 +71,34 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadForObject($object)
+    public function loadForObject($object, $exceptionOnMissingMetadata = true)
     {
-        $this->loadForObjects(array($object));
+        $this->loadForObjects(array($object), $exceptionOnMissingMetadata);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadForObjects(array $objects)
+    public function loadForObjects(array $objects, $exceptionOnMissingMetadata = true)
     {
+        foreach ($objects as $key => $entity) {
+            $entityClass = ClassUtils::getClass($entity);
+
+            if ($this->hasCustomObjectMeta($entityClass)) {
+                continue;
+            }
+            if ($exceptionOnMissingMetadata) {
+                $message = sprintf(
+                    'Class "%s" must be annotated with "%s" annotation in order to load custom objects.',
+                    $entityClass,
+                    CustomObject::ANNOTATION
+                );
+
+                throw new CustomObjectException($message);
+            }
+
+            unset($objects[$key]);
+        }
         if (empty($objects)) {
             return;
         }
@@ -265,25 +283,28 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * @param string $entityClass Entity class
      *
+     * @return bool
+     */
+    private function hasCustomObjectMeta($entityClass)
+    {
+        $customObjectMeta = $this->getCustomObjectMeta($entityClass);
+
+        return !empty($customObjectMeta);
+    }
+
+    /**
+     * @param string $entityClass Entity class
+     *
      * @return array
-     * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
     private function getCustomObjectMeta($entityClass)
     {
-        if (!isset($this->customObjectMeta[$entityClass])) {
+        if (!array_key_exists($entityClass, $this->customObjectMeta)) {
             $meta = $this->metadataFactory->getMetadata($this->getDoctrineMeta($entityClass));
 
-            if (!isset($meta['customObjects']) || empty($meta['customObjects'])) {
-                $message = sprintf(
-                    'Class "%s" must be annotated with "%s" annotation in order to load custom objects.',
-                    $entityClass,
-                    CustomObject::ANNOTATION
-                );
-
-                throw new CustomObjectException($message);
-            }
-
-            $this->customObjectMeta[$entityClass] = $meta['customObjects'];
+            $this->customObjectMeta[$entityClass] = isset($meta['customObjects']) && !empty($meta['customObjects'])
+                ? $meta['customObjects']
+                : null;
         }
 
         return $this->customObjectMeta[$entityClass];
