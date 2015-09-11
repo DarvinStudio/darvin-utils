@@ -1,0 +1,65 @@
+<?php
+/**
+ * @author    Igor Nikolaev <igor.sv.n@gmail.com>
+ * @copyright Copyright (c) 2015, Darvin Studio
+ * @link      https://www.darvin-studio.ru
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Darvin\Utils\DependencyInjection;
+
+/**
+ * Tagged service IDs sorter
+ */
+class TaggedServiceIdsSorter
+{
+    /**
+     * @var string
+     */
+    private $positionArg;
+
+    /**
+     * @param string $positionArg Position argument name
+     */
+    public function __construct($positionArg = 'position')
+    {
+        $this->positionArg = $positionArg;
+    }
+
+    /**
+     * @param array $taggedServiceIds Tagged service IDs
+     */
+    public function sort(array &$taggedServiceIds)
+    {
+        $maxPos = $this->getMaxPosition($taggedServiceIds);
+
+        $posArg = $this->positionArg;
+
+        uasort($taggedServiceIds, function (array $a, array $b) use (&$maxPos, $posArg) {
+            $posA = (int) (isset($a[0][$posArg]) ? $a[0][$posArg] : ++$maxPos);
+            $posB = (int) (isset($b[0][$posArg]) ? $b[0][$posArg] : ++$maxPos);
+
+            return $posA === $posB ? 0 : ($posA > $posB ? 1 : -1);
+        });
+    }
+
+    /**
+     * @param array $taggedServiceIds Tagged service IDs
+     *
+     * @return int
+     */
+    private function getMaxPosition(array $taggedServiceIds)
+    {
+        $positions = array();
+
+        foreach ($taggedServiceIds as $attr) {
+            if (isset($attr[0][$this->positionArg])) {
+                $positions[] = (int) $attr[0][$this->positionArg];
+            }
+        }
+
+        return max($positions);
+    }
+}
