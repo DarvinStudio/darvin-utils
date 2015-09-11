@@ -202,8 +202,14 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
                     unset($initPropertyValues[$initPropertyValue]);
                 }
+
+                unset($initPropertyValue);
             }
+
+            unset($initPropertyValues);
         }
+
+        unset($initProperties);
 
         return $queriesMap;
     }
