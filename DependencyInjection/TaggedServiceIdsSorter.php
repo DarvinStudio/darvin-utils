@@ -33,13 +33,13 @@ class TaggedServiceIdsSorter
      */
     public function sort(array &$taggedServiceIds)
     {
-        $maxPos = $this->getMaxPosition($taggedServiceIds);
+        $defaultPos = $this->getMaxPosition($taggedServiceIds) + 1;
 
         $posArg = $this->positionArg;
 
-        uasort($taggedServiceIds, function (array $a, array $b) use (&$maxPos, $posArg) {
-            $posA = (int) (isset($a[0][$posArg]) ? $a[0][$posArg] : ++$maxPos);
-            $posB = (int) (isset($b[0][$posArg]) ? $b[0][$posArg] : ++$maxPos);
+        uasort($taggedServiceIds, function (array $a, array $b) use ($defaultPos, $posArg) {
+            $posA = (int) (isset($a[0][$posArg]) ? $a[0][$posArg] : $defaultPos);
+            $posB = (int) (isset($b[0][$posArg]) ? $b[0][$posArg] : $defaultPos);
 
             return $posA === $posB ? 0 : ($posA > $posB ? 1 : -1);
         });
