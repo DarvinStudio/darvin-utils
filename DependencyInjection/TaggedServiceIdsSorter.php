@@ -60,6 +60,6 @@ class TaggedServiceIdsSorter
             }
         }
 
-        return max($positions);
+        return !empty($positions) ? max($positions) : 0;
     }
 }
