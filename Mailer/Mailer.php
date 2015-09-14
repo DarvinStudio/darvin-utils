@@ -66,7 +66,7 @@ class Mailer implements MailerInterface
 
         if (!empty($failedRecipients)) {
             $message = sprintf(
-                '%s: unable to send email with subject "%s" to recipients "%s".',
+                '%s: unable to send e-mail with subject "%s" to recipient(s) "%s".',
                 __CLASS__,
                 $subject,
                 implode('", "', $failedRecipients)
