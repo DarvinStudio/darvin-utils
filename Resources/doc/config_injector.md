@@ -3,12 +3,11 @@ Config injector
 
 ## Описание
 
-Config injector - [класс](../../DependencyInjection/ConfigInjector.php) для инжекта конфигурации в DI-контейнер в виде
-набора параметров.
+Config injector - [класс](../../DependencyInjection/ConfigInjector.php), осуществляющий инъекцию параметров конфигурации в DI-контейнер.
 
 ## Использование
 
-Пример:
+Пример использования класса:
 
 ```php
 namespace AppBundle\DependencyInjection;
@@ -45,8 +44,8 @@ $rootNode
     ->end();
 ```
 
-попадет в DI-контейнер в виде трех параметров:
+станет доступна в DI-контейнере в виде следующего набора параметров:
 
-- "app.foo" = "foo"
-- "app.bar" = [ "baz": "baz" ]
-- "app.bar.baz" = "baz"
+- "app.foo" = "foo";
+- "app.bar" = array("baz" => "baz");
+- "app.bar.baz" = "baz".
