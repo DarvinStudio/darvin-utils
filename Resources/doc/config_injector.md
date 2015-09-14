@@ -3,7 +3,8 @@ Config injector
 
 ## Описание
 
-Config injector - [класс](../../DependencyInjection/ConfigInjector.php), осуществляющий инъекцию параметров конфигурации в DI-контейнер.
+Config injector - [класс](../../DependencyInjection/ConfigInjector.php), осуществляющий инъекцию параметров конфигурации
+ в DI-контейнер.
 
 ## Использование
 
