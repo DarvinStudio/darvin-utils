@@ -10,4 +10,5 @@ A set of useful utilities:
 сущности в качестве значения по умолчанию другого свойства;
 - [**Config injector**](/Resources/doc/config_injector.md) - класс для инжекта конфигурации в DI-контейнер в виде набора параметров;
 - [**Tagged service IDs sorter**](/Resources/doc/tagged_service_ids_sorter.md) - класс для сортировки тегированных сервисов;
-- [**Flash notifier**](/Resources/doc/flash_notifier.md) - сервис для добавления flash-сообщений.
+- [**Flash notifier**](/Resources/doc/flash_notifier.md) - сервис для добавления flash-сообщений;
+- [**New entity counter**](/Resources/doc/new_entity_counter.md) - сервис для подсчета количества новых сущностей.
