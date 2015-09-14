@@ -7,7 +7,8 @@ Cloner - сервис для клонирования объектов.
 
 ## Использование
 
-1. Помечаем класс сущности как клонируемый, используя аннотацию «\Darvin\Utils\Mapping\Annotation\Clonable\Clonable».
+__1. Помечаем класс сущности как клонируемый, используя аннотацию «\Darvin\Utils\Mapping\Annotation\Clonable\Clonable».__
+
 При этом доступны две стратегии копрования (аргумент «copyingPolicy» аннотации): «ALL» и «NONE» (по умолчанию). При использовании
 первой будут копироваться значения всех свойств, за исключением помеченных аннотацией «\Darvin\Utils\Mapping\Annotation\Clonable\Skip»,
 во втором случае будут копироваться значения только тех свойств, которые помечены «\Darvin\Utils\Mapping\Annotation\Clonable\Copy».
@@ -47,7 +48,7 @@ class Page
 }
 ```
 
-2. Используем метод «createClone()» сервиса «darvin_utils.cloner»:
+__2. Используем метод «createClone()» сервиса «darvin_utils.cloner»:__
 
 ```php
 $page = new Page();
