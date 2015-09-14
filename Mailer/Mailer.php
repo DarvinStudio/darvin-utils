@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Mailer;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Mailer
@@ -28,6 +29,11 @@ class Mailer implements MailerInterface
     private $swiftMailer;
 
     /**
+     * @var \Symfony\Component\Translation\TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @var string
      */
     private $charset;
@@ -38,15 +44,22 @@ class Mailer implements MailerInterface
     private $from;
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger      Logger
-     * @param \Swift_Mailer            $swiftMailer Swift Mailer
-     * @param string                   $charset     Charset
-     * @param string                   $from        From
+     * @param \Psr\Log\LoggerInterface                           $logger      Logger
+     * @param \Swift_Mailer                                      $swiftMailer Swift Mailer
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator  Translator
+     * @param string                                             $charset     Charset
+     * @param string                                             $from        From
      */
-    public function __construct(LoggerInterface $logger, \Swift_Mailer $swiftMailer, $charset, $from)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        \Swift_Mailer $swiftMailer,
+        TranslatorInterface $translator,
+        $charset,
+        $from
+    ) {
         $this->logger = $logger;
         $this->swiftMailer = $swiftMailer;
+        $this->translator = $translator;
         $this->charset = $charset;
         $this->from = $from;
     }
@@ -54,8 +67,10 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, $contentType = 'text/html')
+    public function send($subject, $body, $to, array $subjectParams = array(), $contentType = 'text/html')
     {
+        $subject = $this->translateSubject($subject, $subjectParams);
+
         $message = new \Swift_Message($subject, $body, $contentType, $this->charset);
         $message
             ->setFrom($this->from)
@@ -75,5 +90,22 @@ class Mailer implements MailerInterface
         }
 
         return $sent;
+    }
+
+    /**
+     * @param string $subject       Subject
+     * @param array  $subjectParams Subject translation parameters
+     *
+     * @return string
+     */
+    private function translateSubject($subject, array $subjectParams)
+    {
+        foreach ($subjectParams as &$param) {
+            $param = $this->translator->trans($param);
+        }
+
+        unset($param);
+
+        return $this->translator->trans($subject, $subjectParams);
     }
 }
