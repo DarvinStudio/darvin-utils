@@ -134,6 +134,8 @@ class Cloner implements ClonerInterface
             $this->propertyAccessor->setValue($clone, $property, $valueCopy);
         }
 
+        $this->eventDispatcher->dispatch(Events::POST_CLONE, new CloneEvent($object, $clone));
+
         return $clone;
     }
 
@@ -158,11 +160,7 @@ class Cloner implements ClonerInterface
             throw new ClonerException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
         }
 
-        $copy = $this->cloneObject($value);
-
-        $this->eventDispatcher->dispatch(Events::POST_CLONE, new CloneEvent($value, $copy));
-
-        return $copy;
+        return $this->cloneObject($value);
     }
 
     /**
