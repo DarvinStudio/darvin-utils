@@ -9,4 +9,5 @@ A set of useful utilities:
 - [**Default value**](/Resources/doc/default_value.md) - функционал, который позволяет использовать значение одного свойства
 сущности в качестве значения по умолчанию другого свойства;
 - [**Config injector**](/Resources/doc/config_injector.md) - класс для инжекта конфигурации в DI-контейнер в виде набора параметров;
-- [**Tagged service IDs sorter**](/Resources/doc/tagged_service_ids_sorter.md) - класс для сортировки тегированных сервисов.
+- [**Tagged service IDs sorter**](/Resources/doc/tagged_service_ids_sorter.md) - класс для сортировки тегированных сервисов;
+- [**Flash notifier**](/Resources/doc/flash_notifier.md) - сервис для добавления flash-сообщений.
