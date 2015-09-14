@@ -3,11 +3,12 @@ Tagged service IDs sorter
 
 ## Описание
 
-Tagged service IDs sorter - [класс](../../DependencyInjection/TaggedServiceIdsSorter.php) для сортировки тегированных сервисов.
+Tagged service IDs sorter - [класс](../../DependencyInjection/TaggedServiceIdsSorter.php), осуществляющий сортировку
+ тегированных сервисов.
 
 ## Использование
 
-Пример:
+Пример использования класса:
 
 ```php
 use Darvin\Utils\DependencyInjection\TaggedServiceIdsSorter;
@@ -26,4 +27,6 @@ class MenuPass implements CompilerPassInterface
 }
 ```
 
-По умолчанию аргумент тега, содержащий позицию сервиса, должен называться «position».
+По умолчанию сортировка осуществляется по значению атрибута "position" тега.
+
+Сортировка осуществляется по возрастанию.
