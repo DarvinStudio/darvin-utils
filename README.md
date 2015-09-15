@@ -1,5 +1,8 @@
 # darvin-utils
-A set of useful utilities:
+
+## A set of useful utilities:
+
+### Компоненты:
 
 - [**Абстрактный класс консольной команды**](/Command/AbstractContainerAwareCommand.php) - класс, содержащий методы для
  удобного вывода сообщений;
