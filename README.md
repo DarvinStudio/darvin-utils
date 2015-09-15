@@ -1,6 +1,6 @@
 # darvin-utils
 
-## A set of useful utilities:
+## A set of useful utilities.
 
 ### Компоненты:
 
