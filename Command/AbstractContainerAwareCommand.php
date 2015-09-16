@@ -10,150 +10,45 @@
 
 namespace Darvin\Utils\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Container aware command abstract implementation
  */
-abstract class AbstractContainerAwareCommand extends ContainerAwareCommand
+abstract class AbstractContainerAwareCommand extends AbstractCommand implements ContainerAwareInterface
 {
-    const MESSAGE_COMMENT  = 'comment';
-    const MESSAGE_ERROR    = 'error';
-    const MESSAGE_INFO     = 'info';
-    const MESSAGE_QUESTION = 'question';
-    const MESSAGE_REGULAR  = 'fg=white';
-
     /**
-     * @var \Symfony\Component\Console\Input\InputInterface
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
-    protected $input;
-
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @var bool
-     */
-    private $initialized;
+    private $container;
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function setContainer(ContainerInterface $container = null)
     {
-        $this->init($input, $output);
+        $this->container = $container;
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface   $input  Input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output Output
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     *
+     * @throws \LogicException
      */
-    protected function init(InputInterface $input, OutputInterface $output)
+    protected function getContainer()
     {
-        if ($this->initialized) {
-            return;
-        }
+        if (null === $this->container) {
+            /** @var \Symfony\Bundle\FrameworkBundle\Console\Application $application */
+            $application = $this->getApplication();
 
-        $this->input = $input;
-        $this->output = $output;
-
-        $this->initialized = true;
-    }
-
-    /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $type     The type of output (one of the OUTPUT constants)
-     */
-    protected function comment($messages, $newline = true, $type = OutputInterface::OUTPUT_NORMAL)
-    {
-        $this->write($messages, self::MESSAGE_COMMENT, $newline, $type);
-    }
-
-    /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $type     The type of output (one of the OUTPUT constants)
-     */
-    protected function error($messages, $newline = true, $type = OutputInterface::OUTPUT_NORMAL)
-    {
-        $this->write($messages, self::MESSAGE_ERROR, $newline, $type);
-    }
-
-    /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $type     The type of output (one of the OUTPUT constants)
-     */
-    protected function info($messages, $newline = true, $type = OutputInterface::OUTPUT_NORMAL)
-    {
-        $this->write($messages, self::MESSAGE_INFO, $newline, $type);
-    }
-
-    /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $type     The type of output (one of the OUTPUT constants)
-     */
-    protected function question($messages, $newline = true, $type = OutputInterface::OUTPUT_NORMAL)
-    {
-        $this->write($messages, self::MESSAGE_QUESTION, $newline, $type);
-    }
-
-    /**
-     * @param string|array $messages     The message as an array of lines or a single string
-     * @param string       $messagesType Messages type
-     * @param int          $type         The type of output (one of the OUTPUT constants)
-     */
-    protected function writeln($messages, $messagesType = self::MESSAGE_REGULAR, $type = OutputInterface::OUTPUT_NORMAL)
-    {
-        $this->write($messages, $messagesType, true, $type);
-    }
-
-    /**
-     * @param string|array $messages     The message as an array of lines or a single string
-     * @param string       $messagesType Messages type
-     * @param bool         $newline      Whether to add a newline
-     * @param int          $type         The type of output (one of the OUTPUT constants)
-     */
-    protected function write(
-        $messages,
-        $messagesType = self::MESSAGE_REGULAR,
-        $newline = false,
-        $type = OutputInterface::OUTPUT_NORMAL
-    ) {
-        $this->checkIfInitialized();
-
-        if (is_array($messages)) {
-            foreach ($messages as &$message) {
-                $this->decorateMessage($message, $messagesType);
+            if (null === $application) {
+                throw new \LogicException('The container cannot be retrieved as the application instance is not yet set.');
             }
 
-            unset($message);
-        } else {
-            $this->decorateMessage($messages, $messagesType);
+            $this->container = $application->getKernel()->getContainer();
         }
 
-        $this->output->write($messages, $newline, $type);
-    }
-
-    /**
-     * @param string $message     Message to decorate
-     * @param string $messageType Message type
-     */
-    private function decorateMessage(&$message, $messageType)
-    {
-        $message = sprintf('<%s>%s</%1$s>', $messageType, $message);
-    }
-
-    private function checkIfInitialized()
-    {
-        if (!$this->initialized) {
-            throw new CommandException(sprintf('You forgot to call "%s::init()".', __CLASS__));
-        }
+        return $this->container;
     }
 }
