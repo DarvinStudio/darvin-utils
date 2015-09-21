@@ -36,6 +36,16 @@ class AbstractCommand extends Command
     protected $output;
 
     /**
+     * @var int
+     */
+    private $startMemory;
+
+    /**
+     * @var float
+     */
+    private $startedAt;
+
+    /**
      * @var bool
      */
     private $initialized;
@@ -60,6 +70,8 @@ class AbstractCommand extends Command
 
         $this->input = $input;
         $this->output = $output;
+        $this->startMemory = memory_get_usage(true);
+        $this->startedAt = microtime(true);
 
         $this->initialized = true;
     }
@@ -147,7 +159,13 @@ class AbstractCommand extends Command
      */
     private function decorateMessage(&$message, $messageType)
     {
-        $message = sprintf('<%s>%s</%1$s>', $messageType, $message);
+        $message = sprintf(
+            '<comment>%ds %.1fMB</comment> <%s>%s</%3$s>',
+            round(microtime(true) - $this->startedAt),
+            (memory_get_usage(true) - $this->startMemory) / pow(1024, 2),
+            $messageType,
+            $message
+        );
     }
 
     private function checkIfInitialized()
