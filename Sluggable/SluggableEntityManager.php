@@ -8,25 +8,28 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\EventListener;
+namespace Darvin\Utils\Sluggable;
 
-use Darvin\Utils\Event\Events as DarvinUtilEvents;
+use Darvin\Utils\Event\Events;
 use Darvin\Utils\Event\SlugsUpdateEvent;
+use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Darvin\Utils\Slug\SlugException;
-use Darvin\Utils\Slug\SlugHandlerInterface;
-use Doctrine\Common\EventSubscriber;
+use Darvin\UtilsBundle\Doctrine\EntityManagerProviderInterface;
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Events as ORMEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Slug event subscriber
+ * Sluggable entity manager
  */
-class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
+class SluggableEntityManager implements SluggableManagerInterface
 {
+    /**
+     * @var \Darvin\UtilsBundle\Doctrine\EntityManagerProviderInterface
+     */
+    private $entityManagerProvider;
+
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
@@ -43,28 +46,43 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     private $propertyAccessor;
 
     /**
-     * @var \Darvin\Utils\Slug\SlugHandlerInterface[]
+     * @var array
+     */
+    private $checkedIfSluggableClasses;
+
+    /**
+     * @var \Darvin\Utils\Sluggable\SlugHandlerInterface[]
      */
     private $slugHandlers;
 
     /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher  Event dispatcher
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
+     * @var array
+     */
+    private $slugsMetadata;
+
+    /**
+     * @param \Darvin\UtilsBundle\Doctrine\EntityManagerProviderInterface $entityManagerProvider Entity manager provider
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher       Event dispatcher
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory       Metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor      Property accessor
      */
     public function __construct(
+        EntityManagerProviderInterface $entityManagerProvider,
         EventDispatcherInterface $eventDispatcher,
         MetadataFactoryInterface $metadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
+        $this->entityManagerProvider = $entityManagerProvider;
         $this->eventDispatcher = $eventDispatcher;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+        $this->checkedIfSluggableClasses = array();
         $this->slugHandlers = array();
+        $this->slugsMetadata = array();
     }
 
     /**
-     * @param \Darvin\Utils\Slug\SlugHandlerInterface $slugHandler Slug handler
+     * @param \Darvin\Utils\Sluggable\SlugHandlerInterface $slugHandler Slug handler
      */
     public function addSlugHandler(SlugHandlerInterface $slugHandler)
     {
@@ -74,42 +92,15 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function getSubscribedEvents()
+    public function generateSlugs($entity, $dispatchUpdateEvent = false)
     {
-        return array(
-            ORMEvents::onFlush,
-        );
-    }
+        $em = $this->entityManagerProvider->getEntityManager();
 
-    /**
-     * {@inheritdoc}
-     */
-    public function onFlush(OnFlushEventArgs $args)
-    {
-        parent::onFlush($args);
-
-        $updateSlugsCallback = array($this, 'updateSlugs');
-
-        $this
-            ->onInsert($updateSlugsCallback)
-            ->onUpdate($updateSlugsCallback);
-    }
-
-    /**
-     * @param object $entity    Entity
-     * @param string $operation Operation type
-     */
-    protected function updateSlugs($entity, $operation)
-    {
-        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata(ClassUtils::getClass($entity)));
-
-        if (!isset($meta['slugs']) || empty($meta['slugs'])) {
-            return;
-        }
+        $entityClass = ClassUtils::getClass($entity);
 
         $slugsChangeSet = array();
 
-        foreach ($meta['slugs'] as $slugProperty => $params) {
+        foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $params) {
             $sourcePropertyPaths = $params['sourcePropertyPaths'];
 
             $oldSlug = $this->getPropertyValue($entity, $slugProperty);
@@ -122,8 +113,9 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             if ($newSlug === $oldSlug) {
                 continue;
             }
+
             foreach ($this->slugHandlers as $slugHandler) {
-                $slugHandler->handle($newSlug, $slugSuffix, $this->em);
+                $slugHandler->handle($newSlug, $slugSuffix, $em);
             }
 
             $slugsChangeSet[$oldSlug] = $newSlug;
@@ -136,17 +128,32 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
             $this->setPropertyValue($entity, $slugProperty, $newSlug);
         }
         if (empty($slugsChangeSet)) {
-            return;
+            return false;
+        }
+        if ($dispatchUpdateEvent) {
+            $this->eventDispatcher->dispatch(Events::POST_SLUGS_UPDATE, new SlugsUpdateEvent($slugsChangeSet, $em));
         }
 
-        $this->recomputeChangeSet($entity);
+        return true;
+    }
 
-        if (AbstractOnFlushListener::OPERATION_UPDATE === $operation) {
-            $this->eventDispatcher->dispatch(
-                DarvinUtilEvents::POST_SLUGS_UPDATE,
-                new SlugsUpdateEvent($slugsChangeSet, $this->em)
-            );
+    /**
+     * {@inheritdoc}
+     */
+    public function isSluggable($entityOrClass)
+    {
+        $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
+
+        if (!isset($this->checkedIfSluggableClasses[$class])) {
+            try {
+                $this->getSlugsMetadata($class);
+                $this->checkedIfSluggableClasses[$class] = true;
+            } catch (SluggableException $ex) {
+                $this->checkedIfSluggableClasses[$class] = false;
+            }
         }
+
+        return $this->checkedIfSluggableClasses[$class];
     }
 
     /**
@@ -155,7 +162,7 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
      * @param array  $sourcePropertyPaths Source property paths
      *
      * @return array
-     * @throws \Darvin\Utils\Slug\SlugException
+     * @throws \Darvin\Utils\Sluggable\SluggableException
      */
     private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths)
     {
@@ -184,10 +191,43 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
                 implode('", "', $sourcePropertyPaths)
             );
 
-            throw new SlugException($message);
+            throw new SluggableException($message);
         }
 
         return $slugParts;
+    }
+
+    /**
+     * @param string $entityClass Entity class
+     *
+     * @return array
+     * @throws \Darvin\Utils\Sluggable\SluggableException
+     */
+    private function getSlugsMetadata($entityClass)
+    {
+        if (!isset($this->slugsMetadata[$entityClass])) {
+            try {
+                $doctrineMeta = $this->entityManagerProvider->getEntityManager()->getClassMetadata($entityClass);
+            } catch (MappingException $ex) {
+                throw new SluggableException(sprintf('Unable to get Doctrine metadata for class "%s".', $entityClass));
+            }
+
+            $meta = $this->metadataFactory->getMetadata($doctrineMeta);
+
+            if (!isset($meta['slugs']) || empty($meta['slugs'])) {
+                $message = sprintf(
+                    'At least one property of class "%s" must be annotated with "%s" annotation in order to generate slug.',
+                    $entityClass,
+                    Slug::ANNOTATION
+                );
+
+                throw new SluggableException($message);
+            }
+
+            $this->slugsMetadata[$entityClass] = $meta['slugs'];
+        }
+
+        return $this->slugsMetadata[$entityClass];
     }
 
     /**
@@ -195,12 +235,12 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
      * @param string $propertyPath Property path
      * @param mixed  $value        Value
      *
-     * @throws \Darvin\Utils\Slug\SlugException
+     * @throws \Darvin\Utils\Sluggable\SluggableException
      */
     private function setPropertyValue($entity, $propertyPath, $value)
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
-            throw new SlugException(
+            throw new SluggableException(
                 sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
             );
         }
@@ -213,12 +253,12 @@ class SlugSubscriber extends AbstractOnFlushListener implements EventSubscriber
      * @param string $propertyPath Property path
      *
      * @return mixed
-     * @throws \Darvin\Utils\Slug\SlugException
+     * @throws \Darvin\Utils\Sluggable\SluggableException
      */
     private function getPropertyValue($entity, $propertyPath)
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
-            throw new SlugException(
+            throw new SluggableException(
                 sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
             );
         }
