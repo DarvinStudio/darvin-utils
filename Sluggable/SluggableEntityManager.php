@@ -92,6 +92,25 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * {@inheritdoc}
      */
+    public function isSluggable($entityOrClass)
+    {
+        $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
+
+        if (!isset($this->checkedIfSluggableClasses[$class])) {
+            try {
+                $this->getSlugsMetadata($class);
+                $this->checkedIfSluggableClasses[$class] = true;
+            } catch (SluggableException $ex) {
+                $this->checkedIfSluggableClasses[$class] = false;
+            }
+        }
+
+        return $this->checkedIfSluggableClasses[$class];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function generateSlugs($entity, $dispatchUpdateEvent = false)
     {
         $em = $this->entityManagerProvider->getEntityManager();
@@ -135,25 +154,6 @@ class SluggableEntityManager implements SluggableManagerInterface
         }
 
         return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isSluggable($entityOrClass)
-    {
-        $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
-
-        if (!isset($this->checkedIfSluggableClasses[$class])) {
-            try {
-                $this->getSlugsMetadata($class);
-                $this->checkedIfSluggableClasses[$class] = true;
-            } catch (SluggableException $ex) {
-                $this->checkedIfSluggableClasses[$class] = false;
-            }
-        }
-
-        return $this->checkedIfSluggableClasses[$class];
     }
 
     /**

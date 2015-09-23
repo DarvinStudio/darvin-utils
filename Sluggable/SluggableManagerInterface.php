@@ -16,17 +16,17 @@ namespace Darvin\Utils\Sluggable;
 interface SluggableManagerInterface
 {
     /**
+     * @param mixed $objectOrClass Object or class
+     *
+     * @return bool
+     */
+    public function isSluggable($objectOrClass);
+
+    /**
      * @param object $object              Object
      * @param bool   $dispatchUpdateEvent Whether to dispatch update event
      *
      * @return bool Is at least one slug updated
      */
     public function generateSlugs($object, $dispatchUpdateEvent = false);
-
-    /**
-     * @param mixed $objectOrClass Object or class
-     *
-     * @return bool
-     */
-    public function isSluggable($objectOrClass);
 }
