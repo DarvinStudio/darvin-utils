@@ -28,9 +28,19 @@ class ConfigInjector
             $name = $prefix.'.'.$name;
             $container->setParameter($name, $value);
 
-            if (is_array($value)) {
+            if (is_array($value) && $this->isAssociative($value)) {
                 $this->inject($value, $container, $name);
             }
         }
+    }
+
+    /**
+     * @param array $array Array to check
+     *
+     * @return bool
+     */
+    private function isAssociative(array $array)
+    {
+        return array_values($array) !== $array;
     }
 }
