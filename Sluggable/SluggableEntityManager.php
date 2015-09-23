@@ -97,9 +97,10 @@ class SluggableEntityManager implements SluggableManagerInterface
         $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
 
         if (!isset($this->checkedIfSluggableClasses[$class])) {
+            $this->checkedIfSluggableClasses[$class] = true;
+
             try {
                 $this->getSlugsMetadata($class);
-                $this->checkedIfSluggableClasses[$class] = true;
             } catch (SluggableException $ex) {
                 $this->checkedIfSluggableClasses[$class] = false;
             }
