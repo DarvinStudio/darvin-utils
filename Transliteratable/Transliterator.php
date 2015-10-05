@@ -44,6 +44,8 @@ class Transliterator implements TransliteratorInterface
 
         $transliterated = preg_replace($this->createSanitizePattern($allowedSymbols, $separator), '', $transliterated);
 
+        $transliterated = preg_replace(sprintf('/%s+/', $separator), $separator, $transliterated);
+
         return $transliterated;
     }
 
