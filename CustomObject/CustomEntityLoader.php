@@ -121,12 +121,12 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     {
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
-            $entityId = $this->getEntityId($entity);
+            $objectHash = spl_object_hash($entity);
 
-            if (!isset($customEntitiesMap[$entityClass][$entityId])) {
+            if (!isset($customEntitiesMap[$entityClass][$objectHash])) {
                 continue;
             }
-            foreach ($customEntitiesMap[$entityClass][$entityId] as $targetProperty => $targetPropertyMap) {
+            foreach ($customEntitiesMap[$entityClass][$objectHash] as $targetProperty => $targetPropertyMap) {
                 $customEntityClass = $targetPropertyMap['class'];
                 $initProperty = $targetPropertyMap['initProperty'];
                 $initPropertyValue = $targetPropertyMap['initPropertyValue'];
@@ -257,7 +257,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
-            $entityId = $this->getEntityId($entity);
+            $objectHash = spl_object_hash($entity);
 
             foreach ($this->getCustomObjectMeta($entityClass) as $targetProperty => $params) {
                 $initPropertyValue = $this->getPropertyValue($entity, $params['initPropertyValuePath']);
@@ -268,11 +268,11 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 if (!isset($map[$entityClass])) {
                     $map[$entityClass] = array();
                 }
-                if (!isset($map[$entityClass][$entityId])) {
-                    $map[$entityClass][$entityId] = array();
+                if (!isset($map[$entityClass][$objectHash])) {
+                    $map[$entityClass][$objectHash] = array();
                 }
 
-                $map[$entityClass][$entityId][$targetProperty] = array(
+                $map[$entityClass][$objectHash][$targetProperty] = array(
                     'class' => !empty($params['class'])
                         ? $params['class']
                         : $this->getPropertyValue($entity, $params['classPropertyPath'])
@@ -314,23 +314,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         }
 
         return $this->customObjectMeta[$entityClass];
-    }
-
-    /**
-     * @param object $entity Entity
-     *
-     * @return mixed
-     */
-    private function getEntityId($entity)
-    {
-        $entityClass = ClassUtils::getClass($entity);
-
-        if (!isset($this->identifiers[$entityClass])) {
-            $identifiers = $this->getDoctrineMeta($entityClass)->getIdentifier();
-            $this->identifiers[$entityClass] = $identifiers[0];
-        }
-
-        return $this->getPropertyValue($entity, $this->identifiers[$entityClass]);
     }
 
     /**
