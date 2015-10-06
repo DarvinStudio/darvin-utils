@@ -18,14 +18,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AjaxResponse extends JsonResponse
 {
     /**
+     * @param string $html       HTML
      * @param bool   $success    Is success
      * @param string $message    Message
-     * @param string $html       HTML
      * @param bool   $reloadPage Whether to reload page
      * @param int    $status     Response status code
      * @param array  $headers    Response headers
      */
-    public function __construct($success, $message, $html = '', $reloadPage = false, $status = 200, $headers = array())
+    public function __construct($html = '', $success = true, $message = null, $reloadPage = false, $status = 200, $headers = array())
     {
         parent::__construct(array(
             'html'       => $html,
