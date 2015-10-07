@@ -15,6 +15,7 @@ use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -76,18 +77,23 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadCustomObjects($entityOrEntities, $exceptionOnMissingMetadata = true)
+    public function loadCustomObjects($entityOrEntities, $exceptionOnMissingMetadata = true, callable $queryBuilderCallback = null)
     {
-        $this->load(is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities));
+        $this->load(
+            is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities),
+            $exceptionOnMissingMetadata,
+            $queryBuilderCallback
+        );
     }
 
     /**
-     * @param array $entities                   Entities
-     * @param bool  $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
+     * @param array    $entities                   Entities
+     * @param bool     $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
+     * @param callable $queryBuilderCallback       Callback to process query builder
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function load(array $entities, $exceptionOnMissingMetadata = true)
+    private function load(array $entities, $exceptionOnMissingMetadata, callable $queryBuilderCallback = null)
     {
         foreach ($entities as $key => $entity) {
             $objectHash = spl_object_hash($entity);
@@ -129,7 +135,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
         $queriesMap = $this->buildQueriesMap($customEntitiesMap);
 
-        $customEntities = $this->fetchCustomEntities($queriesMap);
+        $customEntities = $this->fetchCustomEntities($queriesMap, $queryBuilderCallback);
 
         $this->setCustomEntities($entities, $customEntities, $customEntitiesMap);
     }
@@ -167,12 +173,13 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     }
 
     /**
-     * @param array $queriesMap Queries map
+     * @param array    $queriesMap           Queries map
+     * @param callable $queryBuilderCallback Callback to process query builder
      *
      * @return array
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function fetchCustomEntities(array $queriesMap)
+    private function fetchCustomEntities(array $queriesMap, callable $queryBuilderCallback = null)
     {
         foreach ($queriesMap as $customEntityClass => &$initProperties) {
             $customEntityDoctrineMeta = $this->getDoctrineMeta($customEntityClass);
@@ -190,10 +197,25 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
                 if (1 === count($initPropertyValues)) {
                     $initPropertyValue = reset($initPropertyValues);
-                    $customEntity = $customEntityRepository->findOneBy(array(
-                        $initProperty => $initPropertyValue,
-                    ));
+                    $qb = $customEntityRepository->createQueryBuilder('o')
+                        ->andWhere(sprintf('o.%s = :%1$s', $initProperty))
+                        ->setParameter($initProperty, $initPropertyValue);
 
+                    if (!empty($queryBuilderCallback)) {
+                        $queryBuilderCallback($qb);
+                    }
+                    try {
+                        $customEntity = $qb->getQuery()->getOneOrNullResult();
+                    } catch (NonUniqueResultException $ex) {
+                        throw new CustomObjectException(
+                            sprintf(
+                                'Unable to fetch custom entity "%s" by %s "%s": entity is not unique.',
+                                $customEntityRepository->getClassName(),
+                                $initProperty,
+                                $initPropertyValue
+                            )
+                        );
+                    }
                     if (!empty($customEntity)) {
                         $initPropertyValues[$initPropertyValue] = $customEntity;
 
@@ -206,7 +228,13 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 }
 
                 $qb = $customEntityRepository->createQueryBuilder('o');
-                $customEntities = $qb->where($qb->expr()->in('o.'.$initProperty, $initPropertyValues))->getQuery()->getResult();
+                $qb->where($qb->expr()->in('o.'.$initProperty, $initPropertyValues));
+
+                if (!empty($queryBuilderCallback)) {
+                    $queryBuilderCallback($qb);
+                }
+
+                $customEntities = $qb->getQuery()->getResult();
 
                 /** @var callable $getPropertyValueCallback */
                 $getPropertyValueCallback = array($this, 'getPropertyValue');
