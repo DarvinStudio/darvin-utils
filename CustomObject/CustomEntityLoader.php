@@ -71,13 +71,16 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadForObject($object, $exceptionOnMissingMetadata = true)
+    public function loadCustomObjects($objectOrObjects, $exceptionOnMissingMetadata = true)
     {
-        $this->loadForObjects(array($object), $exceptionOnMissingMetadata);
+        $this->loadForObjects(is_array($objectOrObjects) ? $objectOrObjects : array($objectOrObjects));
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $objects                    Objects
+     * @param bool  $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
+     *
+     * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
     public function loadForObjects(array $objects, $exceptionOnMissingMetadata = true)
     {

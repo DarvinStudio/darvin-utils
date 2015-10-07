@@ -16,14 +16,8 @@ namespace Darvin\Utils\CustomObject;
 interface CustomObjectLoaderInterface
 {
     /**
-     * @param object $object                     Object
-     * @param bool   $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
-     */
-    public function loadForObject($object, $exceptionOnMissingMetadata = true);
-
-    /**
-     * @param array $objects                    Objects
+     * @param mixed $objectOrObjects            Object or array of objects
      * @param bool  $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
      */
-    public function loadForObjects(array $objects, $exceptionOnMissingMetadata = true);
+    public function loadCustomObjects($objectOrObjects, $exceptionOnMissingMetadata = true);
 }
