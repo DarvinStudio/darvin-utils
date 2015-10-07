@@ -53,6 +53,11 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $identifiers;
 
     /**
+     * @var array
+     */
+    private $processedEntityHashes;
+
+    /**
      * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
@@ -65,26 +70,40 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = array();
+        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = $this->processedEntityHashes = array();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadCustomObjects($objectOrObjects, $exceptionOnMissingMetadata = true)
+    public function loadCustomObjects($entityOrEntities, $exceptionOnMissingMetadata = true)
     {
-        $this->loadForObjects(is_array($objectOrObjects) ? $objectOrObjects : array($objectOrObjects));
+        $this->load(is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities));
     }
 
     /**
-     * @param array $objects                    Objects
+     * @param array $entities                   Entities
      * @param bool  $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    public function loadForObjects(array $objects, $exceptionOnMissingMetadata = true)
+    private function load(array $entities, $exceptionOnMissingMetadata = true)
     {
-        foreach ($objects as $key => $entity) {
+        foreach ($entities as $key => $entity) {
+            $objectHash = spl_object_hash($entity);
+
+            if (isset($this->processedEntityHashes[$objectHash])) {
+                unset($entities[$key]);
+
+                continue;
+            }
+
+            $this->processedEntityHashes[$objectHash] = true;
+        }
+        if (empty($entities)) {
+            return;
+        }
+        foreach ($entities as $key => $entity) {
             $entityClass = ClassUtils::getClass($entity);
 
             if ($this->hasCustomObjectMeta($entityClass)) {
@@ -100,19 +119,19 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 throw new CustomObjectException($message);
             }
 
-            unset($objects[$key]);
+            unset($entities[$key]);
         }
-        if (empty($objects)) {
+        if (empty($entities)) {
             return;
         }
 
-        $customEntitiesMap = $this->buildCustomEntitiesMap($objects);
+        $customEntitiesMap = $this->buildCustomEntitiesMap($entities);
 
         $queriesMap = $this->buildQueriesMap($customEntitiesMap);
 
         $customEntities = $this->fetchCustomEntities($queriesMap);
 
-        $this->setCustomEntities($objects, $customEntities, $customEntitiesMap);
+        $this->setCustomEntities($entities, $customEntities, $customEntitiesMap);
     }
 
     /**
