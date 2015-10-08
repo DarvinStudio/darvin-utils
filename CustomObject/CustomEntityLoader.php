@@ -54,11 +54,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $identifiers;
 
     /**
-     * @var array
-     */
-    private $processedEntityHashes;
-
-    /**
      * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
@@ -71,7 +66,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = $this->processedEntityHashes = array();
+        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = array();
     }
 
     /**
@@ -95,20 +90,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      */
     private function load(array $entities, $exceptionOnMissingMetadata, callable $queryBuilderCallback = null)
     {
-        foreach ($entities as $key => $entity) {
-            $objectHash = spl_object_hash($entity);
-
-            if (isset($this->processedEntityHashes[$objectHash])) {
-                unset($entities[$key]);
-
-                continue;
-            }
-
-            $this->processedEntityHashes[$objectHash] = true;
-        }
-        if (empty($entities)) {
-            return;
-        }
         foreach ($entities as $key => $entity) {
             $entityClass = ClassUtils::getClass($entity);
 
