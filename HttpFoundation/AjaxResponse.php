@@ -21,8 +21,8 @@ class AjaxResponse extends JsonResponse
      * @param string $html       HTML
      * @param bool   $success    Is success
      * @param string $message    Message
-     * @param bool   $reloadPage Whether to reload page
      * @param array  $data       Additional data
+     * @param bool   $reloadPage Whether to reload page
      * @param int    $status     Response status code
      * @param array  $headers    Response headers
      */
@@ -30,8 +30,8 @@ class AjaxResponse extends JsonResponse
         $html = '',
         $success = true,
         $message = null,
-        $reloadPage = false,
         array $data = array(),
+        $reloadPage = false,
         $status = 200,
         array $headers = array()
     ) {
