@@ -22,16 +22,24 @@ class AjaxResponse extends JsonResponse
      * @param bool   $success    Is success
      * @param string $message    Message
      * @param bool   $reloadPage Whether to reload page
+     * @param array  $data       Additional data
      * @param int    $status     Response status code
      * @param array  $headers    Response headers
      */
-    public function __construct($html = '', $success = true, $message = null, $reloadPage = false, $status = 200, $headers = array())
-    {
-        parent::__construct(array(
+    public function __construct(
+        $html = '',
+        $success = true,
+        $message = null,
+        $reloadPage = false,
+        array $data = array(),
+        $status = 200,
+        array $headers = array()
+    ) {
+        parent::__construct(array_merge($data, array(
             'html'       => $html,
             'message'    => $message,
             'reloadPage' => $reloadPage,
             'success'    => $success,
-        ), $status, $headers);
+        ), $status, $headers));
     }
 }
