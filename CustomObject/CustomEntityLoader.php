@@ -12,6 +12,7 @@ namespace Darvin\Utils\CustomObject;
 
 use Darvin\Utils\Mapping\Annotation\CustomObject;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -74,6 +75,10 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      */
     public function loadCustomObjects($entityOrEntities, $exceptionOnMissingMetadata = true, callable $queryBuilderCallback = null)
     {
+        if ($entityOrEntities instanceof Collection) {
+            $entityOrEntities = $entityOrEntities->toArray();
+        }
+
         $this->load(
             is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities),
             $exceptionOnMissingMetadata,
