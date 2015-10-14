@@ -69,6 +69,10 @@ class Mailer implements MailerInterface
      */
     public function send($subject, $body, $to, array $subjectParams = array(), $contentType = 'text/html')
     {
+        if (empty($to)) {
+            return 0;
+        }
+
         $subject = $this->translateSubject($subject, $subjectParams);
 
         $message = new \Swift_Message($subject, $body, $contentType, $this->charset);
