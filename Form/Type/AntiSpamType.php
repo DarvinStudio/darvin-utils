@@ -25,6 +25,7 @@ class AntiSpamType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
+            'label'       => false,
             'attr'        => array(
                 'class' => 'title_field',
             ),
