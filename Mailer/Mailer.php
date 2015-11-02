@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Mailer;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -22,6 +23,11 @@ class Mailer implements MailerInterface
      * @var \Psr\Log\LoggerInterface
      */
     private $logger;
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\RequestStack
+     */
+    private $requestStack;
 
     /**
      * @var \Swift_Mailer
@@ -44,20 +50,23 @@ class Mailer implements MailerInterface
     private $from;
 
     /**
-     * @param \Psr\Log\LoggerInterface                           $logger      Logger
-     * @param \Swift_Mailer                                      $swiftMailer Swift Mailer
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator  Translator
-     * @param string                                             $charset     Charset
-     * @param string                                             $from        From
+     * @param \Psr\Log\LoggerInterface                           $logger       Logger
+     * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack Request stack
+     * @param \Swift_Mailer                                      $swiftMailer  Swift Mailer
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator   Translator
+     * @param string                                             $charset      Charset
+     * @param string                                             $from         From
      */
     public function __construct(
         LoggerInterface $logger,
+        RequestStack $requestStack,
         \Swift_Mailer $swiftMailer,
         TranslatorInterface $translator,
         $charset,
         $from
     ) {
         $this->logger = $logger;
+        $this->requestStack = $requestStack;
         $this->swiftMailer = $swiftMailer;
         $this->translator = $translator;
         $this->charset = $charset;
@@ -74,6 +83,12 @@ class Mailer implements MailerInterface
         }
 
         $subject = $this->translateSubject($subject, $subjectParams);
+
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!empty($request)) {
+            $subject = $request->getHost().' '.$subject;
+        }
 
         $message = new \Swift_Message($subject, $body, $contentType, $this->charset);
         $message
