@@ -48,7 +48,7 @@ class AntiSpamType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'darvin_utils_anti_spam';
     }
