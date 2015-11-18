@@ -42,7 +42,7 @@ class AntiSpamType extends AbstractType
      */
     public function getParent()
     {
-        return 'Symfony\\Component\\Form\\Extension\\Core\\Type\\TextType';
+        return 'Symfony\Component\Form\Extension\Core\Type\TextType';
     }
 
     /**
