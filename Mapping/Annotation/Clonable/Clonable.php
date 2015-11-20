@@ -10,6 +10,8 @@
 
 namespace Darvin\Utils\Mapping\Annotation\Clonable;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+
 /**
  * Clonable annotation
  *
