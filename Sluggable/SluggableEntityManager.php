@@ -10,11 +10,11 @@
 
 namespace Darvin\Utils\Sluggable;
 
+use Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface;
 use Darvin\Utils\Event\Events;
 use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Darvin\UtilsBundle\Doctrine\ORM\EntityManagerProviderInterface;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class SluggableEntityManager implements SluggableManagerInterface
 {
     /**
-     * @var \Darvin\UtilsBundle\Doctrine\ORM\EntityManagerProviderInterface
+     * @var \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface
      */
     private $entityManagerProvider;
 
@@ -61,10 +61,10 @@ class SluggableEntityManager implements SluggableManagerInterface
     private $slugsMetadata;
 
     /**
-     * @param \Darvin\UtilsBundle\Doctrine\ORM\EntityManagerProviderInterface $entityManagerProvider Entity manager provider
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface     $eventDispatcher       Event dispatcher
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface                  $metadataFactory       Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface     $propertyAccessor      Property accessor
+     * @param \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface   $entityManagerProvider Entity manager provider
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher       Event dispatcher
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory       Metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor      Property accessor
      */
     public function __construct(
         EntityManagerProviderInterface $entityManagerProvider,
