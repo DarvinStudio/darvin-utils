@@ -17,6 +17,7 @@ use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -25,6 +26,11 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class SluggableEntityManager implements SluggableManagerInterface
 {
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    private $container;
+
     /**
      * @var \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface
      */
@@ -61,17 +67,20 @@ class SluggableEntityManager implements SluggableManagerInterface
     private $slugsMetadata;
 
     /**
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface   $container             DI container
      * @param \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface   $entityManagerProvider Entity manager provider
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher       Event dispatcher
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory       Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor      Property accessor
      */
     public function __construct(
+        ContainerInterface $container,
         EntityManagerProviderInterface $entityManagerProvider,
         EventDispatcherInterface $eventDispatcher,
         MetadataFactoryInterface $metadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
+        $this->container = $container;
         $this->entityManagerProvider = $entityManagerProvider;
         $this->eventDispatcher = $eventDispatcher;
         $this->metadataFactory = $metadataFactory;
@@ -125,7 +134,7 @@ class SluggableEntityManager implements SluggableManagerInterface
 
             $oldSlug = $this->getPropertyValue($entity, $slugProperty);
 
-            $slugParts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths);
+            $slugParts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths, $params['prefixProvider']);
 
             $newSlug = $originalNewSlug = implode($params['separator'], $slugParts);
             $slugSuffix = $slugParts[count($slugParts) - 1];
@@ -160,14 +169,22 @@ class SluggableEntityManager implements SluggableManagerInterface
      * @param object $entity              Entity
      * @param string $slugProperty        Slug property
      * @param array  $sourcePropertyPaths Source property paths
+     * @param array  $prefixProvider      Prefix provider definition
      *
      * @return array
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths)
+    private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths, array $prefixProvider = null)
     {
         $slugParts = array();
 
+        if (!empty($prefixProvider)) {
+            $slugPrefix = $this->getSlugPrefix($entity, $prefixProvider);
+
+            if (!empty($slugPrefix)) {
+                $slugParts[] = $slugPrefix;
+            }
+        }
         foreach ($sourcePropertyPaths as $propertyPath) {
             if (false !== strpos($propertyPath, '.')) {
                 $related = $this->getPropertyValue($entity, preg_replace('/\..*/', '', $propertyPath));
@@ -195,6 +212,36 @@ class SluggableEntityManager implements SluggableManagerInterface
         }
 
         return $slugParts;
+    }
+
+    /**
+     * @param object $entity         Entity
+     * @param array  $prefixProvider Prefix provider definition
+     *
+     * @return string
+     * @throws \Darvin\Utils\Sluggable\SluggableException
+     */
+    private function getSlugPrefix($entity, array $prefixProvider)
+    {
+        if (!$this->container->has($prefixProvider['id'])) {
+            throw new SluggableException(sprintf('Prefix provider service "%s" does not exist.', $prefixProvider['id']));
+        }
+
+        $prefixProviderService = $this->container->get($prefixProvider['id']);
+        $method = $prefixProvider['method'];
+
+        if (!method_exists($prefixProviderService, $method)) {
+            $message = sprintf(
+                'Class "%s" of prefix provider service "%s" does not have method "%s()".',
+                get_class($prefixProviderService),
+                $prefixProvider['id'],
+                $method
+            );
+
+            throw new SluggableException($message);
+        }
+
+        return $prefixProviderService->$method($entity);
     }
 
     /**
