@@ -133,7 +133,6 @@ class SluggableEntityManager implements SluggableManagerInterface
             if ($newSlug === $oldSlug) {
                 continue;
             }
-
             foreach ($this->slugHandlers as $slugHandler) {
                 $slugHandler->handle($newSlug, $slugSuffix, $em);
             }
