@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
+use Darvin\Utils\Mapping\Annotation\ServiceCallback;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
@@ -29,26 +30,34 @@ class SlugDriver extends AbstractDriver
             $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION);
 
             if ($slugAnnotation instanceof Slug) {
-                $this->validateSourcePropertyPaths(
-                    $slugAnnotation->sourcePropertyPaths,
+                $this->validateAnnotation(
+                    $slugAnnotation,
                     $doctrineMeta->getName(),
                     $reflectionProperty->getName()
                 );
 
                 $meta['slugs'][$reflectionProperty->getName()] = get_object_vars($slugAnnotation);
+
+                if (!empty($slugAnnotation->prefixProvider)) {
+                    $meta['slugs'][$reflectionProperty->getName()]['prefixProvider'] = get_object_vars(
+                        $slugAnnotation->prefixProvider
+                    );
+                }
             }
         }
     }
 
     /**
-     * @param array  $sourcePropertyPaths Source property paths
-     * @param string $objectClass         Object class
-     * @param string $slugProperty        Slug property
+     * @param \Darvin\Utils\Mapping\Annotation\Slug $annotation   Annotation
+     * @param string                                $objectClass  Object class
+     * @param string                                $slugProperty Slug property
      *
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    private function validateSourcePropertyPaths(array $sourcePropertyPaths, $objectClass, $slugProperty)
+    private function validateAnnotation(Slug $annotation, $objectClass, $slugProperty)
     {
+        $sourcePropertyPaths = $annotation->sourcePropertyPaths;
+
         if (empty($sourcePropertyPaths)) {
             throw $this->createPropertyAnnotationInvalidException(
                 Slug::ANNOTATION,
@@ -58,20 +67,33 @@ class SlugDriver extends AbstractDriver
             );
         }
 
-        $lastSourcePropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
+        $prefixProvider = $annotation->prefixProvider;
 
-        if (false !== strpos($lastSourcePropertyPath, '.')) {
-            throw $this->createPropertyAnnotationInvalidException(
-                Slug::ANNOTATION,
-                $objectClass,
-                $slugProperty,
-                sprintf(
-                    'last source property path must not contain relations ("." symbols), "%s" provided',
-                    $lastSourcePropertyPath
-                )
-            );
+        if (!empty($prefixProvider)) {
+            $this->validatePrefixProvider($prefixProvider, $objectClass, $slugProperty);
         }
-        foreach ($sourcePropertyPaths as $sourcePropertyPath) {
+        foreach (array_values($sourcePropertyPaths) as $index => $sourcePropertyPath) {
+            if (false !== strpos($sourcePropertyPath, '.')) {
+                if ($index > 0) {
+                    throw $this->createPropertyAnnotationInvalidException(
+                        Slug::ANNOTATION,
+                        $objectClass,
+                        $slugProperty,
+                        'only first source property path can contain relation ("." symbol)'
+                    );
+                }
+                if (!empty($prefixProvider) && 0 === $index) {
+                    throw $this->createPropertyAnnotationInvalidException(
+                        Slug::ANNOTATION,
+                        $objectClass,
+                        $slugProperty,
+                        sprintf(
+                            'source property paths can contain relations ("." symbol) only if prefix provider is not used, "%s" provided',
+                            $sourcePropertyPath
+                        )
+                    );
+                }
+            }
             if (substr_count($sourcePropertyPath, '.') > 1) {
                 throw $this->createPropertyAnnotationInvalidException(
                     Slug::ANNOTATION,
@@ -81,6 +103,27 @@ class SlugDriver extends AbstractDriver
                         'source property path can contain only single relation ("." symbol), "%s" provided',
                         $sourcePropertyPath
                     )
+                );
+            }
+        }
+    }
+
+    /**
+     * @param \Darvin\Utils\Mapping\Annotation\ServiceCallback $prefixProvider Prefix provider
+     * @param string                                           $objectClass    Object class
+     * @param string                                           $slugProperty   Slug property
+     *
+     * @throws \Darvin\Utils\Mapping\MappingException
+     */
+    private function validatePrefixProvider(ServiceCallback $prefixProvider, $objectClass, $slugProperty)
+    {
+        foreach (get_object_vars($prefixProvider) as $property => $value) {
+            if (empty($value)) {
+                throw $this->createPropertyAnnotationInvalidException(
+                    Slug::ANNOTATION,
+                    $objectClass,
+                    $slugProperty,
+                    sprintf('prefix provider parameter "%s" must not be empty', $property)
                 );
             }
         }

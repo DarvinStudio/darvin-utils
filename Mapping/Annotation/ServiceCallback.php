@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2016, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,28 +10,23 @@
 
 namespace Darvin\Utils\Mapping\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
- * Slug annotation
+ * Service callback annotation
  *
  * @Annotation
- * @Target("PROPERTY")
+ * @Target("ANNOTATION")
  */
-final class Slug
+final class ServiceCallback
 {
-    const ANNOTATION = __CLASS__;
-
     /**
-     * @var array
+     * @var string
      */
-    public $sourcePropertyPaths = array();
-
-    /**
-     * @var \Darvin\Utils\Mapping\Annotation\ServiceCallback
-     */
-    public $prefixProvider;
+    public $id;
 
     /**
      * @var string
      */
-    public $separator = '/';
+    public $method;
 }
