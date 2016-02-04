@@ -74,11 +74,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
             $entityOrEntities = $entityOrEntities->toArray();
         }
 
-        $this->load(
-            is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities),
-            $exceptionOnMissingMetadata,
-            $queryBuilderCallback
-        );
+        $this->load((array) $entityOrEntities, $exceptionOnMissingMetadata, $queryBuilderCallback);
     }
 
     /**
