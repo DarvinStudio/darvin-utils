@@ -23,8 +23,9 @@ class TransliteratableDriver extends AbstractDriver
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
-        $meta['transliteratable'] = array();
-
+        if (!isset($meta['transliteratable'])) {
+            $meta['transliteratable'] = array();
+        }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             $transliteratableAnnotation = $this->reader->getPropertyAnnotation(
                 $reflectionProperty,

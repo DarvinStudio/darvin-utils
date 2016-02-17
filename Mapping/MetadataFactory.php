@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\Mapping;
 
+use Darvin\Utils\Doctrine\ObjectManagerProviderInterface;
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
@@ -18,6 +19,11 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
  */
 class MetadataFactory implements MetadataFactoryInterface
 {
+    /**
+     * @var \Darvin\Utils\Doctrine\ObjectManagerProviderInterface
+     */
+    private $objectManagerProvider;
+
     /**
      * @var \Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface[]
      */
@@ -29,10 +35,11 @@ class MetadataFactory implements MetadataFactoryInterface
     private $loadedMeta;
 
     /**
-     * Constructor
+     * @param \Darvin\Utils\Doctrine\ObjectManagerProviderInterface $objectManagerProvider Object manager provider
      */
-    public function __construct()
+    public function __construct(ObjectManagerProviderInterface $objectManagerProvider)
     {
+        $this->objectManagerProvider = $objectManagerProvider;
         $this->annotationDrivers = array();
         $this->loadedMeta = array();
     }
@@ -52,14 +59,30 @@ class MetadataFactory implements MetadataFactoryInterface
     {
         if (!isset($this->loadedMeta[$doctrineMeta->getName()])) {
             $meta = array();
+            $om = $this->objectManagerProvider->getObjectManager();
 
-            foreach ($this->annotationDrivers as $annotationDriver) {
-                $annotationDriver->readMetadata($doctrineMeta, $meta);
+            foreach (array_reverse(class_parents($doctrineMeta->getName())) as $parent) {
+                if ($om->getMetadataFactory()->hasMetadataFor($parent)) {
+                    $this->readMetadata($om->getClassMetadata($parent), $meta);
+                    $this->loadedMeta[$parent] = $meta;
+                }
             }
 
+            $this->readMetadata($doctrineMeta, $meta);
             $this->loadedMeta[$doctrineMeta->getName()] = $meta;
         }
 
         return $this->loadedMeta[$doctrineMeta->getName()];
+    }
+
+    /**
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
+     * @param array                                              $meta         Metadata
+     */
+    private function readMetadata(ClassMetadata $doctrineMeta, &$meta)
+    {
+        foreach ($this->annotationDrivers as $annotationDriver) {
+            $annotationDriver->readMetadata($doctrineMeta, $meta);
+        }
     }
 }

@@ -35,9 +35,15 @@ class ClonableDriver extends AbstractDriver
 
         $idProperties = $doctrineMeta->getIdentifier();
 
-        $meta['clonable'] = array(
-            'properties' => $this->getPropertiesToCopy($reflectionClass, $clonableAnnotation->copyingPolicy, $idProperties),
-        );
+        if (!isset($meta['clonable'])) {
+            $meta['clonable'] = array();
+        }
+
+        $properties = $this->getPropertiesToCopy($reflectionClass, $clonableAnnotation->copyingPolicy, $idProperties);
+
+        $meta['clonable']['properties'] = isset($meta['clonable']['properties'])
+            ? array_merge($meta['clonable']['properties'], $properties)
+            : $properties;
     }
 
     /**

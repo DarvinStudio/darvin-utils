@@ -23,8 +23,9 @@ class NewObjectFlagDriver extends AbstractDriver
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
-        $meta['newObjectFlag'] = null;
-
+        if (!isset($meta['newObjectFlag'])) {
+            $meta['newObjectFlag'] = null;
+        }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             if (null === $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::ANNOTATION)) {
                 continue;
