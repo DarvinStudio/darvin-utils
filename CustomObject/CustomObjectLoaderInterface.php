@@ -16,9 +16,8 @@ namespace Darvin\Utils\CustomObject;
 interface CustomObjectLoaderInterface
 {
     /**
-     * @param mixed    $objectOrObjects            Object or array of objects
-     * @param bool     $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
-     * @param callable $queryBuilderCallback       Callback to process query builder
+     * @param mixed    $objectOrObjects      Object or array of objects
+     * @param callable $queryBuilderCallback Callback to process query builder
      */
-    public function loadCustomObjects($objectOrObjects, $exceptionOnMissingMetadata = true, callable $queryBuilderCallback = null);
+    public function loadCustomObjects($objectOrObjects, callable $queryBuilderCallback = null);
 }

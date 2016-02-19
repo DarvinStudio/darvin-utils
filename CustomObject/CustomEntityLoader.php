@@ -68,35 +68,27 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadCustomObjects($entityOrEntities, $exceptionOnMissingMetadata = true, callable $queryBuilderCallback = null)
+    public function loadCustomObjects($entityOrEntities, callable $queryBuilderCallback = null)
     {
         if ($entityOrEntities instanceof Collection) {
             $entityOrEntities = $entityOrEntities->toArray();
         }
 
-        $this->load(
-            is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities),
-            $exceptionOnMissingMetadata,
-            $queryBuilderCallback
-        );
+        $this->load(is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities), $queryBuilderCallback);
     }
 
     /**
-     * @param array    $entities                   Entities
-     * @param bool     $exceptionOnMissingMetadata Whether to throw exception if custom object metadata is missing
-     * @param callable $queryBuilderCallback       Callback to process query builder
+     * @param array    $entities             Entities
+     * @param callable $queryBuilderCallback Callback to process query builder
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function load(array $entities, $exceptionOnMissingMetadata, callable $queryBuilderCallback = null)
+    private function load(array $entities, callable $queryBuilderCallback = null)
     {
-        foreach ($entities as $key => $entity) {
+        foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
 
-            if ($this->hasCustomObjectMeta($entityClass)) {
-                continue;
-            }
-            if ($exceptionOnMissingMetadata) {
+            if (!$this->hasCustomObjectMeta($entityClass)) {
                 $message = sprintf(
                     'Class "%s" must be annotated with "%s" annotation in order to load custom objects.',
                     $entityClass,
@@ -105,11 +97,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
                 throw new CustomObjectException($message);
             }
-
-            unset($entities[$key]);
-        }
-        if (empty($entities)) {
-            return;
         }
 
         $customEntitiesMap = $this->buildCustomEntitiesMap($entities);
