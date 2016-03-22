@@ -166,6 +166,32 @@ class SluggableEntityManager implements SluggableManagerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getSlugPrefix($entity, $slugProperty)
+    {
+        $entityClass = ClassUtils::getClass($entity);
+
+        $meta = $this->getSlugsMetadata($entityClass);
+
+        if (!isset($meta[$slugProperty])) {
+            throw new SluggableException(sprintf('"%s::$%s" is not valid slug property.', $entityClass, $slugProperty));
+        }
+
+        $params = $meta[$slugProperty];
+
+        $prefixProvider = $params['prefixProvider'];
+
+        if (empty($prefixProvider)) {
+            return '';
+        }
+
+        $slugPrefix = $this->getSlugPrefixFromProvider($entity, $prefixProvider);
+
+        return !empty($slugPrefix) ? $slugPrefix.$params['separator'] : '';
+    }
+
+    /**
      * @param object $entity              Entity
      * @param string $slugProperty        Slug property
      * @param array  $sourcePropertyPaths Source property paths
@@ -179,7 +205,7 @@ class SluggableEntityManager implements SluggableManagerInterface
         $slugParts = array();
 
         if (!empty($prefixProvider)) {
-            $slugPrefix = $this->getSlugPrefix($entity, $prefixProvider);
+            $slugPrefix = $this->getSlugPrefixFromProvider($entity, $prefixProvider);
 
             if (!empty($slugPrefix)) {
                 $slugParts[] = $slugPrefix;
@@ -221,7 +247,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      * @return string
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function getSlugPrefix($entity, array $prefixProvider)
+    private function getSlugPrefixFromProvider($entity, array $prefixProvider)
     {
         if (!$this->container->has($prefixProvider['id'])) {
             throw new SluggableException(sprintf('Prefix provider service "%s" does not exist.', $prefixProvider['id']));

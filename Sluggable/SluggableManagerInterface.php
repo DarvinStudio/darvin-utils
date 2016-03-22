@@ -29,4 +29,12 @@ interface SluggableManagerInterface
      * @return bool Is at least one slug updated
      */
     public function generateSlugs($object, $dispatchUpdateEvent = false);
+
+    /**
+     * @param object $object       Object
+     * @param string $slugProperty Slug property
+     *
+     * @return string
+     */
+    public function getSlugPrefix($object, $slugProperty);
 }
