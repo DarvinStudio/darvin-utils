@@ -33,7 +33,7 @@ final class CustomObject
     /**
      * @var string
      */
-    public $initProperty = 'id';
+    public $initProperty;
 
     /**
      * @var string

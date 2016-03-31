@@ -50,6 +50,11 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $doctrineMeta;
 
     /**
+     * @var string[]
+     */
+    private $identifiers;
+
+    /**
      * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
@@ -62,7 +67,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = array();
+        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = array();
     }
 
     /**
@@ -295,7 +300,10 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                         ? $params['class']
                         : $this->getPropertyValue($entity, $params['classPropertyPath'])
                     ,
-                    'initProperty'      => $params['initProperty'],
+                    'initProperty' => !empty($params['initProperty'])
+                        ? $params['initProperty']
+                        : $this->getIdentifier($entityClass)
+                    ,
                     'initPropertyValue' => $initPropertyValue,
                 );
             }
@@ -332,6 +340,34 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         }
 
         return $this->customObjectMeta[$entityClass];
+    }
+
+    /**
+     * @param string $entityClass Entity class
+     *
+     * @return string
+     * @throws \Darvin\Utils\CustomObject\CustomObjectException
+     */
+    private function getIdentifier($entityClass)
+    {
+        if (!isset($this->identifiers[$entityClass])) {
+            $identifiers = $this->getDoctrineMeta($entityClass)->getIdentifier();
+            $count = count($identifiers);
+
+            if ($count > 1) {
+                $message = sprintf(
+                    'Only entities with single identifier are supported, provided entity class "%s" has %d identifiers.',
+                    $entityClass,
+                    $count
+                );
+
+                throw new CustomObjectException($message);
+            }
+
+            $this->identifiers[$entityClass] = array_shift($identifiers);
+        }
+
+        return $this->identifiers[$entityClass];
     }
 
     /**
