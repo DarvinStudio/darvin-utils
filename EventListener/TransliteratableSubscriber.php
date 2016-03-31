@@ -27,7 +27,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -40,16 +40,16 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     private $transliterator;
 
     /**
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
-     * @param \Darvin\Utils\Transliteratable\TransliteratorInterface      $transliterator   Transliterator
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
+     * @param \Darvin\Utils\Transliteratable\TransliteratorInterface      $transliterator          Transliterator
      */
     public function __construct(
-        MetadataFactoryInterface $metadataFactory,
+        MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor,
         TransliteratorInterface $transliterator
     ) {
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
         $this->transliterator = $transliterator;
     }
@@ -87,7 +87,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     {
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
+        $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
         if (!isset($meta['transliteratable']) || empty($meta['transliteratable'])) {
             return;
