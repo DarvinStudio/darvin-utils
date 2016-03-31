@@ -31,7 +31,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -49,17 +49,17 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $doctrineMeta;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
+     * @param \Doctrine\ORM\EntityManager                                 $em                      Entity manager
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
     public function __construct(
         EntityManager $em,
-        MetadataFactoryInterface $metadataFactory,
+        MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
         $this->em = $em;
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
         $this->customObjectMeta = $this->doctrineMeta = array();
     }
@@ -149,7 +149,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private function fetchCustomEntities(array $queriesMap, callable $queryBuilderCallback = null)
     {
         foreach ($queriesMap as $customEntityClass => &$initProperties) {
-            $customEntityDoctrineMeta = $this->metadataFactory->getDoctrineMetadata($customEntityClass);
+            $customEntityDoctrineMeta = $this->extendedMetadataFactory->getDoctrineMetadata($customEntityClass);
 
             foreach ($initProperties as $initProperty => &$initPropertyValues) {
                 if (!$customEntityDoctrineMeta->hasField($initProperty)
@@ -296,7 +296,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     ,
                     'initProperty' => !empty($params['initProperty'])
                         ? $params['initProperty']
-                        : $this->metadataFactory->getIdentifier($entityClass)
+                        : $this->extendedMetadataFactory->getIdentifier($entityClass)
                     ,
                     'initPropertyValue' => $initPropertyValue,
                 );
@@ -326,7 +326,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private function getCustomObjectMeta($entityClass)
     {
         if (!array_key_exists($entityClass, $this->customObjectMeta)) {
-            $meta = $this->metadataFactory->getExtendedMetadata($entityClass);
+            $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
             $this->customObjectMeta[$entityClass] = isset($meta['customObjects']) && !empty($meta['customObjects'])
                 ? $meta['customObjects']

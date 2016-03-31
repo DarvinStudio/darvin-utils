@@ -33,7 +33,7 @@ class Cloner implements ClonerInterface
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -46,17 +46,17 @@ class Cloner implements ClonerInterface
     private $clonedObjects;
 
     /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher  Event dispatcher
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher         Event dispatcher
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        MetadataFactoryInterface $metadataFactory,
+        MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
         $this->eventDispatcher = $eventDispatcher;
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
     }
 
@@ -94,7 +94,7 @@ class Cloner implements ClonerInterface
             return $clone;
         }
 
-        $meta = $this->metadataFactory->getExtendedMetadata($class);
+        $meta = $this->extendedMetadataFactory->getExtendedMetadata($class);
 
         if (!isset($meta['clonable'])) {
             $message = sprintf(
