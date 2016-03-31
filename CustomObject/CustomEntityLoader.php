@@ -13,7 +13,6 @@ namespace Darvin\Utils\CustomObject;
 use Darvin\Utils\Mapping\Annotation\CustomObject;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NonUniqueResultException;
@@ -50,11 +49,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $doctrineMeta;
 
     /**
-     * @var string[]
-     */
-    private $identifiers;
-
-    /**
      * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
@@ -67,7 +61,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->metadataFactory = $metadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = $this->identifiers = array();
+        $this->customObjectMeta = $this->doctrineMeta = array();
     }
 
     /**
@@ -155,7 +149,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private function fetchCustomEntities(array $queriesMap, callable $queryBuilderCallback = null)
     {
         foreach ($queriesMap as $customEntityClass => &$initProperties) {
-            $customEntityDoctrineMeta = $this->getDoctrineMeta($customEntityClass);
+            $customEntityDoctrineMeta = $this->metadataFactory->getDoctrineMetadata($customEntityClass);
 
             foreach ($initProperties as $initProperty => &$initPropertyValues) {
                 if (!$customEntityDoctrineMeta->hasField($initProperty)
@@ -302,7 +296,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     ,
                     'initProperty' => !empty($params['initProperty'])
                         ? $params['initProperty']
-                        : $this->getIdentifier($entityClass)
+                        : $this->metadataFactory->getIdentifier($entityClass)
                     ,
                     'initPropertyValue' => $initPropertyValue,
                 );
@@ -332,7 +326,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private function getCustomObjectMeta($entityClass)
     {
         if (!array_key_exists($entityClass, $this->customObjectMeta)) {
-            $meta = $this->metadataFactory->getMetadata($this->getDoctrineMeta($entityClass));
+            $meta = $this->metadataFactory->getExtendedMetadata($entityClass);
 
             $this->customObjectMeta[$entityClass] = isset($meta['customObjects']) && !empty($meta['customObjects'])
                 ? $meta['customObjects']
@@ -340,53 +334,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         }
 
         return $this->customObjectMeta[$entityClass];
-    }
-
-    /**
-     * @param string $entityClass Entity class
-     *
-     * @return string
-     * @throws \Darvin\Utils\CustomObject\CustomObjectException
-     */
-    private function getIdentifier($entityClass)
-    {
-        if (!isset($this->identifiers[$entityClass])) {
-            $identifiers = $this->getDoctrineMeta($entityClass)->getIdentifier();
-            $count = count($identifiers);
-
-            if ($count > 1) {
-                $message = sprintf(
-                    'Only entities with single identifier are supported, provided entity class "%s" has %d identifiers.',
-                    $entityClass,
-                    $count
-                );
-
-                throw new CustomObjectException($message);
-            }
-
-            $this->identifiers[$entityClass] = array_shift($identifiers);
-        }
-
-        return $this->identifiers[$entityClass];
-    }
-
-    /**
-     * @param string $entityClass Entity class
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
-     * @throws \Darvin\Utils\CustomObject\CustomObjectException
-     */
-    private function getDoctrineMeta($entityClass)
-    {
-        if (!isset($this->doctrineMeta[$entityClass])) {
-            try {
-                $this->doctrineMeta[$entityClass] = $this->em->getClassMetadata($entityClass);
-            } catch (MappingException $ex) {
-                throw new CustomObjectException(sprintf('Unable to get Doctrine metadata for class "%s".', $entityClass));
-            }
-        }
-
-        return $this->doctrineMeta[$entityClass];
     }
 
     /**
