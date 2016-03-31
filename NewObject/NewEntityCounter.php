@@ -12,7 +12,6 @@ namespace Darvin\Utils\NewObject;
 
 use Darvin\Utils\Mapping\Annotation\NewObjectFlag;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -28,7 +27,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var array
@@ -36,13 +35,13 @@ class NewEntityCounter implements NewObjectCounterInterface
     private $counts;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                    $em              Entity manager
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface $metadataFactory Metadata factory
+     * @param \Doctrine\ORM\EntityManager                    $em                      Entity manager
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface $extendedMetadataFactory Extended metadata factory
      */
-    public function __construct(EntityManager $em, MetadataFactoryInterface $metadataFactory)
+    public function __construct(EntityManager $em, MetadataFactoryInterface $extendedMetadataFactory)
     {
         $this->em = $em;
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->counts = array();
     }
 
@@ -93,17 +92,10 @@ class NewEntityCounter implements NewObjectCounterInterface
      * @param string $entityClass Entity class
      *
      * @return string
-     * @throws \Darvin\Utils\NewObject\NewObjectException
      */
     private function getNewObjectFlag($entityClass)
     {
-        try {
-            $doctrineMeta = $this->em->getClassMetadata($entityClass);
-        } catch (MappingException $ex) {
-            throw new NewObjectException(sprintf('Unable to get Doctrine metadata for class "%s".', $entityClass));
-        }
-
-        $meta = $this->metadataFactory->getMetadata($doctrineMeta);
+        $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
         return isset($meta['newObjectFlag']) ? $meta['newObjectFlag'] : null;
     }
