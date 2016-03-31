@@ -16,7 +16,6 @@ use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -37,11 +36,6 @@ class Cloner implements ClonerInterface
     private $metadataFactory;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    private $om;
-
-    /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
      */
     private $propertyAccessor;
@@ -54,18 +48,15 @@ class Cloner implements ClonerInterface
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher  Event dispatcher
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Doctrine\Common\Persistence\ObjectManager                  $om               Object manager
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         MetadataFactoryInterface $metadataFactory,
-        ObjectManager $om,
         PropertyAccessorInterface $propertyAccessor
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->metadataFactory = $metadataFactory;
-        $this->om = $om;
         $this->propertyAccessor = $propertyAccessor;
     }
 
@@ -103,7 +94,7 @@ class Cloner implements ClonerInterface
             return $clone;
         }
 
-        $meta = $this->metadataFactory->getMetadata($this->om->getClassMetadata($class));
+        $meta = $this->metadataFactory->getExtendedMetadata($class);
 
         if (!isset($meta['clonable'])) {
             $message = sprintf(
