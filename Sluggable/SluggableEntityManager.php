@@ -15,7 +15,6 @@ use Darvin\Utils\Event\Events;
 use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -44,7 +43,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -67,23 +66,23 @@ class SluggableEntityManager implements SluggableManagerInterface
     private $slugsMetadata;
 
     /**
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface   $container             DI container
-     * @param \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface   $entityManagerProvider Entity manager provider
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher       Event dispatcher
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory       Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor      Property accessor
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface   $container               DI container
+     * @param \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface   $entityManagerProvider   Entity manager provider
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher         Event dispatcher
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
     public function __construct(
         ContainerInterface $container,
         EntityManagerProviderInterface $entityManagerProvider,
         EventDispatcherInterface $eventDispatcher,
-        MetadataFactoryInterface $metadataFactory,
+        MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
         $this->container = $container;
         $this->entityManagerProvider = $entityManagerProvider;
         $this->eventDispatcher = $eventDispatcher;
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
         $this->checkedIfSluggableClasses = array();
         $this->slugHandlers = array();
@@ -279,13 +278,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     private function getSlugsMetadata($entityClass)
     {
         if (!isset($this->slugsMetadata[$entityClass])) {
-            try {
-                $doctrineMeta = $this->entityManagerProvider->getEntityManager()->getClassMetadata($entityClass);
-            } catch (MappingException $ex) {
-                throw new SluggableException(sprintf('Unable to get Doctrine metadata for class "%s".', $entityClass));
-            }
-
-            $meta = $this->metadataFactory->getMetadata($doctrineMeta);
+            $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
             if (!isset($meta['slugs']) || empty($meta['slugs'])) {
                 $message = sprintf(
