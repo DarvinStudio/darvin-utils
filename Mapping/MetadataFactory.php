@@ -90,7 +90,7 @@ class MetadataFactory implements MetadataFactoryInterface
                 throw new MappingException($message);
             }
 
-            $this->identifiers[$doctrineMeta->getName()] = array_shift($identifiers);
+            $this->identifiers[$doctrineMeta->getName()] = reset($identifiers);
         }
 
         return $this->identifiers[$doctrineMeta->getName()];
