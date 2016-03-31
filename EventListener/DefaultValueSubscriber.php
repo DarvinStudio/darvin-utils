@@ -26,7 +26,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
      */
-    private $metadataFactory;
+    private $extendedMetadataFactory;
 
     /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessorInterface
@@ -34,12 +34,12 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     private $propertyAccessor;
 
     /**
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $metadataFactory  Metadata factory
-     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
-    public function __construct(MetadataFactoryInterface $metadataFactory, PropertyAccessorInterface $propertyAccessor)
+    public function __construct(MetadataFactoryInterface $extendedMetadataFactory, PropertyAccessorInterface $propertyAccessor)
     {
-        $this->metadataFactory = $metadataFactory;
+        $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
     }
 
@@ -76,7 +76,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     {
         $entityClass = ClassUtils::getClass($entity);
 
-        $meta = $this->metadataFactory->getMetadata($this->em->getClassMetadata($entityClass));
+        $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
         if (!isset($meta['defaultValues']) || empty($meta['defaultValues'])) {
             return;
