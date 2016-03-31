@@ -11,7 +11,6 @@
 namespace Darvin\Utils\Mapping;
 
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * Metadata factory
@@ -24,9 +23,25 @@ interface MetadataFactoryInterface
     public function addAnnotationDriver(AnnotationDriverInterface $driver);
 
     /**
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
+     * @param object|string $objectOrClass Object or class
      *
-     * @return array
+     * @return mixed[]
      */
-    public function getMetadata(ClassMetadata $doctrineMeta);
+    public function getExtendedMetadata($objectOrClass);
+
+    /**
+     * @param object|string $objectOrClass Object or class
+     *
+     * @return string
+     * @throws \Darvin\Utils\Mapping\MappingException
+     */
+    public function getIdentifier($objectOrClass);
+
+    /**
+     * @param object|string $objectOrClass Object or class
+     *
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @throws \Darvin\Utils\Mapping\MappingException
+     */
+    public function getDoctrineMetadata($objectOrClass);
 }
