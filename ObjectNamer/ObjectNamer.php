@@ -11,6 +11,7 @@
 namespace Darvin\Utils\ObjectNamer;
 
 use Darvin\Utils\Strings\StringsUtil;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
  * Object namer
@@ -33,10 +34,12 @@ class ObjectNamer implements ObjectNamerInterface
     /**
      * {@inheritdoc}
      */
-    public function name($objectClass)
+    public function name($objectOrClass)
     {
-        if (!isset($this->names[$objectClass])) {
-            $parts = explode('_', str_replace('\\', '_', StringsUtil::toUnderscore($objectClass)));
+        $class = is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass;
+
+        if (!isset($this->names[$class])) {
+            $parts = explode('_', str_replace('\\', '_', StringsUtil::toUnderscore($class)));
             $offset = array_search('entity', $parts);
 
             if ($offset) {
@@ -51,9 +54,9 @@ class ObjectNamer implements ObjectNamerInterface
                 }
             }
 
-            $this->names[$objectClass] = implode('_', $parts);
+            $this->names[$class] = implode('_', $parts);
         }
 
-        return $this->names[$objectClass];
+        return $this->names[$class];
     }
 }

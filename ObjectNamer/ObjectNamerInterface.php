@@ -16,9 +16,9 @@ namespace Darvin\Utils\ObjectNamer;
 interface ObjectNamerInterface
 {
     /**
-     * @param string $objectClass Object class
+     * @param object|string $objectOrClass Object or class
      *
      * @return string
      */
-    public function name($objectClass);
+    public function name($objectOrClass);
 }
