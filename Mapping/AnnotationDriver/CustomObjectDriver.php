@@ -24,7 +24,7 @@ class CustomObjectDriver extends AbstractDriver
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
         if (!isset($meta['customObjects'])) {
-            $meta['customObjects'] = array();
+            $meta['customObjects'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             $customObjectAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, CustomObject::ANNOTATION);

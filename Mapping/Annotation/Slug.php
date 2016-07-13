@@ -23,7 +23,7 @@ final class Slug
     /**
      * @var array
      */
-    public $sourcePropertyPaths = array();
+    public $sourcePropertyPaths = [];
 
     /**
      * @var \Darvin\Utils\Mapping\Annotation\ServiceCallback

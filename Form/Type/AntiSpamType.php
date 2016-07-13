@@ -26,15 +26,17 @@ class AntiSpamType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+            [
             'label'       => false,
-            'attr'        => array(
+            'attr'        => [
                 'class' => 'title_field',
-            ),
+            ],
             'constraints' => new Blank(),
             'mapped'      => false,
             'required'    => false,
-        ));
+            ]
+        );
     }
 
     /**

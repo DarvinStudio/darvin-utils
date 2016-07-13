@@ -61,7 +61,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = array();
+        $this->customObjectMeta = $this->doctrineMeta = [];
     }
 
     /**
@@ -73,7 +73,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
             $entityOrEntities = $entityOrEntities->toArray();
         }
 
-        $this->load(is_array($entityOrEntities) ? $entityOrEntities : array($entityOrEntities), $queryBuilderCallback);
+        $this->load(is_array($entityOrEntities) ? $entityOrEntities : [$entityOrEntities], $queryBuilderCallback);
     }
 
     /**
@@ -204,7 +204,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 $customEntities = $qb->getQuery()->getResult();
 
                 /** @var callable $getPropertyValueCallback */
-                $getPropertyValueCallback = array($this, 'getPropertyValue');
+                $getPropertyValueCallback = [$this, 'getPropertyValue'];
 
                 $customEntities = array_combine(array_map(function ($customEntity) use ($getPropertyValueCallback, $initProperty) {
                     return $getPropertyValueCallback($customEntity, $initProperty);
@@ -238,7 +238,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      */
     private function buildQueriesMap(array $customEntitiesMap)
     {
-        $map = array();
+        $map = [];
 
         foreach ($customEntitiesMap as $entitiesMap) {
             foreach ($entitiesMap as $entityMap) {
@@ -248,10 +248,10 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     $initPropertyValue = $targetPropertyMap['initPropertyValue'];
 
                     if (!isset($map[$customEntityClass])) {
-                        $map[$customEntityClass] = array();
+                        $map[$customEntityClass] = [];
                     }
                     if (!isset($map[$customEntityClass][$initProperty])) {
-                        $map[$customEntityClass][$initProperty] = array();
+                        $map[$customEntityClass][$initProperty] = [];
                     }
                     if (!in_array($initPropertyValue, $map[$customEntityClass][$initProperty])) {
                         $map[$customEntityClass][$initProperty][$initPropertyValue] = $initPropertyValue;
@@ -270,7 +270,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      */
     private function buildCustomEntitiesMap(array $entities)
     {
-        $map = array();
+        $map = [];
 
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
@@ -283,13 +283,13 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     continue;
                 }
                 if (!isset($map[$entityClass])) {
-                    $map[$entityClass] = array();
+                    $map[$entityClass] = [];
                 }
                 if (!isset($map[$entityClass][$objectHash])) {
-                    $map[$entityClass][$objectHash] = array();
+                    $map[$entityClass][$objectHash] = [];
                 }
 
-                $map[$entityClass][$objectHash][$targetProperty] = array(
+                $map[$entityClass][$objectHash][$targetProperty] = [
                     'class' => !empty($params['class'])
                         ? $params['class']
                         : $this->getPropertyValue($entity, $params['classPropertyPath'])
@@ -299,7 +299,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                         : $this->extendedMetadataFactory->getIdentifier($entityClass)
                     ,
                     'initPropertyValue' => $initPropertyValue,
-                );
+                ];
             }
         }
 

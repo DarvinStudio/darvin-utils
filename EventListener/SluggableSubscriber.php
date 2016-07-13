@@ -38,9 +38,9 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::onFlush,
-        );
+        ];
     }
 
     /**
@@ -50,7 +50,7 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
     {
         parent::onFlush($args);
 
-        $generateSlugsCallback = array($this, 'generateSlugs');
+        $generateSlugsCallback = [$this, 'generateSlugs'];
 
         $this
             ->onInsert($generateSlugsCallback)

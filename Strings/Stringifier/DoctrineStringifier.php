@@ -21,12 +21,12 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * @var array
      */
-    private static $datetimeFormats = array(
+    private static $datetimeFormats = [
         Type::DATE       => 'd.m.Y',
         Type::DATETIME   => 'd.m.Y H:i:s',
         Type::DATETIMETZ => 'd.m.Y H:i:s',
         Type::TIME       => 'H:i:s',
-    );
+    ];
 
     /**
      * @var \Symfony\Component\Translation\TranslatorInterface

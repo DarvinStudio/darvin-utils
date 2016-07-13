@@ -28,7 +28,7 @@ class ObjectNamer implements ObjectNamerInterface
      */
     public function __construct()
     {
-        $this->names = array();
+        $this->names = [];
     }
 
     /**

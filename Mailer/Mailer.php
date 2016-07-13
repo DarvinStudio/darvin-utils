@@ -76,7 +76,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = array(), $contentType = 'text/html')
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html')
     {
         if (empty($to)) {
             return 0;
@@ -95,7 +95,7 @@ class Mailer implements MailerInterface
             ->setFrom($this->from)
             ->setTo($to);
 
-        $failedRecipients = array();
+        $failedRecipients = [];
         $sent = $this->swiftMailer->send($message, $failedRecipients);
 
         if (!empty($failedRecipients)) {

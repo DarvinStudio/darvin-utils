@@ -65,7 +65,7 @@ class Cloner implements ClonerInterface
      */
     public function createClone($object)
     {
-        $this->clonedObjects = array();
+        $this->clonedObjects = [];
 
         return $this->cloneObject($object);
     }
@@ -161,7 +161,7 @@ class Cloner implements ClonerInterface
      */
     private function copyArray(array $array)
     {
-        $copy = array();
+        $copy = [];
 
         foreach ($array as $key => $value) {
             $copy[$key] = $this->copyValue($value);

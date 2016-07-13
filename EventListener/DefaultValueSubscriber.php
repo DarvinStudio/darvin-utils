@@ -48,9 +48,9 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::onFlush,
-        );
+        ];
     }
 
     /**
@@ -60,7 +60,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     {
         parent::onFlush($args);
 
-        $setDefaultValuesCallback = array($this, 'setDefaultValues');
+        $setDefaultValuesCallback = [$this, 'setDefaultValues'];
 
         $this
             ->onInsert($setDefaultValuesCallback)
@@ -146,7 +146,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      */
     private function getSourcePropertyValues(array $sourcePropertyPaths, $entity, $entityClass)
     {
-        $sourcePropertyValues = array();
+        $sourcePropertyValues = [];
 
         foreach ($sourcePropertyPaths as $sourcePropertyPath) {
             if (!$this->propertyAccessor->isReadable($entity, $sourcePropertyPath)) {

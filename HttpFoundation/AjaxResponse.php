@@ -30,16 +30,17 @@ class AjaxResponse extends JsonResponse
         $html = '',
         $success = true,
         $message = null,
-        array $data = array(),
+        array $data = [],
         $redirectUrl = null,
         $status = 200,
-        array $headers = array()
+        array $headers = []
     ) {
-        parent::__construct(array_merge($data, array(
+        parent::__construct(array_merge($data, [
             'html'        => $html,
             'message'     => $message,
             'redirectUrl' => $redirectUrl,
             'success'     => $success,
-        )), $status, $headers);
+        ]
+        ), $status, $headers);
     }
 }

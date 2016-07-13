@@ -25,7 +25,7 @@ class SlugDriver extends AbstractDriver
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
         if (!isset($meta['slugs'])) {
-            $meta['slugs'] = array();
+            $meta['slugs'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION);

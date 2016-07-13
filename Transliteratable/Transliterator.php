@@ -18,19 +18,19 @@ class Transliterator implements TransliteratorInterface
     /**
      * @var array
      */
-    private static $replacePairs = array(
+    private static $replacePairs = [
         'а' => 'a',  'б' => 'b',  'в' => 'v',  'г' => 'g', 'д' => 'd', 'е' => 'e',
         'ё' => 'e',  'ж' => 'zh', 'з' => 'z',  'и' => 'i', 'й' => 'y', 'к' => 'k',
         'л' => 'l',  'м' => 'm',  'н' => 'n',  'о' => 'o', 'п' => 'p', 'р' => 'r',
         'с' => 's',  'т' => 't',  'у' => 'u',  'ф' => 'f', 'х' => 'h', 'ц' => 'c',
         'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sh', 'ы' => 'i', 'ь' => '',  'ъ' => '',
         'э' => 'e',  'ю' => 'yu', 'я' => 'ya',
-    );
+    ];
 
     /**
      * {@inheritdoc}
      */
-    public function transliterate($string, $sanitize = true, array $allowedSymbols = array('_'), $separator = '-')
+    public function transliterate($string, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-')
     {
         $string = mb_strtolower(preg_replace('/\s+/', ' ', trim($string)));
 

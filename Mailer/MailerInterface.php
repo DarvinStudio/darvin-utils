@@ -24,5 +24,5 @@ interface MailerInterface
      *
      * @return int
      */
-    public function send($subject, $body, $to, array $subjectParams = array(), $contentType = 'text/html');
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html');
 }

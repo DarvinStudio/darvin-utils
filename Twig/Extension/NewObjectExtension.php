@@ -35,10 +35,10 @@ class NewObjectExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('utils_count_new_objects', array($this->newObjectCounter, 'count')),
-            new \Twig_SimpleFunction('utils_new_objects_countable', array($this->newObjectCounter, 'isCountable')),
-        );
+        return [
+            new \Twig_SimpleFunction('utils_count_new_objects', [$this->newObjectCounter, 'count']),
+            new \Twig_SimpleFunction('utils_new_objects_countable', [$this->newObjectCounter, 'isCountable']),
+        ];
     }
 
     /**

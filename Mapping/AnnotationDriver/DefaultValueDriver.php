@@ -24,7 +24,7 @@ class DefaultValueDriver extends AbstractDriver
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
         if (!isset($meta['defaultValues'])) {
-            $meta['defaultValues'] = array();
+            $meta['defaultValues'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
             $defaultValueAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, DefaultValue::ANNOTATION);

@@ -52,7 +52,7 @@ class TaggedServiceIdsSorter
      */
     private function getMaxPosition(array $taggedServiceIds)
     {
-        $positions = array();
+        $positions = [];
 
         foreach ($taggedServiceIds as $attr) {
             if (isset($attr[0][$this->positionArg])) {

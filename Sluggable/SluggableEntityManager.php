@@ -84,9 +84,9 @@ class SluggableEntityManager implements SluggableManagerInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->checkedIfSluggableClasses = array();
-        $this->slugHandlers = array();
-        $this->slugsMetadata = array();
+        $this->checkedIfSluggableClasses = [];
+        $this->slugHandlers = [];
+        $this->slugsMetadata = [];
     }
 
     /**
@@ -126,7 +126,7 @@ class SluggableEntityManager implements SluggableManagerInterface
 
         $entityClass = ClassUtils::getClass($entity);
 
-        $slugsChangeSet = array();
+        $slugsChangeSet = [];
 
         foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $params) {
             $sourcePropertyPaths = $params['sourcePropertyPaths'];
@@ -201,7 +201,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      */
     private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths, array $prefixProvider = null)
     {
-        $slugParts = array();
+        $slugParts = [];
 
         if (!empty($prefixProvider)) {
             $slugPrefix = $this->getSlugPrefixFromProvider($entity, $prefixProvider);

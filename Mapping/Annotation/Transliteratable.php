@@ -28,7 +28,7 @@ final class Transliteratable
     /**
      * @var array
      */
-    public $allowedSymbols = array('_');
+    public $allowedSymbols = ['_'];
 
     /**
      * @var string

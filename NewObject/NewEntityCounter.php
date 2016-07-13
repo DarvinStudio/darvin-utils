@@ -42,7 +42,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     {
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
-        $this->counts = array();
+        $this->counts = [];
     }
 
     /**

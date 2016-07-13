@@ -42,7 +42,7 @@ class ClonableDriver extends AbstractDriver
             return;
         }
         if (!isset($meta['clonable'])) {
-            $meta['clonable'] = array();
+            $meta['clonable'] = [];
         }
 
         $meta['clonable']['copyingPolicy'] = $copyingPolicy;
@@ -64,7 +64,7 @@ class ClonableDriver extends AbstractDriver
      */
     private function getPropertiesToCopy(\ReflectionClass $reflectionClass, $copyingPolicy, array $idProperties)
     {
-        $properties = array();
+        $properties = [];
 
         switch ($copyingPolicy) {
             case Clonable::COPYING_POLICY_ALL:

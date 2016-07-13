@@ -21,5 +21,5 @@ interface TransliteratorInterface
      * @param array  $allowedSymbols Allowed symbols
      * @param string $separator      Words separator
      */
-    public function transliterate($string, $sanitize = true, array $allowedSymbols = array('_'), $separator = '-');
+    public function transliterate($string, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-');
 }

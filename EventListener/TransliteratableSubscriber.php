@@ -59,9 +59,9 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::onFlush,
-        );
+        ];
     }
 
     /**
@@ -71,7 +71,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     {
         parent::onFlush($args);
 
-        $transliterateCallback = array($this, 'transliterate');
+        $transliterateCallback = [$this, 'transliterate'];
 
         $this
             ->onInsert($transliterateCallback)
