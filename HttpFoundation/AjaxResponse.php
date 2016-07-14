@@ -40,7 +40,6 @@ class AjaxResponse extends JsonResponse
             'message'     => $message,
             'redirectUrl' => $redirectUrl,
             'success'     => $success,
-        ]
-        ), $status, $headers);
+        ]), $status, $headers);
     }
 }

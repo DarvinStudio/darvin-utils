@@ -26,8 +26,7 @@ class AntiSpamType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            [
+        $resolver->setDefaults([
             'label'       => false,
             'attr'        => [
                 'class' => 'title_field',
@@ -35,8 +34,7 @@ class AntiSpamType extends AbstractType
             'constraints' => new Blank(),
             'mapped'      => false,
             'required'    => false,
-            ]
-        );
+        ]);
     }
 
     /**
