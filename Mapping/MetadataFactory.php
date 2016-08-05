@@ -10,8 +10,8 @@
 
 namespace Darvin\Utils\Mapping;
 
-use Darvin\Utils\Doctrine\ObjectManagerProviderInterface;
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
+use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Util\ClassUtils;
 
@@ -21,7 +21,7 @@ use Doctrine\Common\Util\ClassUtils;
 class MetadataFactory implements MetadataFactoryInterface
 {
     /**
-     * @var \Darvin\Utils\Doctrine\ObjectManagerProviderInterface
+     * @var \Darvin\Utils\Service\ServiceProviderInterface
      */
     private $objectManagerProvider;
 
@@ -51,9 +51,9 @@ class MetadataFactory implements MetadataFactoryInterface
     private $identifiers;
 
     /**
-     * @param \Darvin\Utils\Doctrine\ObjectManagerProviderInterface $objectManagerProvider Object manager provider
+     * @param \Darvin\Utils\Service\ServiceProviderInterface $objectManagerProvider Object manager provider
      */
-    public function __construct(ObjectManagerProviderInterface $objectManagerProvider)
+    public function __construct(ServiceProviderInterface $objectManagerProvider)
     {
         $this->objectManagerProvider = $objectManagerProvider;
 
@@ -168,7 +168,7 @@ class MetadataFactory implements MetadataFactoryInterface
     private function getObjectManager()
     {
         if (empty($this->om)) {
-            $this->om = $this->objectManagerProvider->getObjectManager();
+            $this->om = $this->objectManagerProvider->getService();
         }
 
         return $this->om;

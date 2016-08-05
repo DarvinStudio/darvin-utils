@@ -10,11 +10,11 @@
 
 namespace Darvin\Utils\Sluggable;
 
-use Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface;
 use Darvin\Utils\Event\Events;
 use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -31,7 +31,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     private $container;
 
     /**
-     * @var \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface
+     * @var \Darvin\Utils\Service\ServiceProviderInterface
      */
     private $entityManagerProvider;
 
@@ -67,14 +67,14 @@ class SluggableEntityManager implements SluggableManagerInterface
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerInterface   $container               DI container
-     * @param \Darvin\Utils\Doctrine\ORM\EntityManagerProviderInterface   $entityManagerProvider   Entity manager provider
+     * @param \Darvin\Utils\Service\ServiceProviderInterface              $entityManagerProvider   Entity manager provider
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher         Event dispatcher
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
     public function __construct(
         ContainerInterface $container,
-        EntityManagerProviderInterface $entityManagerProvider,
+        ServiceProviderInterface $entityManagerProvider,
         EventDispatcherInterface $eventDispatcher,
         MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor
@@ -122,7 +122,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      */
     public function generateSlugs($entity, $dispatchUpdateEvent = false)
     {
-        $em = $this->entityManagerProvider->getEntityManager();
+        $em = $this->getEntityManager();
 
         $entityClass = ClassUtils::getClass($entity);
 
@@ -330,5 +330,13 @@ class SluggableEntityManager implements SluggableManagerInterface
         }
 
         return $this->propertyAccessor->getValue($entity, $propertyPath);
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    private function getEntityManager()
+    {
+        return $this->entityManagerProvider->getService();
     }
 }

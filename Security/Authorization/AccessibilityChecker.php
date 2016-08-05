@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Security\Authorization;
 
 use Darvin\Utils\Security\SecurableInterface;
+use Darvin\Utils\Service\ServiceProviderInterface;
 
 /**
  * Accessibility checker
@@ -18,14 +19,14 @@ use Darvin\Utils\Security\SecurableInterface;
 class AccessibilityChecker
 {
     /**
-     * @var \Darvin\Utils\Security\Authorization\AuthorizationCheckerProviderInterface
+     * @var \Darvin\Utils\Service\ServiceProviderInterface
      */
     private $authorizationCheckerProvider;
 
     /**
-     * @param \Darvin\Utils\Security\Authorization\AuthorizationCheckerProviderInterface $authorizationCheckerProvider Authorization checker provider
+     * @param \Darvin\Utils\Service\ServiceProviderInterface $authorizationCheckerProvider Authorization checker provider
      */
-    public function __construct(AuthorizationCheckerProviderInterface $authorizationCheckerProvider)
+    public function __construct(ServiceProviderInterface $authorizationCheckerProvider)
     {
         $this->authorizationCheckerProvider = $authorizationCheckerProvider;
     }
@@ -43,7 +44,7 @@ class AccessibilityChecker
             return true;
         }
 
-        $authorizationChecker = $this->authorizationCheckerProvider->getAuthorizationChecker();
+        $authorizationChecker = $this->getAuthorizationChecker();
 
         foreach ($allowedRoles as $allowedRole) {
             if ($authorizationChecker->isGranted($allowedRole)) {
@@ -52,5 +53,13 @@ class AccessibilityChecker
         }
 
         return false;
+    }
+
+    /**
+     * @return \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+     */
+    private function getAuthorizationChecker()
+    {
+        return $this->authorizationCheckerProvider->getService();
     }
 }
