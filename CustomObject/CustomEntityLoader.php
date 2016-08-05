@@ -44,11 +44,6 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $customObjectMeta;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadataInfo[]
-     */
-    private $doctrineMeta;
-
-    /**
      * @param \Doctrine\ORM\EntityManager                                 $em                      Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
@@ -61,7 +56,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = $this->doctrineMeta = [];
+        $this->customObjectMeta = [];
     }
 
     /**
