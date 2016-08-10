@@ -182,12 +182,12 @@ class SluggableEntityManager implements SluggableManagerInterface
         $prefixProvider = $params['prefixProvider'];
 
         if (empty($prefixProvider)) {
-            return '';
+            return null;
         }
 
         $slugPrefix = $this->getSlugPrefixFromProvider($entity, $prefixProvider);
 
-        return !empty($slugPrefix) ? $slugPrefix.$params['separator'] : '';
+        return !empty($slugPrefix) ? $slugPrefix.$params['separator'] : null;
     }
 
     /**
