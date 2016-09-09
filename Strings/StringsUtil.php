@@ -16,22 +16,52 @@ namespace Darvin\Utils\Strings;
 class StringsUtil
 {
     /**
-     * @param string $string String
+     * @param string $text Text
      *
      * @return string
      */
-    public static function toCamelCase($string)
+    public static function humanize($text)
     {
-        return str_replace(' ', '', ucwords(str_replace('_', ' ', $string)));
+        return ucfirst(trim(strtolower(preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], $text))));
     }
 
     /**
-     * @param string $string String
+     * @param string $word Word
+     *
+     * @return bool
+     */
+    public static function isUppercase($word)
+    {
+        return mb_strtoupper($word) === $word;
+    }
+
+    /**
+     * @param string $text Text
      *
      * @return string
      */
-    public static function toUnderscore($string)
+    public static function lowercaseFirst($text)
     {
-        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $string));
+        return mb_strtolower(mb_substr($text, 0, 1)).mb_substr($text, 1);
+    }
+
+    /**
+     * @param string $text Text
+     *
+     * @return string
+     */
+    public static function toCamelCase($text)
+    {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $text)));
+    }
+
+    /**
+     * @param string $text Text
+     *
+     * @return string
+     */
+    public static function toUnderscore($text)
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $text));
     }
 }
