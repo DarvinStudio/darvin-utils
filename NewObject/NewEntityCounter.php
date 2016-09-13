@@ -12,6 +12,7 @@ namespace Darvin\Utils\NewObject;
 
 use Darvin\Utils\Mapping\Annotation\NewObjectFlag;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Darvin\Utils\User\UserQueryBuilderFiltererInterface;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -30,18 +31,29 @@ class NewEntityCounter implements NewObjectCounterInterface
     private $extendedMetadataFactory;
 
     /**
+     * @var \Darvin\Utils\User\UserQueryBuilderFiltererInterface
+     */
+    private $userQueryBuilderFilterer;
+
+    /**
      * @var array
      */
     private $counts;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                    $em                      Entity manager
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface $extendedMetadataFactory Extended metadata factory
+     * @param \Doctrine\ORM\EntityManager                          $em                       Entity manager
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface       $extendedMetadataFactory  Extended metadata factory
+     * @param \Darvin\Utils\User\UserQueryBuilderFiltererInterface $userQueryBuilderFilterer User query builder filterer
      */
-    public function __construct(EntityManager $em, MetadataFactoryInterface $extendedMetadataFactory)
-    {
+    public function __construct(
+        EntityManager $em,
+        MetadataFactoryInterface $extendedMetadataFactory,
+        UserQueryBuilderFiltererInterface $userQueryBuilderFilterer
+    ) {
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
+        $this->userQueryBuilderFilterer = $userQueryBuilderFilterer;
+
         $this->counts = [];
     }
 
@@ -63,12 +75,16 @@ class NewEntityCounter implements NewObjectCounterInterface
                 throw new NewObjectException($message);
             }
 
-            $this->counts[$objectClass] = (int) $this->em->getRepository($objectClass)->createQueryBuilder('o')
+            $qb = $this->em->getRepository($objectClass)->createQueryBuilder('o')
                 ->select('COUNT(o)')
                 ->where(sprintf('o.%s = :%1$s', $newObjectFlag))
-                ->setParameter($newObjectFlag, true)
-                ->getQuery()
-                ->getSingleScalarResult();
+                ->setParameter($newObjectFlag, true);
+
+            if ($this->userQueryBuilderFilterer->isFilterable($qb)) {
+                $this->userQueryBuilderFilterer->filter($qb);
+            }
+
+            $this->counts[$objectClass] = (int) $qb->getQuery()->getSingleScalarResult();
         }
 
         return $this->counts[$objectClass];
