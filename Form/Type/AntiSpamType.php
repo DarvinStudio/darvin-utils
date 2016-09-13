@@ -44,12 +44,4 @@ class AntiSpamType extends AbstractType
     {
         return 'Symfony\Component\Form\Extension\Core\Type\TextType';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'darvin_utils_anti_spam';
-    }
 }
