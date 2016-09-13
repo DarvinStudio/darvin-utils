@@ -13,6 +13,7 @@ namespace Darvin\Utils\User;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -23,7 +24,12 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     /**
      * @var \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface
      */
-    private $authTokenStorage;
+    private $authenticationTokenStorage;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
 
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -31,12 +37,17 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     private $extendedMetadataFactory;
 
     /**
-     * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $authTokenStorage        Authentication token storage
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface                                      $extendedMetadataFactory Extended metadata factory
+     * @param \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface $authenticationTokenStorage Authentication token storage
+     * @param \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface        $authorizationChecker       Authorization checker
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface                                      $extendedMetadataFactory    Extended metadata factory
      */
-    public function __construct(TokenStorageInterface $authTokenStorage, MetadataFactoryInterface $extendedMetadataFactory)
-    {
-        $this->authTokenStorage = $authTokenStorage;
+    public function __construct(
+        TokenStorageInterface $authenticationTokenStorage,
+        AuthorizationCheckerInterface $authorizationChecker,
+        MetadataFactoryInterface $extendedMetadataFactory
+    ) {
+        $this->authenticationTokenStorage = $authenticationTokenStorage;
+        $this->authorizationChecker = $authorizationChecker;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
     }
 
@@ -63,16 +74,29 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
             throw new UserException('User ID is empty.');
         }
         foreach (array_combine($qb->getRootAliases(), $qb->getRootEntities()) as $alias => $entity) {
-            $userProperty = $this->extendedMetadataFactory->getExtendedMetadata($entity)['user'];
+            $meta = $this->extendedMetadataFactory->getExtendedMetadata($entity)['user'];
 
-            if (empty($userProperty)) {
+            if (empty($meta)) {
                 continue;
             }
 
-            $key = $userProperty.'_id';
+            $filter = false;
+
+            foreach ($meta['roles'] as $role) {
+                if ($this->authorizationChecker->isGranted($role)) {
+                    $filter = true;
+
+                    break;
+                }
+            }
+            if (!$filter) {
+                continue;
+            }
+
+            $key = $meta['property'].'_id';
 
             $qb
-                ->andWhere(sprintf('%s.%s = :%s', $alias, $userProperty, $key))
+                ->andWhere(sprintf('%s.%s = :%s', $alias, $meta['property'], $key))
                 ->setParameter($key, $userId);
         }
     }
@@ -103,7 +127,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
      */
     private function getUser()
     {
-        $token = $this->authTokenStorage->getToken();
+        $token = $this->authenticationTokenStorage->getToken();
 
         if (empty($token)) {
             return null;

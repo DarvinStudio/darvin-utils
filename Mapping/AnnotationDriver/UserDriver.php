@@ -24,14 +24,16 @@ class UserDriver extends AbstractDriver
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
         if (!isset($meta['user'])) {
-            $meta['user'] = null;
+            $meta['user'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $property) {
-            if (null === $this->reader->getPropertyAnnotation($property, User::ANNOTATION)) {
+            $annotation = $this->reader->getPropertyAnnotation($property, User::ANNOTATION);
+
+            if (!$annotation instanceof User) {
                 continue;
             }
             if (!empty($meta['user'])) {
-                if ($meta['user'] === $property->getName()) {
+                if ($meta['user']['property'] === $property->getName()) {
                     continue;
                 }
 
@@ -39,7 +41,7 @@ class UserDriver extends AbstractDriver
                     User::ANNOTATION,
                     $doctrineMeta->getName(),
                     $property->getName(),
-                    sprintf('property "%s" is already annotated with this annotation', $meta['user'])
+                    sprintf('property "%s" is already annotated with this annotation', $meta['user']['property'])
                 );
             }
             if (!$doctrineMeta->hasAssociation($property->getName())) {
@@ -47,11 +49,14 @@ class UserDriver extends AbstractDriver
                     User::ANNOTATION,
                     $doctrineMeta->getName(),
                     $property->getName(),
-                    'field must be mapped association'
+                    'property must be mapped association'
                 );
             }
 
-            $meta['user'] = $property->getName();
+            $meta['user'] = [
+                'property' => $property->getName(),
+                'roles'    => $annotation->roles,
+            ];
         }
     }
 }
