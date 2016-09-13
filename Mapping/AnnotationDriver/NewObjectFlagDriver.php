@@ -35,6 +35,10 @@ class NewObjectFlagDriver extends AbstractDriver
             $property = $reflectionProperty->getName();
 
             if (!empty($meta['newObjectFlag'])) {
+                if ($meta['newObjectFlag'] === $property) {
+                    continue;
+                }
+
                 throw $this->createPropertyAnnotationInvalidException(
                     NewObjectFlag::ANNOTATION,
                     $objectClass,

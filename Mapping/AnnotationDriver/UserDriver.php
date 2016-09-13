@@ -10,54 +10,48 @@
 
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
-use Darvin\Utils\Mapping\Annotation\UpdatedAt;
+use Darvin\Utils\Mapping\Annotation\User;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\DBAL\Types\Type;
 
 /**
- * Updated at annotation driver
+ * User annotation driver
  */
-class UpdatedAtDriver extends AbstractDriver
+class UserDriver extends AbstractDriver
 {
     /**
      * {@inheritdoc}
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
-        if (!isset($meta['updated_at'])) {
-            $meta['updatedAt'] = null;
+        if (!isset($meta['user'])) {
+            $meta['user'] = null;
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $property) {
-            $annotation = $this->reader->getPropertyAnnotation($property, UpdatedAt::ANNOTATION);
-
-            if (!$annotation instanceof UpdatedAt) {
+            if (null === $this->reader->getPropertyAnnotation($property, User::ANNOTATION)) {
                 continue;
             }
-            if (!empty($meta['updatedAt'])) {
-                if ($meta['updatedAt'] === $property->getName()) {
+            if (!empty($meta['user'])) {
+                if ($meta['user'] === $property->getName()) {
                     continue;
                 }
 
                 throw $this->createPropertyAnnotationInvalidException(
-                    UpdatedAt::ANNOTATION,
+                    User::ANNOTATION,
                     $doctrineMeta->getName(),
                     $property->getName(),
-                    sprintf('property "%s" is already annotated with this annotation', $meta['updatedAt'])
+                    sprintf('property "%s" is already annotated with this annotation', $meta['user'])
                 );
             }
-
-            $fieldType = $doctrineMeta->getTypeOfField($property->getName());
-
-            if (Type::DATETIME !== $fieldType) {
+            if (!$doctrineMeta->hasAssociation($property->getName())) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    UpdatedAt::ANNOTATION,
+                    User::ANNOTATION,
                     $doctrineMeta->getName(),
                     $property->getName(),
-                    sprintf('field must be of type "%s", "%s" provided', Type::DATETIME, $fieldType)
+                    'field must be mapped association'
                 );
             }
 
-            $meta['updatedAt'] = $property->getName();
+            $meta['user'] = $property->getName();
         }
     }
 }
