@@ -96,7 +96,8 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
             $key = $meta['property'].'_id';
 
             $qb
-                ->andWhere(sprintf('%s.%s = :%s', $alias, $meta['property'], $key))
+                ->innerJoin(sprintf('%s.%s', $alias, $meta['property']), $meta['property'])
+                ->andWhere(sprintf('%s = :%s', $meta['property'], $key))
                 ->setParameter($key, $userId);
         }
     }
