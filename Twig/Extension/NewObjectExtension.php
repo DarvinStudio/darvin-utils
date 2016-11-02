@@ -40,12 +40,4 @@ class NewObjectExtension extends \Twig_Extension
             new \Twig_SimpleFunction('utils_new_objects_countable', [$this->newObjectCounter, 'isCountable']),
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'darvin_utils_new_object_extension';
-    }
 }
