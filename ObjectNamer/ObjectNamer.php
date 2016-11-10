@@ -39,19 +39,27 @@ class ObjectNamer implements ObjectNamerInterface
         $class = is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass;
 
         if (!isset($this->names[$class])) {
-            $parts = explode('_', str_replace('\\', '_', StringsUtil::toUnderscore($class)));
-            $offset = array_search('entity', $parts);
+            $nsParts = array_map(function ($nsPart) {
+                return explode('_', StringsUtil::toUnderscore($nsPart));
+            }, explode('\\', $class));
+            $offset = array_search(['entity'], $nsParts);
 
             if ($offset) {
-                $parts = array_slice($parts, $offset + 1);
+                $nsParts = array_slice($nsParts, $offset + 1);
             }
 
-            $partsCount = count($parts);
+            $nsPartsCount = count($nsParts);
 
-            for ($i = 0; $i < $partsCount - 1; $i++) {
-                if ($parts[$i + 1] === $parts[$i]) {
-                    unset($parts[$i]);
+            for ($i = 0; $i < $nsPartsCount - 1; $i++) {
+                if (array_intersect($nsParts[$i], $nsParts[$i + 1]) === $nsParts[$i]) {
+                    unset($nsParts[$i]);
                 }
+            }
+
+            $parts = [];
+
+            foreach ($nsParts as $nsPart) {
+                $parts = array_merge($parts, $nsPart);
             }
 
             $this->names[$class] = implode('_', $parts);
