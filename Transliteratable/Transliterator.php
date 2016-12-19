@@ -34,7 +34,9 @@ class Transliterator implements TransliteratorInterface
     {
         $string = mb_strtolower(preg_replace('/\s+/', ' ', trim($string)));
 
-        $transliterated = strtr($string, self::$replacePairs);
+        $transliterated = preg_match('/^[a-zA-Zа-яА-Я0-9\s]+$/u', $string)
+            ? strtr($string, self::$replacePairs)
+            : \Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($string));
 
         if (!$sanitize) {
             return $transliterated;
