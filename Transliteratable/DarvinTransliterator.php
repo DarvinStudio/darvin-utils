@@ -13,7 +13,7 @@ namespace Darvin\Utils\Transliteratable;
 /**
  * Darvin Studio standard transliterator
  */
-class Transliterator implements TransliteratorInterface
+class DarvinTransliterator implements TransliteratorInterface
 {
     /**
      * @var array
