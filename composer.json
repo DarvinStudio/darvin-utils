@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4"
+        "php":      ">=5.4",
+        "ext-intl": "*"
     },
     "autoload": {
         "psr-4": { "Darvin\\Utils\\": "" }
