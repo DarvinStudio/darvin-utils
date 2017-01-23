@@ -27,7 +27,7 @@ class CustomObjectDriver extends AbstractDriver
             $meta['customObjects'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            $customObjectAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, CustomObject::ANNOTATION);
+            $customObjectAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, CustomObject::class);
 
             if (!$customObjectAnnotation instanceof CustomObject) {
                 continue;
@@ -50,7 +50,7 @@ class CustomObjectDriver extends AbstractDriver
     {
         if (empty($annotation->class) && empty($annotation->classPropertyPath)) {
             throw $this->createPropertyAnnotationInvalidException(
-                CustomObject::ANNOTATION,
+                CustomObject::class,
                 $objectClass,
                 $property,
                 'class or class property path must be provided'
@@ -58,7 +58,7 @@ class CustomObjectDriver extends AbstractDriver
         }
         if (!empty($annotation->class) && !empty($annotation->classPropertyPath)) {
             throw $this->createPropertyAnnotationInvalidException(
-                CustomObject::ANNOTATION,
+                CustomObject::class,
                 $objectClass,
                 $property,
                 'class or class property path must be provided but not both of them'
@@ -66,7 +66,7 @@ class CustomObjectDriver extends AbstractDriver
         }
         if (!empty($annotation->class) && !class_exists($annotation->class)) {
             throw $this->createPropertyAnnotationInvalidException(
-                CustomObject::ANNOTATION,
+                CustomObject::class,
                 $objectClass,
                 $property,
                 sprintf('class "%s" does not exist', $annotation->class)
@@ -74,7 +74,7 @@ class CustomObjectDriver extends AbstractDriver
         }
         if (empty($annotation->initPropertyValuePath)) {
             throw $this->createPropertyAnnotationInvalidException(
-                CustomObject::ANNOTATION,
+                CustomObject::class,
                 $objectClass,
                 $property,
                 'init property value path must be provided'

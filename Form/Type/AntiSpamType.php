@@ -19,8 +19,6 @@ use Symfony\Component\Validator\Constraints\Blank;
  */
 class AntiSpamType extends AbstractType
 {
-    const ANTI_SPAM_TYPE_CLASS = __CLASS__;
-
     /**
      * {@inheritdoc}
      */

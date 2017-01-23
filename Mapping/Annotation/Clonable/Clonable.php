@@ -20,8 +20,6 @@ use Doctrine\Common\Annotations\Annotation\Enum;
  */
 final class Clonable
 {
-    const ANNOTATION = __CLASS__;
-
     const COPYING_POLICY_ALL  = 'ALL';
     const COPYING_POLICY_NONE = 'NONE';
 

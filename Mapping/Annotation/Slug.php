@@ -18,8 +18,6 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class Slug
 {
-    const ANNOTATION = __CLASS__;
-
     /**
      * @var array
      */

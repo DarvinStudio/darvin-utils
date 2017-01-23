@@ -69,7 +69,7 @@ class NewEntityCounter implements NewObjectCounterInterface
                 $message = sprintf(
                     'Class "%s" must be annotated with "%s" annotation in order to count new objects.',
                     $objectClass,
-                    NewObjectFlag::ANNOTATION
+                    NewObjectFlag::class
                 );
 
                 throw new NewObjectException($message);

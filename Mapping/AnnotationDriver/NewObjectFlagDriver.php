@@ -27,7 +27,7 @@ class NewObjectFlagDriver extends AbstractDriver
             $meta['newObjectFlag'] = null;
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            if (null === $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::ANNOTATION)) {
+            if (null === $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::class)) {
                 continue;
             }
 
@@ -40,7 +40,7 @@ class NewObjectFlagDriver extends AbstractDriver
                 }
 
                 throw $this->createPropertyAnnotationInvalidException(
-                    NewObjectFlag::ANNOTATION,
+                    NewObjectFlag::class,
                     $objectClass,
                     $property,
                     sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlag'])
@@ -48,7 +48,7 @@ class NewObjectFlagDriver extends AbstractDriver
             }
             if (!$doctrineMeta->hasField($property)) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    NewObjectFlag::ANNOTATION,
+                    NewObjectFlag::class,
                     $objectClass,
                     $property,
                     'property must be mapped field'

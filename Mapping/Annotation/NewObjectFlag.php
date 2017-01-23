@@ -18,5 +18,5 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class NewObjectFlag
 {
-    const ANNOTATION = __CLASS__;
+
 }

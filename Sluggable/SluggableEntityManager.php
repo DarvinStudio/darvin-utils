@@ -284,7 +284,7 @@ class SluggableEntityManager implements SluggableManagerInterface
                 $message = sprintf(
                     'At least one property of class "%s" must be annotated with "%s" annotation in order to generate slug.',
                     $entityClass,
-                    Slug::ANNOTATION
+                    Slug::class
                 );
 
                 throw new SluggableException($message);

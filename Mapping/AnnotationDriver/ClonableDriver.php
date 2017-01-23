@@ -33,7 +33,7 @@ class ClonableDriver extends AbstractDriver
             $copyingPolicy = $meta['clonable']['copyingPolicy'];
         }
 
-        $clonableAnnotation = $this->reader->getClassAnnotation($reflectionClass, Clonable::ANNOTATION);
+        $clonableAnnotation = $this->reader->getClassAnnotation($reflectionClass, Clonable::class);
 
         if ($clonableAnnotation instanceof Clonable) {
             $copyingPolicy = $clonableAnnotation->copyingPolicy;
@@ -69,7 +69,7 @@ class ClonableDriver extends AbstractDriver
         switch ($copyingPolicy) {
             case Clonable::COPYING_POLICY_ALL:
                 foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-                    if (null === $this->reader->getPropertyAnnotation($reflectionProperty, Skip::ANNOTATION)
+                    if (null === $this->reader->getPropertyAnnotation($reflectionProperty, Skip::class)
                         && !in_array($reflectionProperty->getName(), $idProperties)
                     ) {
                         $properties[] = $reflectionProperty->getName();
@@ -79,10 +79,10 @@ class ClonableDriver extends AbstractDriver
                 break;
             case Clonable::COPYING_POLICY_NONE:
                 foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-                    if (null !== $this->reader->getPropertyAnnotation($reflectionProperty, Copy::ANNOTATION)) {
+                    if (null !== $this->reader->getPropertyAnnotation($reflectionProperty, Copy::class)) {
                         if (in_array($reflectionProperty->getName(), $idProperties)) {
                             throw $this->createPropertyAnnotationInvalidException(
-                                Copy::ANNOTATION,
+                                Copy::class,
                                 $reflectionClass->getName(),
                                 $reflectionProperty->getName(),
                                 'property is identifier and it\'s value must not be copied during cloning'

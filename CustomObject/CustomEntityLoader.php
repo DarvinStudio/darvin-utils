@@ -86,7 +86,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 $message = sprintf(
                     'Class "%s" must be annotated with "%s" annotation in order to load custom objects.',
                     $entityClass,
-                    CustomObject::ANNOTATION
+                    CustomObject::class
                 );
 
                 throw new CustomObjectException($message);

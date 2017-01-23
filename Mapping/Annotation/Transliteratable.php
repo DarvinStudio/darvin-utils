@@ -18,8 +18,6 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class Transliteratable
 {
-    const ANNOTATION = __CLASS__;
-
     /**
      * @var bool
      */

@@ -18,5 +18,5 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class UpdatedAt
 {
-    const ANNOTATION = __CLASS__;
+
 }

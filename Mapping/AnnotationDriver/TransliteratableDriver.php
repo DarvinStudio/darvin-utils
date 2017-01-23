@@ -27,15 +27,12 @@ class TransliteratableDriver extends AbstractDriver
             $meta['transliteratable'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            $transliteratableAnnotation = $this->reader->getPropertyAnnotation(
-                $reflectionProperty,
-                Transliteratable::ANNOTATION
-            );
+            $transliteratableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Transliteratable::class);
 
             if ($transliteratableAnnotation instanceof Transliteratable) {
                 if (!$doctrineMeta->hasField($reflectionProperty->getName())) {
                     throw $this->createPropertyAnnotationInvalidException(
-                        Transliteratable::ANNOTATION,
+                        Transliteratable::class,
                         $doctrineMeta->getName(),
                         $reflectionProperty->getName(),
                         'property must be mapped field'

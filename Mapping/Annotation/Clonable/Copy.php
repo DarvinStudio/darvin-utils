@@ -18,5 +18,5 @@ namespace Darvin\Utils\Mapping\Annotation\Clonable;
  */
 final class Copy
 {
-    const ANNOTATION = __CLASS__;
+
 }

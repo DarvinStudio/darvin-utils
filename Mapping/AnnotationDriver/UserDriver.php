@@ -27,7 +27,7 @@ class UserDriver extends AbstractDriver
             $meta['user'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $property) {
-            $annotation = $this->reader->getPropertyAnnotation($property, User::ANNOTATION);
+            $annotation = $this->reader->getPropertyAnnotation($property, User::class);
 
             if (!$annotation instanceof User) {
                 continue;
@@ -38,7 +38,7 @@ class UserDriver extends AbstractDriver
                 }
 
                 throw $this->createPropertyAnnotationInvalidException(
-                    User::ANNOTATION,
+                    User::class,
                     $doctrineMeta->getName(),
                     $property->getName(),
                     sprintf('property "%s" is already annotated with this annotation', $meta['user']['property'])
@@ -46,7 +46,7 @@ class UserDriver extends AbstractDriver
             }
             if (!$doctrineMeta->hasAssociation($property->getName())) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    User::ANNOTATION,
+                    User::class,
                     $doctrineMeta->getName(),
                     $property->getName(),
                     'property must be mapped association'

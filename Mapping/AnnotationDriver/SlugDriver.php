@@ -28,7 +28,7 @@ class SlugDriver extends AbstractDriver
             $meta['slugs'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::ANNOTATION);
+            $slugAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Slug::class);
 
             if ($slugAnnotation instanceof Slug) {
                 $this->validateAnnotation(
@@ -61,7 +61,7 @@ class SlugDriver extends AbstractDriver
 
         if (empty($sourcePropertyPaths)) {
             throw $this->createPropertyAnnotationInvalidException(
-                Slug::ANNOTATION,
+                Slug::class,
                 $objectClass,
                 $slugProperty,
                 'source property paths array must not be empty'
@@ -77,7 +77,7 @@ class SlugDriver extends AbstractDriver
             if (false !== strpos($sourcePropertyPath, '.')) {
                 if ($index > 0) {
                     throw $this->createPropertyAnnotationInvalidException(
-                        Slug::ANNOTATION,
+                        Slug::class,
                         $objectClass,
                         $slugProperty,
                         'only first source property path can contain relation ("." symbol)'
@@ -85,7 +85,7 @@ class SlugDriver extends AbstractDriver
                 }
                 if (!empty($prefixProvider) && 0 === $index) {
                     throw $this->createPropertyAnnotationInvalidException(
-                        Slug::ANNOTATION,
+                        Slug::class,
                         $objectClass,
                         $slugProperty,
                         sprintf(
@@ -97,7 +97,7 @@ class SlugDriver extends AbstractDriver
             }
             if (substr_count($sourcePropertyPath, '.') > 1) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    Slug::ANNOTATION,
+                    Slug::class,
                     $objectClass,
                     $slugProperty,
                     sprintf(
@@ -121,7 +121,7 @@ class SlugDriver extends AbstractDriver
         foreach (get_object_vars($prefixProvider) as $property => $value) {
             if (empty($value)) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    Slug::ANNOTATION,
+                    Slug::class,
                     $objectClass,
                     $slugProperty,
                     sprintf('prefix provider parameter "%s" must not be empty', $property)

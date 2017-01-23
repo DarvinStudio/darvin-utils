@@ -18,8 +18,6 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class DefaultValue
 {
-    const ANNOTATION = __CLASS__;
-
     /**
      * @var string
      */

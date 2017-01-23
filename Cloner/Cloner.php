@@ -100,7 +100,7 @@ class Cloner implements ClonerInterface
             $message = sprintf(
                 'Class "%s" must be annotated with "%s" annotation in order to create clone of it\'s instance.',
                 $class,
-                Clonable::ANNOTATION
+                Clonable::class
             );
 
             throw new ClonerException($message);

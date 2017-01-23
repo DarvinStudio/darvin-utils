@@ -18,8 +18,6 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class User
 {
-    const ANNOTATION = __CLASS__;
-
     /**
      * @var string[]
      */

@@ -28,7 +28,7 @@ class UpdatedAtDriver extends AbstractDriver
             $meta['updatedAt'] = null;
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $property) {
-            $annotation = $this->reader->getPropertyAnnotation($property, UpdatedAt::ANNOTATION);
+            $annotation = $this->reader->getPropertyAnnotation($property, UpdatedAt::class);
 
             if (!$annotation instanceof UpdatedAt) {
                 continue;
@@ -39,7 +39,7 @@ class UpdatedAtDriver extends AbstractDriver
                 }
 
                 throw $this->createPropertyAnnotationInvalidException(
-                    UpdatedAt::ANNOTATION,
+                    UpdatedAt::class,
                     $doctrineMeta->getName(),
                     $property->getName(),
                     sprintf('property "%s" is already annotated with this annotation', $meta['updatedAt'])
@@ -50,7 +50,7 @@ class UpdatedAtDriver extends AbstractDriver
 
             if (Type::DATETIME !== $fieldType) {
                 throw $this->createPropertyAnnotationInvalidException(
-                    UpdatedAt::ANNOTATION,
+                    UpdatedAt::class,
                     $doctrineMeta->getName(),
                     $property->getName(),
                     sprintf('field must be of type "%s", "%s" provided', Type::DATETIME, $fieldType)
