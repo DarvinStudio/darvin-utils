@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Blank;
 
@@ -40,6 +41,6 @@ class AntiSpamType extends AbstractType
      */
     public function getParent()
     {
-        return 'Symfony\Component\Form\Extension\Core\Type\TextType';
+        return TextType::class;
     }
 }
