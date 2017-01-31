@@ -60,7 +60,10 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed    $entityOrEntities     Entity or array of entities
+     * @param callable $queryBuilderCallback Callback to process query builder
+     *
+     * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
     public function loadCustomObjects($entityOrEntities, callable $queryBuilderCallback = null)
     {
@@ -69,6 +72,16 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         }
 
         $this->load(is_array($entityOrEntities) ? $entityOrEntities : [$entityOrEntities], $queryBuilderCallback);
+    }
+
+    /**
+     * @param string $entityClass Entity class
+     *
+     * @return bool
+     */
+    public function customObjectsLoadable($entityClass)
+    {
+        return $this->hasCustomObjectMeta($entityClass);
     }
 
     /**
@@ -82,7 +95,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
 
-            if (!$this->hasCustomObjectMeta($entityClass)) {
+            if (!$this->customObjectsLoadable($entityClass)) {
                 $message = sprintf(
                     'Class "%s" must be annotated with "%s" annotation in order to load custom objects.',
                     $entityClass,

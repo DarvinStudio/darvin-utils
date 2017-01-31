@@ -18,6 +18,15 @@ interface CustomObjectLoaderInterface
     /**
      * @param mixed    $objectOrObjects      Object or array of objects
      * @param callable $queryBuilderCallback Callback to process query builder
+     *
+     * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
     public function loadCustomObjects($objectOrObjects, callable $queryBuilderCallback = null);
+
+    /**
+     * @param string $objectClass Object class
+     *
+     * @return bool
+     */
+    public function customObjectsLoadable($objectClass);
 }
