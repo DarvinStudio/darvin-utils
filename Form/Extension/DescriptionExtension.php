@@ -17,11 +17,11 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Disclaimer form type extension
+ * Description form type extension
  */
-class DisclaimerExtension extends AbstractTypeExtension
+class DescriptionExtension extends AbstractTypeExtension
 {
-    const OPTION = 'disclaimer';
+    const OPTION = 'description';
 
     /**
      * {@inheritdoc}
