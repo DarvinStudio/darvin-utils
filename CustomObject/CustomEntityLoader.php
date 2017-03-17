@@ -44,6 +44,11 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $customObjectMeta;
 
     /**
+     * @var array
+     */
+    private $processedHashes;
+
+    /**
      * @param \Doctrine\ORM\EntityManager                                 $em                      Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
@@ -56,7 +61,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
-        $this->customObjectMeta = [];
+        $this->customObjectMeta = $this->processedHashes = [];
     }
 
     /**
@@ -92,7 +97,21 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      */
     private function load(array $entities, callable $queryBuilderCallback = null)
     {
-        foreach ($entities as $entity) {
+        foreach ($entities as $key => $entity) {
+            $hash = spl_object_hash($entity);
+
+            if (!empty($queryBuilderCallback)) {
+                /** @var callable|object $queryBuilderCallback */
+                $hash .= spl_object_hash($queryBuilderCallback);
+            }
+            if (isset($this->processedHashes[$hash])) {
+                unset($entities[$key]);
+
+                continue;
+            }
+
+            $this->processedHashes[$hash] = true;
+
             $entityClass = ClassUtils::getClass($entity);
 
             if (!$this->customObjectsLoadable($entityClass)) {
