@@ -21,8 +21,9 @@ interface MailerInterface
      * @param mixed  $to            To
      * @param array  $subjectParams Subject translation parameters
      * @param string $contentType   Content type
+     * @param array  $files         Attached files
      *
      * @return int
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html');
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', $files=array());
 }

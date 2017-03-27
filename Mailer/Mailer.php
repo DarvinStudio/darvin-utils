@@ -76,7 +76,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html')
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', $files = array())
     {
         if (empty($to)) {
             return 0;
@@ -94,6 +94,13 @@ class Mailer implements MailerInterface
         $message
             ->setFrom($this->from)
             ->setTo($to);
+
+        /** @var $file \Symfony\Component\HttpFoundation\File\UploadedFile */
+        foreach ($files as $file) {
+            if(file_exists($file->getPathname())) {
+                $message->attach(\Swift_Attachment::fromPath($file->getPathname(), $file->getMimeType()));
+            }
+        }
 
         $failedRecipients = [];
         $sent = $this->swiftMailer->send($message, $failedRecipients);
