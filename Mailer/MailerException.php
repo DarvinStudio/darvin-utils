@@ -8,10 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Exception;
+namespace Darvin\Mailer;
+
+use Darvin\Utils\Exception\DarvinUtilsException;
 
 /**
- * Base exception
+ * Mailer exception
  */
 class MailerException extends DarvinUtilsException
 {

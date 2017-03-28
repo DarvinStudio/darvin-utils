@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Mailer;
 
-use Darvin\Utils\Exception\MailerException;
+use Darvin\Mailer\MailerException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -77,7 +77,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', $filePathnames = array())
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [])
     {
         if (empty($to)) {
             return 0;
@@ -97,11 +97,11 @@ class Mailer implements MailerInterface
             ->setTo($to);
 
         foreach ($filePathnames as $filePathname) {
-            if (is_readable($filePathname)) {
-                $message->attach(\Swift_Attachment::fromPath($filePathname));
-            } else {
-                throw new MailerException( sprintf('File "%s" is not readable.', $filePathname) );
+            if (!is_readable($filePathname)) {
+                throw new MailerException(sprintf('File "%s" is not readable.', $filePathname));
             }
+
+            $message->attach(\Swift_Attachment::fromPath($filePathname));
         }
 
         $failedRecipients = [];
