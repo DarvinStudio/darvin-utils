@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\Mailer;
 
+use Darvin\Utils\Exception\MailerException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -76,7 +77,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', $files = array())
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', $filePathnames = array())
     {
         if (empty($to)) {
             return 0;
@@ -95,10 +96,11 @@ class Mailer implements MailerInterface
             ->setFrom($this->from)
             ->setTo($to);
 
-        /** @var $file \Symfony\Component\HttpFoundation\File\UploadedFile */
-        foreach ($files as $file) {
-            if(file_exists($file->getPathname())) {
-                $message->attach(\Swift_Attachment::fromPath($file->getPathname(), $file->getMimeType()));
+        foreach ($filePathnames as $filePathname) {
+            if (is_readable($filePathname)) {
+                $message->attach(\Swift_Attachment::fromPath($filePathname));
+            } else {
+                throw new MailerException( sprintf('File "%s" is not readable.', $filePathname) );
             }
         }
 
