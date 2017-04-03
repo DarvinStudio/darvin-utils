@@ -33,7 +33,7 @@ interface HomepageRouterInterface
     public function isHomepage($object);
 
     /**
-     * @return \Symfony\Component\Routing\Route|null
+     * @return string|null
      */
     public function getHomepageRoute();
 }
