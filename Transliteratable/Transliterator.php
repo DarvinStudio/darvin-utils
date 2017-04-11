@@ -36,7 +36,7 @@ class Transliterator implements TransliteratorInterface
 
         $transliterated = preg_match('/^[a-zA-Zа-яА-Я0-9\s]+$/u', $string)
             ? strtr($string, self::$replacePairs)
-            : \Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($string));
+            : strtolower(\Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($string)));
 
         if (!$sanitize) {
             return $transliterated;
