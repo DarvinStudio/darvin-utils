@@ -24,11 +24,6 @@ final class Slug
     public $sourcePropertyPaths = [];
 
     /**
-     * @var \Darvin\Utils\Mapping\Annotation\ServiceCallback
-     */
-    public $prefixProvider;
-
-    /**
      * @var string
      */
     public $separator = '/';

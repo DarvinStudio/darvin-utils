@@ -25,16 +25,9 @@ interface SluggableManagerInterface
     /**
      * @param object $object              Object
      * @param bool   $dispatchUpdateEvent Whether to dispatch update event
+     * @param string $prefix              Slug prefix
      *
      * @return bool Is at least one slug updated
      */
-    public function generateSlugs($object, $dispatchUpdateEvent = false);
-
-    /**
-     * @param object $object       Object
-     * @param string $slugProperty Slug property
-     *
-     * @return string
-     */
-    public function getSlugPrefix($object, $slugProperty);
+    public function generateSlugs($object, $dispatchUpdateEvent = false, $prefix = null);
 }
