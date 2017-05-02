@@ -18,9 +18,10 @@ use Doctrine\ORM\EntityManager;
 interface SlugHandlerInterface
 {
     /**
+     * @param object                      $entity Entity
      * @param string                      $slug   Slug
      * @param string                      $suffix Slug suffix
      * @param \Doctrine\ORM\EntityManager $em     Entity manager
      */
-    public function handle(&$slug, &$suffix, EntityManager $em);
+    public function handle($entity, &$slug, &$suffix, EntityManager $em);
 }

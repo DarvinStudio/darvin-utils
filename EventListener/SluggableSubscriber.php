@@ -26,11 +26,18 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
     private $sluggableManager;
 
     /**
+     * @var array
+     */
+    private $entityBlacklist;
+
+    /**
      * @param \Darvin\Utils\Sluggable\SluggableManagerInterface $sluggableManager Sluggable manager
      */
     public function __construct(SluggableManagerInterface $sluggableManager)
     {
         $this->sluggableManager = $sluggableManager;
+
+        $this->entityBlacklist = [];
     }
 
     /**
@@ -41,6 +48,15 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
         return [
             Events::onFlush,
         ];
+    }
+
+    /**
+     * @param object $entity Entity
+     */
+    public function blacklistEntity($entity)
+    {
+        $hash = spl_object_hash($entity);
+        $this->entityBlacklist[$hash] = $hash;
     }
 
     /**
@@ -63,7 +79,7 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     protected function generateSlugs($entity, $operation)
     {
-        if (!$this->sluggableManager->isSluggable($entity)) {
+        if (isset($this->entityBlacklist[spl_object_hash($entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
         }
         if ($this->sluggableManager->generateSlugs($entity, AbstractOnFlushListener::OPERATION_UPDATE === $operation)) {
