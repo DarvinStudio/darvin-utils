@@ -74,7 +74,13 @@ class LoadDataFixtureCommand extends Command
             $reflection = new \ReflectionClass($class);
 
             if (!$reflection->isAbstract() && $reflection->implementsInterface(FixtureInterface::class)) {
-                $classes[] = $class;
+                $classes[$class] = $class;
+            }
+
+            $parent = $reflection->getParentClass();
+
+            if ($parent instanceof \ReflectionClass) {
+                unset($classes[$parent->getName()]);
             }
         }
         if (empty($classes)) {
