@@ -13,11 +13,13 @@ namespace Darvin\Utils\Cloner;
 use Darvin\Utils\Event\CloneEvent;
 use Darvin\Utils\Event\Events;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
+use Darvin\Utils\Mapping\MappingException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -43,7 +45,7 @@ class Cloner implements ClonerInterface
     /**
      * @var array
      */
-    private $clonedObjects;
+    private $cloned;
 
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher         Event dispatcher
@@ -58,6 +60,8 @@ class Cloner implements ClonerInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
+
+        $this->cloned = [];
     }
 
     /**
@@ -65,69 +69,86 @@ class Cloner implements ClonerInterface
      */
     public function createClone($object)
     {
-        $this->clonedObjects = [];
-
-        return $this->cloneObject($object);
+        return $this->cloneObject($object, true);
     }
 
     /**
-     * @param object $object Object to clone
+     * @param object $object          Object to clone
+     * @param bool   $requireClonable Whether to require object to be clonable
      *
      * @return object
      * @throws \Darvin\Utils\Cloner\ClonerException
      */
-    private function cloneObject($object)
+    private function cloneObject($object, $requireClonable)
     {
-        $objectHash = spl_object_hash($object);
+        $hash = spl_object_hash($object);
 
-        if (isset($this->clonedObjects[$objectHash])) {
-            return $this->clonedObjects[$objectHash];
+        if (isset($this->cloned[$hash])) {
+            return $this->cloned[$hash];
         }
+
+        $meta = [];
+        $isClonable = $isEntity = false;
 
         $class = ClassUtils::getClass($object);
 
-        if (false === strpos($class, '\\')) {
-            $clone = clone $object;
+        try {
+            $meta = $this->extendedMetadataFactory->getExtendedMetadata($class);
+            $isClonable = isset($meta['clonable']);
+            $isEntity = true;
+        } catch (MappingException $ex) {
+        }
+        if (!$isClonable) {
+            if ($requireClonable) {
+                $message = sprintf(
+                    'Class "%s" must be annotated with "%s" annotation in order to create clone of it\'s instance.',
+                    $class,
+                    Clonable::class
+                );
 
-            $this->clonedObjects[$objectHash] = $clone;
+                throw new ClonerException($message);
+            }
+            if ($isEntity) {
+                return $object;
+            }
 
-            return $clone;
+            return $this->cloned[$hash] = clone $object;
         }
 
-        $meta = $this->extendedMetadataFactory->getExtendedMetadata($class);
+        $reflectionClass = $this->extendedMetadataFactory->getDoctrineMetadata($class)->getReflectionClass();
 
-        if (!isset($meta['clonable'])) {
-            $message = sprintf(
-                'Class "%s" must be annotated with "%s" annotation in order to create clone of it\'s instance.',
-                $class,
-                Clonable::class
-            );
-
-            throw new ClonerException($message);
-        }
-
-        $clone = new $class();
-
-        $this->clonedObjects[$objectHash] = $clone;
+        $clone = $this->cloned[$hash] = $reflectionClass->newInstance();
 
         foreach ($meta['clonable']['properties'] as $property) {
-            if (!$this->propertyAccessor->isReadable($object, $property)) {
-                throw new ClonerException(sprintf('Property "%s::$%s" is not readable.', $class, $property));
+            try {
+                $value = $this->propertyAccessor->getValue($object, $property);
+
+                $valueCopy = $this->copyValue($value);
+
+                $this->propertyAccessor->setValue($clone, $property, $valueCopy);
+
+                continue;
+            } catch (NoSuchPropertyException $ex) {
             }
-            if (!$this->propertyAccessor->isWritable($clone, $property)) {
-                throw new ClonerException(sprintf('Property "%s::$%s" is not writable.', $class, $property));
+            try {
+                $reflectionProperty = $reflectionClass->getProperty($property);
+            } catch (\ReflectionException $ex) {
+                throw new ClonerException($ex->getMessage());
             }
 
-            $value = $this->propertyAccessor->getValue($object, $property);
+            $reflectionProperty->setAccessible(true);
+
+            $value = $reflectionProperty->getValue($object);
 
             $valueCopy = $this->copyValue($value);
 
-            $this->propertyAccessor->setValue($clone, $property, $valueCopy);
+            $reflectionProperty->setValue($clone, $valueCopy);
         }
 
-        $this->eventDispatcher->dispatch(Events::POST_CLONE, new CloneEvent($object, $clone));
+        $event = new CloneEvent($object, $clone);
+        $this->eventDispatcher->dispatch(Events::POST_CLONE, $event);
 
-        return $clone;
+        return $event->getClone();
     }
 
     /**
@@ -139,32 +160,37 @@ class Cloner implements ClonerInterface
     private function copyValue($value)
     {
         if (is_array($value)) {
-            return $this->copyArray($value);
+            return $this->copyArray($value, true);
         }
         if (!is_object($value)) {
             return $value;
         }
         if ($value instanceof Collection) {
-            return new ArrayCollection($this->copyArray($value->toArray()));
+            return new ArrayCollection($this->copyArray($value->toArray(), false));
         }
         if ($value instanceof \Traversable) {
             throw new ClonerException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
         }
 
-        return $this->cloneObject($value);
+        return $this->cloneObject($value, false);
     }
 
     /**
-     * @param array $array Array to copy
+     * @param array $array         Array to copy
+     * @param bool  $addNullValues Whether to add null values to array copy
      *
      * @return array
      */
-    private function copyArray(array $array)
+    private function copyArray(array $array, $addNullValues)
     {
         $copy = [];
 
         foreach ($array as $key => $value) {
-            $copy[$key] = $this->copyValue($value);
+            $valueCopy = $this->copyValue($value);
+
+            if (null !== $valueCopy || $addNullValues) {
+                $copy[$key] = $valueCopy;
+            }
         }
 
         return $copy;

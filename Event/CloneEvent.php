@@ -52,4 +52,16 @@ class CloneEvent extends Event
     {
         return $this->clone;
     }
+
+    /**
+     * @param object $clone clone
+     *
+     * @return CloneEvent
+     */
+    public function setClone($clone)
+    {
+        $this->clone = $clone;
+
+        return $this;
+    }
 }
