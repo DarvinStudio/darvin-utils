@@ -19,7 +19,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -130,7 +129,7 @@ class Cloner implements ClonerInterface
                 $this->propertyAccessor->setValue($clone, $property, $valueCopy);
 
                 continue;
-            } catch (NoSuchPropertyException $ex) {
+            } catch (\Exception $ex) {
             }
             try {
                 $reflectionProperty = $reflectionClass->getProperty($property);
