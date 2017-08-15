@@ -43,7 +43,7 @@ class Cloner implements ClonerInterface
     private $propertyAccessor;
 
     /**
-     * @var array
+     * @var array|null
      */
     private $cloned;
 
@@ -61,7 +61,7 @@ class Cloner implements ClonerInterface
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
 
-        $this->cloned = [];
+        $this->cloned = null;
     }
 
     /**
@@ -69,6 +69,8 @@ class Cloner implements ClonerInterface
      */
     public function createClone($object)
     {
+        $this->cloned = [];
+
         return $this->cloneObject($object, true);
     }
 

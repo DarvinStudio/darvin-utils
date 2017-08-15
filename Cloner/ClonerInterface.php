@@ -19,6 +19,7 @@ interface ClonerInterface
      * @param object $object Object to clone
      *
      * @return object
+     * @throws \Darvin\Utils\Cloner\ClonerException
      */
     public function createClone($object);
 }
