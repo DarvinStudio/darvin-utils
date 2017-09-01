@@ -61,7 +61,7 @@ class Mailer implements MailerInterface
     public function __construct(
         LoggerInterface $logger,
         RequestStack $requestStack,
-        \Swift_Mailer $swiftMailer,
+        \Swift_Mailer $swiftMailer = null,
         TranslatorInterface $translator,
         $charset,
         $from
@@ -79,7 +79,7 @@ class Mailer implements MailerInterface
      */
     public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [])
     {
-        if (empty($to)) {
+        if (empty($this->swiftMailer) || empty($to)) {
             return 0;
         }
 
