@@ -121,35 +121,74 @@ class Cloner implements ClonerInterface
         $clone = $this->cloned[$hash] = $reflectionClass->newInstance();
 
         foreach ($meta['clonable']['properties'] as $property) {
-            try {
-                $value = $this->propertyAccessor->getValue($object, $property);
-
-                $valueCopy = $this->copyValue($value);
-
-                $this->propertyAccessor->setValue($clone, $property, $valueCopy);
+            if (isset($meta['slugs'][$property])) {
+                $this->setValue($clone, $reflectionClass, $property, null);
 
                 continue;
-            } catch (\Exception $ex) {
-            }
-            try {
-                $reflectionProperty = $reflectionClass->getProperty($property);
-            } catch (\ReflectionException $ex) {
-                throw new ClonerException($ex->getMessage());
             }
 
-            $reflectionProperty->setAccessible(true);
-
-            $value = $reflectionProperty->getValue($object);
+            $value = $this->getValue($object, $reflectionClass, $property);
 
             $valueCopy = $this->copyValue($value);
 
-            $reflectionProperty->setValue($clone, $valueCopy);
+            $this->setValue($clone, $reflectionClass, $property, $valueCopy);
         }
 
         $event = new CloneEvent($object, $clone);
         $this->eventDispatcher->dispatch(Events::POST_CLONE, $event);
 
         return $event->getClone();
+    }
+
+    /**
+     * @param object           $object          Object
+     * @param \ReflectionClass $reflectionClass Reflection class
+     * @param string           $property        Property
+     *
+     * @return mixed
+     * @throws \Darvin\Utils\Cloner\ClonerException
+     */
+    private function getValue($object, \ReflectionClass $reflectionClass, $property)
+    {
+        try {
+            return $this->propertyAccessor->getValue($object, $property);
+        } catch (\Exception $ex) {
+        }
+        try {
+            $reflectionProperty = $reflectionClass->getProperty($property);
+        } catch (\ReflectionException $ex) {
+            throw new ClonerException($ex->getMessage());
+        }
+
+        $reflectionProperty->setAccessible(true);
+
+        return $reflectionProperty->getValue($object);
+    }
+
+    /**
+     * @param object           $object          Object
+     * @param \ReflectionClass $reflectionClass Reflection class
+     * @param string           $property        Property
+     * @param mixed            $value           Value
+     *
+     * @throws \Darvin\Utils\Cloner\ClonerException
+     */
+    private function setValue($object, \ReflectionClass $reflectionClass, $property, $value)
+    {
+        try {
+            $this->propertyAccessor->setValue($object, $property, $value);
+
+            return;
+        } catch (\Exception $ex) {
+        }
+        try {
+            $reflectionProperty = $reflectionClass->getProperty($property);
+        } catch (\ReflectionException $ex) {
+            throw new ClonerException($ex->getMessage());
+        }
+
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $value);
     }
 
     /**
