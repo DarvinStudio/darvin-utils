@@ -64,12 +64,12 @@ class CustomObjectDriver extends AbstractDriver
                 'class or class property path must be provided but not both of them'
             );
         }
-        if (!empty($annotation->class) && !class_exists($annotation->class)) {
+        if (!empty($annotation->class) && !(class_exists($annotation->class) || interface_exists($annotation->class))) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::class,
                 $objectClass,
                 $property,
-                sprintf('class "%s" does not exist', $annotation->class)
+                sprintf('class or interface "%s" does not exist', $annotation->class)
             );
         }
         if (empty($annotation->initPropertyValuePath)) {
