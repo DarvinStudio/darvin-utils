@@ -50,6 +50,15 @@ interface RouteManagerInterface
     public function getPath($routeName);
 
     /**
+     * @param string $routeName   Route name
+     * @param string $requirement Requirement
+     *
+     * @return bool
+     * @throws \Darvin\Utils\Routing\Exception\RouteNotExistException
+     */
+    public function hasRequirement($routeName, $requirement);
+
+    /**
      * @param string $routeName Route name
      *
      * @return bool

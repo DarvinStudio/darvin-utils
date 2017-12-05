@@ -20,6 +20,8 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class CachedRouteManager implements RouteManagerInterface
 {
+    const REQUIREMENT_LOCALE = '_locale';
+
     /**
      * @var \Symfony\Component\Routing\RouterInterface
      */
@@ -97,9 +99,19 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
+    public function hasRequirement($routeName, $requirement)
+    {
+        $requirements = $this->getRoute($routeName)['requirements'];
+
+        return array_key_exists($requirement, $requirements);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function requiresLocale($routeName)
     {
-        return $this->getRoute($routeName)['requires_locale'];
+        return $this->hasRequirement($routeName, self::REQUIREMENT_LOCALE);
     }
 
     public function cacheRoutes()
@@ -114,9 +126,9 @@ class CachedRouteManager implements RouteManagerInterface
 
         foreach ($this->router->getRouteCollection() as $name => $symfonyRoute) {
             $routes[$name] = [
-                'options'         => $symfonyRoute->getOptions(),
-                'path'            => $symfonyRoute->getPath(),
-                'requires_locale' => $symfonyRoute->hasRequirement('_locale'),
+                'options'      => $symfonyRoute->getOptions(),
+                'path'         => $symfonyRoute->getPath(),
+                'requirements' => $symfonyRoute->getRequirements(),
             ];
         }
 
