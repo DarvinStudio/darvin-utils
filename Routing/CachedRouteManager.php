@@ -69,6 +69,14 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
+    public function getNames()
+    {
+        return array_keys($this->getRoutes());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getOption($routeName, $option)
     {
         if (!$this->hasOption($routeName, $option)) {

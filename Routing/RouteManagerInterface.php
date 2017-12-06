@@ -23,6 +23,11 @@ interface RouteManagerInterface
     public function exists($routeName);
 
     /**
+     * @return string[]
+     */
+    public function getNames();
+
+    /**
      * @param string $routeName Route name
      * @param string $option    Option
      *
