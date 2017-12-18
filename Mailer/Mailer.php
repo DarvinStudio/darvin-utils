@@ -51,12 +51,18 @@ class Mailer implements MailerInterface
     private $from;
 
     /**
+     * @var bool
+     */
+    private $prependHost;
+
+    /**
      * @param \Psr\Log\LoggerInterface                           $logger       Logger
      * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack Request stack
      * @param \Swift_Mailer                                      $swiftMailer  Swift Mailer
      * @param \Symfony\Component\Translation\TranslatorInterface $translator   Translator
      * @param string                                             $charset      Charset
      * @param string                                             $from         From
+     * @param bool                                               $prependHost  Whether to prepend host to subject
      */
     public function __construct(
         LoggerInterface $logger,
@@ -64,7 +70,8 @@ class Mailer implements MailerInterface
         \Swift_Mailer $swiftMailer = null,
         TranslatorInterface $translator,
         $charset,
-        $from
+        $from,
+        $prependHost = true
     ) {
         $this->logger = $logger;
         $this->requestStack = $requestStack;
@@ -72,6 +79,7 @@ class Mailer implements MailerInterface
         $this->translator = $translator;
         $this->charset = $charset;
         $this->from = $from;
+        $this->prependHost = $prependHost;
     }
 
     /**
@@ -87,7 +95,7 @@ class Mailer implements MailerInterface
 
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!empty($request)) {
+        if ($this->prependHost && !empty($request)) {
             $subject = $request->getHost().' '.$subject;
         }
 
