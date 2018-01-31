@@ -12,6 +12,7 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Sluggable\SluggableManagerInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 
@@ -55,8 +56,14 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function blacklistEntity($entity)
     {
-        $hash = spl_object_hash($entity);
-        $this->entityBlacklist[$hash] = $hash;
+        $class = ClassUtils::getClass($entity);
+        $hash  = spl_object_hash($entity);
+
+        if (!isset($this->entityBlacklist[$class])) {
+            $this->entityBlacklist[$class] = [];
+        }
+
+        $this->entityBlacklist[$class][$hash] = $hash;
     }
 
     /**
@@ -79,7 +86,9 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     protected function generateSlugs($entity, $operation)
     {
-        if (isset($this->entityBlacklist[spl_object_hash($entity)]) || !$this->sluggableManager->isSluggable($entity)) {
+        if (isset($this->entityBlacklist[ClassUtils::getClass($entity)][spl_object_hash($entity)])
+            || !$this->sluggableManager->isSluggable($entity)
+        ) {
             return;
         }
         if ($this->sluggableManager->generateSlugs($entity, AbstractOnFlushListener::OPERATION_UPDATE === $operation)) {
