@@ -56,14 +56,9 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function blacklistEntity($entity)
     {
-        $class = ClassUtils::getClass($entity);
-        $hash  = spl_object_hash($entity);
+        $hash = $this->hashEntity($entity);
 
-        if (!isset($this->entityBlacklist[$class])) {
-            $this->entityBlacklist[$class] = [];
-        }
-
-        $this->entityBlacklist[$class][$hash] = $hash;
+        $this->entityBlacklist[$hash] = $hash;
     }
 
     /**
@@ -86,13 +81,25 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     protected function generateSlugs($entity, $operation)
     {
-        if (isset($this->entityBlacklist[ClassUtils::getClass($entity)][spl_object_hash($entity)])
-            || !$this->sluggableManager->isSluggable($entity)
-        ) {
+        if (isset($this->entityBlacklist[$this->hashEntity($entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
         }
         if ($this->sluggableManager->generateSlugs($entity, AbstractOnFlushListener::OPERATION_UPDATE === $operation)) {
             $this->recomputeChangeSet($entity);
         }
+    }
+
+    /**
+     * @param object $entity Entity
+     *
+     * @return string
+     */
+    private function hashEntity($entity)
+    {
+        $class = ClassUtils::getClass($entity);
+
+        $ids = $this->em->getClassMetadata($class)->getIdentifierValues($entity);
+
+        return $class.spl_object_hash($entity).reset($ids);
     }
 }
