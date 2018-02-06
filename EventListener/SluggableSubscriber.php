@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\EventListener;
 
+use Darvin\Utils\Service\ServiceProviderInterface;
 use Darvin\Utils\Sluggable\SluggableManagerInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
@@ -22,6 +23,11 @@ use Doctrine\ORM\Events;
 class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscriber
 {
     /**
+     * @var \Darvin\Utils\Service\ServiceProviderInterface
+     */
+    private $entityManagerProvider;
+
+    /**
      * @var \Darvin\Utils\Sluggable\SluggableManagerInterface
      */
     private $sluggableManager;
@@ -32,10 +38,12 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
     private $entityBlacklist;
 
     /**
-     * @param \Darvin\Utils\Sluggable\SluggableManagerInterface $sluggableManager Sluggable manager
+     * @param \Darvin\Utils\Service\ServiceProviderInterface    $entityManagerProvider Entity manager service provider
+     * @param \Darvin\Utils\Sluggable\SluggableManagerInterface $sluggableManager      Sluggable manager
      */
-    public function __construct(SluggableManagerInterface $sluggableManager)
+    public function __construct(ServiceProviderInterface $entityManagerProvider, SluggableManagerInterface $sluggableManager)
     {
+        $this->entityManagerProvider = $entityManagerProvider;
         $this->sluggableManager = $sluggableManager;
 
         $this->entityBlacklist = [];
@@ -56,6 +64,10 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function blacklistEntity($entity)
     {
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = $this->entityManagerProvider->getService();
+        $this->init($em, $em->getUnitOfWork());
+
         $hash = $this->hashEntity($entity);
 
         $this->entityBlacklist[$hash] = $hash;
