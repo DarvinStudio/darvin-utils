@@ -16,10 +16,10 @@ namespace Darvin\Utils\Transliteratable;
 interface TransliteratorInterface
 {
     /**
-     * @param string $string         String to transliterate
-     * @param bool   $sanitize       Whether to sanitize string
-     * @param array  $allowedSymbols Allowed symbols
-     * @param string $separator      Words separator
+     * @param string   $text           Text to transliterate
+     * @param bool     $sanitize       Whether to sanitize text
+     * @param string[] $allowedSymbols Allowed symbols
+     * @param string   $separator      Word separator
      */
-    public function transliterate($string, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-');
+    public function transliterate($text, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-');
 }
