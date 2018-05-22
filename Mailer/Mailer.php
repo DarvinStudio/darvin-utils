@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Mailer;
 
 use Darvin\Mailer\MailerException;
+use Darvin\Utils\Strings\StringsUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -93,7 +94,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [])
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [], array $messageProperties = [])
     {
         if (empty($this->swiftMailer) || empty($to)) {
             return 0;
@@ -118,6 +119,11 @@ class Mailer implements MailerInterface
             }
 
             $message->attach(\Swift_Attachment::fromPath($filePathname));
+        }
+        foreach ($messageProperties as $property => $value) {
+            $setter = sprintf('set%s', StringsUtil::toCamelCase($property));
+
+            $message->{$setter}($value);
         }
 
         $failedRecipients = [];

@@ -16,14 +16,15 @@ namespace Darvin\Utils\Mailer;
 interface MailerInterface
 {
     /**
-     * @param string    $subject        Subject
-     * @param string    $body           Body
-     * @param mixed     $to             To
-     * @param array     $subjectParams  Subject translation parameters
-     * @param string    $contentType    Content type
-     * @param string[]  $filePathnames  Attached file pathnames
+     * @param string   $subject           Subject
+     * @param string   $body              Body
+     * @param mixed    $to                To
+     * @param array    $subjectParams     Subject translation parameters
+     * @param string   $contentType       Content type
+     * @param string[] $filePathnames     Attached file pathnames
+     * @param array    $messageProperties Message object property values, for example "['reply_to' => 'me@example.com']"
      *
      * @return int
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = []);
+    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [], array $messageProperties = []);
 }
