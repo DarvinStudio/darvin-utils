@@ -51,6 +51,11 @@ class Mailer implements MailerInterface
     private $from;
 
     /**
+     * @var string|null
+     */
+    private $fromName;
+
+    /**
      * @var bool
      */
     private $prependHost;
@@ -61,7 +66,8 @@ class Mailer implements MailerInterface
      * @param \Swift_Mailer                                      $swiftMailer  Swift Mailer
      * @param \Symfony\Component\Translation\TranslatorInterface $translator   Translator
      * @param string                                             $charset      Charset
-     * @param string                                             $from         From
+     * @param string                                             $from         From email
+     * @param string|null                                        $fromName     From name
      * @param bool                                               $prependHost  Whether to prepend host to subject
      */
     public function __construct(
@@ -71,6 +77,7 @@ class Mailer implements MailerInterface
         TranslatorInterface $translator,
         $charset,
         $from,
+        $fromName,
         $prependHost = true
     ) {
         $this->logger = $logger;
@@ -79,6 +86,7 @@ class Mailer implements MailerInterface
         $this->translator = $translator;
         $this->charset = $charset;
         $this->from = $from;
+        $this->fromName = $fromName;
         $this->prependHost = $prependHost;
     }
 
@@ -101,7 +109,7 @@ class Mailer implements MailerInterface
 
         $message = new \Swift_Message($subject, $body, $contentType, $this->charset);
         $message
-            ->setFrom($this->from)
+            ->setFrom($this->from, $this->fromName)
             ->setTo($to);
 
         foreach ($filePathnames as $filePathname) {
