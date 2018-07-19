@@ -63,9 +63,9 @@ class NewEntityCounter implements NewObjectCounterInterface
     public function count($objectClass)
     {
         if (!isset($this->counts[$objectClass])) {
-            $newObjectFlag = $this->getNewObjectFlag($objectClass);
+            $meta = $this->getNewObjectFlagMeta($objectClass);
 
-            if (empty($newObjectFlag)) {
+            if (empty($meta)) {
                 $message = sprintf(
                     'Class "%s" must be annotated with "%s" annotation in order to count new objects.',
                     $objectClass,
@@ -77,14 +77,14 @@ class NewEntityCounter implements NewObjectCounterInterface
 
             $qb = $this->em->getRepository($objectClass)->createQueryBuilder('o')
                 ->select('COUNT(o)')
-                ->where(sprintf('o.%s = :%1$s', $newObjectFlag))
-                ->setParameter($newObjectFlag, true);
+                ->where(sprintf($meta['inverse'] ? 'o.%s != :%1$s' : 'o.%s = :%1$s', $meta['property']))
+                ->setParameter($meta['property'], true);
 
             if ($this->userQueryBuilderFilterer->isFilterable($qb)) {
                 $this->userQueryBuilderFilterer->filter($qb);
             }
 
-            $this->counts[$objectClass] = (int) $qb->getQuery()->getSingleScalarResult();
+            $this->counts[$objectClass] = (int)$qb->getQuery()->getSingleScalarResult();
         }
 
         return $this->counts[$objectClass];
@@ -99,20 +99,20 @@ class NewEntityCounter implements NewObjectCounterInterface
             return true;
         }
 
-        $newObjectFlag = $this->getNewObjectFlag($objectClass);
+        $meta = $this->getNewObjectFlagMeta($objectClass);
 
-        return !empty($newObjectFlag);
+        return !empty($meta);
     }
 
     /**
      * @param string $entityClass Entity class
      *
-     * @return string
+     * @return array
      */
-    private function getNewObjectFlag($entityClass)
+    private function getNewObjectFlagMeta($entityClass)
     {
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
-        return isset($meta['newObjectFlag']) ? $meta['newObjectFlag'] : null;
+        return isset($meta['newObjectFlag']) ? $meta['newObjectFlag'] : [];
     }
 }

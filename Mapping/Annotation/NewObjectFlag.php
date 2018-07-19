@@ -18,5 +18,8 @@ namespace Darvin\Utils\Mapping\Annotation;
  */
 final class NewObjectFlag
 {
-
+    /**
+     * @var bool
+     */
+    public $inverse = false;
 }

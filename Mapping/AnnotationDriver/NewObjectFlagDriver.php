@@ -24,38 +24,38 @@ class NewObjectFlagDriver extends AbstractDriver
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
     {
         if (!isset($meta['newObjectFlag'])) {
-            $meta['newObjectFlag'] = null;
+            $meta['newObjectFlag'] = [];
         }
         foreach ($doctrineMeta->getReflectionClass()->getProperties() as $reflectionProperty) {
-            if (null === $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::class)) {
+            $annotation = $this->reader->getPropertyAnnotation($reflectionProperty, NewObjectFlag::class);
+
+            if (!$annotation instanceof NewObjectFlag) {
                 continue;
             }
 
-            $objectClass = $doctrineMeta->getName();
+            $class    = $doctrineMeta->getName();
             $property = $reflectionProperty->getName();
 
-            if (!empty($meta['newObjectFlag'])) {
-                if ($meta['newObjectFlag'] === $property) {
-                    continue;
-                }
-
+            if (!empty($meta['newObjectFlag']) && $meta['newObjectFlag']['property'] !== $property) {
                 throw $this->createPropertyAnnotationInvalidException(
                     NewObjectFlag::class,
-                    $objectClass,
+                    $class,
                     $property,
-                    sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlag'])
+                    sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlag']['property'])
                 );
             }
             if (!$doctrineMeta->hasField($property)) {
                 throw $this->createPropertyAnnotationInvalidException(
                     NewObjectFlag::class,
-                    $objectClass,
+                    $class,
                     $property,
                     'property must be mapped field'
                 );
             }
 
-            $meta['newObjectFlag'] = $property;
+            $meta['newObjectFlag'] = array_merge(get_object_vars($annotation), [
+                'property' => $property,
+            ]);
         }
     }
 }
