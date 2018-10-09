@@ -10,7 +10,6 @@
 
 namespace Darvin\Utils\Mailer;
 
-use Darvin\Mailer\MailerException;
 use Darvin\Utils\Strings\StringsUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -79,7 +78,7 @@ class Mailer implements MailerInterface
         $charset,
         $from,
         $fromName,
-        $prependHost = true
+        $prependHost
     ) {
         $this->logger = $logger;
         $this->requestStack = $requestStack;
@@ -115,7 +114,7 @@ class Mailer implements MailerInterface
 
         foreach ($filePathnames as $filePathname) {
             if (!is_readable($filePathname)) {
-                throw new MailerException(sprintf('File "%s" is not readable.', $filePathname));
+                throw new \RuntimeException(sprintf('File "%s" is not readable.', $filePathname));
             }
 
             $message->attach(\Swift_Attachment::fromPath($filePathname));

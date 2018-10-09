@@ -25,6 +25,7 @@ interface MailerInterface
      * @param array    $messageProperties Message object property values, for example "['reply_to' => 'me@example.com']"
      *
      * @return int
+     * @throws \RuntimeException
      */
     public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [], array $messageProperties = []);
 }
