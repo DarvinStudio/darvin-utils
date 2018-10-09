@@ -13,7 +13,7 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Transliteratable\TransliteratorInterface;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -21,7 +21,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * Transliteratable event subscriber
  */
-class TransliteratableSubscriber extends AbstractOnFlushListener implements EventSubscriber
+class TransliteratableSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -68,23 +68,23 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        parent::onFlush($args);
+        $em = $args->getEntityManager();
+        $uow = $em->getUnitOfWork();
 
-        $transliterateCallback = [$this, 'transliterate'];
-
-        $this
-            ->onInsert($transliterateCallback)
-            ->onUpdate($transliterateCallback);
+        foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $entity) {
+            $this->transliterate($em, $entity);
+        }
     }
 
     /**
-     * @param object $entity Entity
+     * @param \Doctrine\ORM\EntityManager $em     Entity manager
+     * @param object                      $entity Entity
      *
      * @throws \RuntimeException
      */
-    protected function transliterate($entity)
+    private function transliterate(EntityManager $em, $entity)
     {
-        $entityClass = ClassUtils::getClass($entity);
+        $entityClass = get_class($entity);
 
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
@@ -92,7 +92,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
             return;
         }
 
-        $changeSet = $this->uow->getEntityChangeSet($entity);
+        $changeSet = $em->getUnitOfWork()->getEntityChangeSet($entity);
 
         $recomputeChangeSet = false;
 
@@ -115,7 +115,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
             $recomputeChangeSet = true;
         }
         if ($recomputeChangeSet) {
-            $this->recomputeChangeSet($entity);
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata($entityClass), $entity);
         }
     }
 }
