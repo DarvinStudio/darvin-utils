@@ -19,9 +19,9 @@ use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Transliteratable event subscriber
+ * Transliterate event subscriber
  */
-class TransliteratableSubscriber implements EventSubscriber
+class TransliterateSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface

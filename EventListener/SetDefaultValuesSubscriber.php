@@ -18,9 +18,9 @@ use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Default value event subscriber
+ * Set default values event subscriber
  */
-class DefaultValueSubscriber implements EventSubscriber
+class SetDefaultValuesSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface

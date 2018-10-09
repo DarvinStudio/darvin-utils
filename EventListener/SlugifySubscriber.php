@@ -18,9 +18,9 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 
 /**
- * Sluggable event subscriber
+ * Slugify event subscriber
  */
-class SluggableSubscriber implements EventSubscriber
+class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
 {
     /**
      * @var \Darvin\Utils\Service\ServiceProviderInterface
@@ -78,10 +78,10 @@ class SluggableSubscriber implements EventSubscriber
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
-            $this->generateSlugs($em, $entity);
+            $this->slugify($em, $entity);
         }
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
-            $this->generateSlugs($em, $entity, true);
+            $this->slugify($em, $entity, true);
         }
     }
 
@@ -90,7 +90,7 @@ class SluggableSubscriber implements EventSubscriber
      * @param object                      $entity              Entity
      * @param bool                        $dispatchUpdateEvent Whether to dispatch update event
      */
-    private function generateSlugs(EntityManager $em, $entity, $dispatchUpdateEvent = false)
+    private function slugify(EntityManager $em, $entity, $dispatchUpdateEvent = false)
     {
         if (isset($this->entityBlacklist[$this->hashEntity($em, $entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
