@@ -13,14 +13,14 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Darvin\Utils\Sluggable\SluggableManagerInterface;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 
 /**
  * Sluggable event subscriber
  */
-class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscriber
+class SluggableSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Service\ServiceProviderInterface
@@ -64,11 +64,7 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function blacklistEntity($entity)
     {
-        /** @var \Doctrine\ORM\EntityManager $em */
-        $em = $this->entityManagerProvider->getService();
-        $this->init($em, $em->getUnitOfWork());
-
-        $hash = $this->hashEntity($entity);
+        $hash = $this->hashEntity($this->getEntityManager(), $entity);
 
         $this->entityBlacklist[$hash] = $hash;
     }
@@ -78,40 +74,52 @@ class SluggableSubscriber extends AbstractOnFlushListener implements EventSubscr
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        parent::onFlush($args);
+        $em = $args->getEntityManager();
+        $uow = $em->getUnitOfWork();
 
-        $generateSlugsCallback = [$this, 'generateSlugs'];
-
-        $this
-            ->onInsert($generateSlugsCallback)
-            ->onUpdate($generateSlugsCallback);
+        foreach ($uow->getScheduledEntityInsertions() as $entity) {
+            $this->generateSlugs($em, $entity);
+        }
+        foreach ($uow->getScheduledEntityUpdates() as $entity) {
+            $this->generateSlugs($em, $entity, true);
+        }
     }
 
     /**
-     * @param object $entity    Entity
-     * @param string $operation Operation type
+     * @param \Doctrine\ORM\EntityManager $em                  Entity manager
+     * @param object                      $entity              Entity
+     * @param bool                        $dispatchUpdateEvent Whether to dispatch update event
      */
-    protected function generateSlugs($entity, $operation)
+    private function generateSlugs(EntityManager $em, $entity, $dispatchUpdateEvent = false)
     {
-        if (isset($this->entityBlacklist[$this->hashEntity($entity)]) || !$this->sluggableManager->isSluggable($entity)) {
+        if (isset($this->entityBlacklist[$this->hashEntity($em, $entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
         }
-        if ($this->sluggableManager->generateSlugs($entity, AbstractOnFlushListener::OPERATION_UPDATE === $operation)) {
-            $this->recomputeChangeSet($entity);
+        if ($this->sluggableManager->generateSlugs($entity, $dispatchUpdateEvent)) {
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata(get_class($entity)), $entity);
         }
     }
 
     /**
-     * @param object $entity Entity
+     * @param \Doctrine\ORM\EntityManager $em     Entity manager
+     * @param object                      $entity Entity
      *
      * @return string
      */
-    private function hashEntity($entity)
+    private function hashEntity(EntityManager $em, $entity)
     {
-        $class = ClassUtils::getClass($entity);
+        $class = get_class($entity);
 
-        $ids = $this->em->getClassMetadata($class)->getIdentifierValues($entity);
+        $ids = $em->getClassMetadata($class)->getIdentifierValues($entity);
 
         return $class.spl_object_hash($entity).reset($ids);
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    private function getEntityManager()
+    {
+        return $this->entityManagerProvider->getService();
     }
 }
