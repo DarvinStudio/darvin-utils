@@ -13,7 +13,7 @@ namespace Darvin\Utils\Routing\Exception;
 /**
  * Route does not exist exception
  */
-class RouteNotExistException extends RoutingException
+class RouteNotExistException extends \Exception
 {
     /**
      * @param string $routeName Route name

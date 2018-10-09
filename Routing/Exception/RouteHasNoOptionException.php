@@ -13,7 +13,7 @@ namespace Darvin\Utils\Routing\Exception;
 /**
  * Route has no option exception
  */
-class RouteHasNoOptionException extends RoutingException
+class RouteHasNoOptionException extends \Exception
 {
     /**
      * @param string $routeName Route name
