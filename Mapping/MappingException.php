@@ -10,12 +10,10 @@
 
 namespace Darvin\Utils\Mapping;
 
-use Darvin\Utils\Exception\DarvinUtilsException;
-
 /**
  * Mapping exception
  */
-class MappingException extends DarvinUtilsException
+class MappingException extends \Exception
 {
 
 }

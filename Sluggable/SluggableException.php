@@ -10,12 +10,10 @@
 
 namespace Darvin\Utils\Sluggable;
 
-use Darvin\Utils\Exception\DarvinUtilsException;
-
 /**
  * Sluggable exception
  */
-class SluggableException extends DarvinUtilsException
+class SluggableException extends \Exception
 {
 
 }

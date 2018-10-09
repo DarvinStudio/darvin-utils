@@ -10,12 +10,10 @@
 
 namespace Darvin\Utils\NewObject;
 
-use Darvin\Utils\Exception\DarvinUtilsException;
-
 /**
  * New object exception
  */
-class NewObjectException extends DarvinUtilsException
+class NewObjectException extends \Exception
 {
 
 }

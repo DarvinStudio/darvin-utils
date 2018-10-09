@@ -10,12 +10,10 @@
 
 namespace Darvin\Utils\CustomObject;
 
-use Darvin\Utils\Exception\DarvinUtilsException;
-
 /**
  * Custom object exception
  */
-class CustomObjectException extends DarvinUtilsException
+class CustomObjectException extends \Exception
 {
 
 }

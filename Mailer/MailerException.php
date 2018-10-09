@@ -10,12 +10,10 @@
 
 namespace Darvin\Mailer;
 
-use Darvin\Utils\Exception\DarvinUtilsException;
-
 /**
  * Mailer exception
  */
-class MailerException extends DarvinUtilsException
+class MailerException extends \Exception
 {
 
 }
