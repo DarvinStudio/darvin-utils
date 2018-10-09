@@ -11,9 +11,9 @@
 namespace Darvin\Utils\Event;
 
 /**
- * Clone events
+ * Clonable events
  */
-final class CloneEvents
+final class ClonableEvents
 {
-    public const CREATED = 'darvin_utils.clone.created';
+    public const CLONED = 'darvin_utils.clonable.cloned';
 }

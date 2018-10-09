@@ -10,8 +10,8 @@
 
 namespace Darvin\Utils\Cloner;
 
+use Darvin\Utils\Event\ClonableEvents;
 use Darvin\Utils\Event\CloneEvent;
-use Darvin\Utils\Event\CloneEvents;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\MappingException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
@@ -135,7 +135,7 @@ class Cloner implements ClonerInterface
         }
 
         $event = new CloneEvent($object, $clone);
-        $this->eventDispatcher->dispatch(CloneEvents::CREATED, $event);
+        $this->eventDispatcher->dispatch(ClonableEvents::CLONED, $event);
 
         return $event->getClone();
     }

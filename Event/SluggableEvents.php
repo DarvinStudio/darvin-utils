@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2018, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,9 +11,9 @@
 namespace Darvin\Utils\Event;
 
 /**
- * Events
+ * Sluggable events
  */
-final class Events
+final class SluggableEvents
 {
-    const POST_SLUGS_UPDATE = 'darvin_utils.post_slugs_update';
+    public const SLUGS_UPDATED = 'darvin_utils.sluggable.slugs_updated';
 }

@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Sluggable;
 
-use Darvin\Utils\Event\Events;
+use Darvin\Utils\Event\SluggableEvents;
 use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
@@ -148,7 +148,7 @@ class SluggableEntityManager implements SluggableManagerInterface
             return false;
         }
         if ($dispatchUpdateEvent) {
-            $this->eventDispatcher->dispatch(Events::POST_SLUGS_UPDATE, new SlugsUpdateEvent($slugsChangeSet, $em));
+            $this->eventDispatcher->dispatch(SluggableEvents::SLUGS_UPDATED, new SlugsUpdateEvent($slugsChangeSet, $em));
         }
 
         return true;
