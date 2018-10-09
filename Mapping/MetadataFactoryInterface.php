@@ -26,6 +26,7 @@ interface MetadataFactoryInterface
      * @param object|string $objectOrClass Object or class
      *
      * @return mixed[]
+     * @throws \Darvin\Utils\Mapping\MappingException
      */
     public function getExtendedMetadata($objectOrClass);
 

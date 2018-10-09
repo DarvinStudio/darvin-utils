@@ -11,7 +11,6 @@
 namespace Darvin\Utils\ObjectNamer;
 
 use Darvin\Utils\Strings\StringsUtil;
-use Doctrine\Common\Util\ClassUtils;
 
 /**
  * Object namer
@@ -36,7 +35,7 @@ class ObjectNamer implements ObjectNamerInterface
      */
     public function name($objectOrClass)
     {
-        $class = is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass;
+        $class = is_object($objectOrClass) ? get_class($objectOrClass) : $objectOrClass;
 
         if (!isset($this->names[$class])) {
             $nsParts = array_map(function ($nsPart) {

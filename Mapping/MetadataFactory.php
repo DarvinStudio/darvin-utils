@@ -13,7 +13,6 @@ namespace Darvin\Utils\Mapping;
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Util\ClassUtils;
 
 /**
  * Metadata factory
@@ -159,7 +158,7 @@ class MetadataFactory implements MetadataFactoryInterface
      */
     private function getClass($objectOrClass)
     {
-        return is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass;
+        return is_object($objectOrClass) ? get_class($objectOrClass) : $objectOrClass;
     }
 
     /**

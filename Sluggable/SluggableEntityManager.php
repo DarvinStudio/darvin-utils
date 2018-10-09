@@ -15,7 +15,6 @@ use Darvin\Utils\Event\SlugsUpdateEvent;
 use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
-use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -92,7 +91,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      */
     public function isSluggable($entityOrClass)
     {
-        $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
+        $class = is_object($entityOrClass) ? get_class($entityOrClass) : $entityOrClass;
 
         if (!isset($this->checkedIfSluggableClasses[$class])) {
             $this->checkedIfSluggableClasses[$class] = true;
@@ -112,10 +111,8 @@ class SluggableEntityManager implements SluggableManagerInterface
      */
     public function generateSlugs($entity, $dispatchUpdateEvent = false, $prefix = null)
     {
-        $em = $this->getEntityManager();
-
-        $entityClass = ClassUtils::getClass($entity);
-
+        $em             = $this->getEntityManager();
+        $entityClass    = get_class($entity);
         $slugsChangeSet = [];
 
         foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $params) {
@@ -188,7 +185,7 @@ class SluggableEntityManager implements SluggableManagerInterface
         if (empty($slugParts)) {
             $message = sprintf(
                 'Unable to generate slug "%s::$%s": unable to get any non empty slug parts using property paths "%s".',
-                ClassUtils::getClass($entity),
+                get_class($entity),
                 $slugProperty,
                 implode('", "', $sourcePropertyPaths)
             );
@@ -237,7 +234,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
             throw new SluggableException(
-                sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
+                sprintf('Property "%s::$%s" is not writable.', get_class($entity), $propertyPath)
             );
         }
 
@@ -255,7 +252,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
             throw new SluggableException(
-                sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
+                sprintf('Property "%s::$%s" is not readable.', get_class($entity), $propertyPath)
             );
         }
 

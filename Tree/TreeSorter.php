@@ -11,7 +11,6 @@
 namespace Darvin\Utils\Tree;
 
 use Darvin\Utils\Tree\Exception\ClassIsNotTreeException;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Gedmo\Tree\TreeListener;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -57,7 +56,7 @@ class TreeSorter implements TreeSorterInterface
             return $entities;
         }
 
-        $class = ClassUtils::getClass(reset($entities));
+        $class = get_class(reset($entities));
 
         $config = $this->treeListener->getConfiguration($this->em, $class);
 

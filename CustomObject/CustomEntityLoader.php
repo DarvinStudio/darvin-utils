@@ -13,7 +13,6 @@ namespace Darvin\Utils\CustomObject;
 use Darvin\Utils\Mapping\Annotation\CustomObject;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -112,7 +111,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
             $this->processedHashes[$hash] = true;
 
-            $entityClass = ClassUtils::getClass($entity);
+            $entityClass = get_class($entity);
 
             if (!$this->customObjectsLoadable($entityClass)) {
                 $message = sprintf(
@@ -142,8 +141,8 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private function setCustomEntities(array $entities, array $customEntities, array $customEntitiesMap)
     {
         foreach ($entities as $entity) {
-            $entityClass = ClassUtils::getClass($entity);
-            $objectHash = spl_object_hash($entity);
+            $entityClass = get_class($entity);
+            $objectHash  = spl_object_hash($entity);
 
             if (!isset($customEntitiesMap[$entityClass][$objectHash])) {
                 continue;
@@ -300,8 +299,8 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
         $map = [];
 
         foreach ($entities as $entity) {
-            $entityClass = ClassUtils::getClass($entity);
-            $objectHash = spl_object_hash($entity);
+            $entityClass = get_class($entity);
+            $objectHash  = spl_object_hash($entity);
 
             foreach ($this->getCustomObjectMeta($entityClass) as $targetProperty => $params) {
                 $initPropertyValue = $this->getPropertyValue($entity, $params['initPropertyValuePath']);
@@ -374,7 +373,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
             throw new CustomObjectException(
-                sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
+                sprintf('Property "%s::$%s" is not writable.', get_class($entity), $propertyPath)
             );
         }
 
@@ -392,7 +391,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
             throw new CustomObjectException(
-                sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
+                sprintf('Property "%s::$%s" is not readable.', get_class($entity), $propertyPath)
             );
         }
 
