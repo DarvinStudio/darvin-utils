@@ -11,7 +11,6 @@
 namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
-use Darvin\Utils\Transliteratable\TransliteratableException;
 use Darvin\Utils\Transliteratable\TransliteratorInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
@@ -81,7 +80,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
     /**
      * @param object $entity Entity
      *
-     * @throws \Darvin\Utils\Transliteratable\TransliteratableException
+     * @throws \RuntimeException
      */
     protected function transliterate($entity)
     {
@@ -102,7 +101,7 @@ class TransliteratableSubscriber extends AbstractOnFlushListener implements Even
                 continue;
             }
             if (!$this->propertyAccessor->isWritable($entity, $property)) {
-                throw new TransliteratableException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $property));
+                throw new \RuntimeException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $property));
             }
 
             $transliterated = $this->transliterator->transliterate(

@@ -28,7 +28,7 @@ class Transliterator implements TransliteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function transliterate($text, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-')
+    public function transliterate($text, $sanitize = true, array $allowedSymbols = [], $separator = '-')
     {
         $lowercase = mb_strtolower($text);
 
@@ -42,8 +42,8 @@ class Transliterator implements TransliteratorInterface
 
         $sanitized = preg_replace('/\s+/u', $separator, $transliterated);
         $sanitized = trim($sanitized, $separator);
-        $sanitized = preg_replace(sprintf('/%s+/', $separator), $separator, $sanitized);
         $sanitized = preg_replace($this->createSanitizePattern($allowedSymbols, $separator), '', $sanitized);
+        $sanitized = preg_replace(sprintf('/%s+/', $separator), $separator, $sanitized);
 
         return $sanitized;
     }
