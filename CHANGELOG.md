@@ -4,4 +4,8 @@
 
 6.5.6: Add importable interface.
 
-7.0.0: Remove redundant Composer script handler.
+7.0.0: 
+
+- remove redundant Composer script handler;
+
+- remove redundant exception classes.

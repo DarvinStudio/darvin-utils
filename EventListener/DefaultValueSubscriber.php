@@ -10,7 +10,6 @@
 
 namespace Darvin\Utils\EventListener;
 
-use Darvin\Utils\DefaultValue\DefaultValueException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
@@ -70,7 +69,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
     /**
      * @param object $entity Entity
      *
-     * @throws \Darvin\Utils\DefaultValue\DefaultValueException
+     * @throws \RuntimeException
      */
     protected function setDefaultValues($entity)
     {
@@ -102,7 +101,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
                 continue;
             }
             if (!$this->propertyAccessor->isWritable($entity, $targetProperty)) {
-                throw new DefaultValueException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $targetProperty));
+                throw new \RuntimeException(sprintf('Property "%s::$%s" is not writable.', $entityClass, $targetProperty));
             }
 
             $this->propertyAccessor->setValue($entity, $targetProperty, $sourcePropertyValues[$sourcePropertyPath]);
@@ -119,7 +118,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      * @param object $entity           Entity
      * @param string $entityClass      Entity class
      *
-     * @throws \Darvin\Utils\DefaultValue\DefaultValueException
+     * @throws \RuntimeException
      */
     private function filterDefaultValuesMap(array &$defaultValuesMap, $entity, $entityClass)
     {
@@ -142,7 +141,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      * @param string $entityClass         Entity class
      *
      * @return array
-     * @throws \Darvin\Utils\DefaultValue\DefaultValueException
+     * @throws \RuntimeException
      */
     private function getSourcePropertyValues(array $sourcePropertyPaths, $entity, $entityClass)
     {
@@ -163,10 +162,10 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      * @param string $entityClass Entity class
      * @param string $property    Property
      *
-     * @return \Darvin\Utils\DefaultValue\DefaultValueException
+     * @return \RuntimeException
      */
     private function createPropertyNotReadableException($entityClass, $property)
     {
-        return new DefaultValueException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $property));
+        return new \RuntimeException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $property));
     }
 }
