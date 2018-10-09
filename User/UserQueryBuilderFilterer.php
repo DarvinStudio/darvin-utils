@@ -57,7 +57,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     public function filter(QueryBuilder $qb, UserInterface $user = null)
     {
         if (!$this->isFilterable($qb)) {
-            throw new \LogicException('Query builder is not filterable.');
+            throw new \InvalidArgumentException('Query builder is not filterable.');
         }
         if (empty($user)) {
             $user = $this->getUser();

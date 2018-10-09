@@ -78,7 +78,7 @@ class Cloner implements ClonerInterface
      * @param bool   $requireClonable Whether to require object to be clonable
      *
      * @return object
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     private function cloneObject($object, $requireClonable)
     {
@@ -107,7 +107,7 @@ class Cloner implements ClonerInterface
                     Clonable::class
                 );
 
-                throw new \LogicException($message);
+                throw new \InvalidArgumentException($message);
             }
             if ($isEntity) {
                 return $object;

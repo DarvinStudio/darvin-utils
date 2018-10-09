@@ -19,6 +19,7 @@ interface NewObjectCounterInterface
      * @param string $objectClass Object class
      *
      * @return int
+     * @throws \InvalidArgumentException
      */
     public function count($objectClass);
 

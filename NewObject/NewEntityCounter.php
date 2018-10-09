@@ -72,7 +72,7 @@ class NewEntityCounter implements NewObjectCounterInterface
                     NewObjectFlag::class
                 );
 
-                throw new NewObjectException($message);
+                throw new \InvalidArgumentException($message);
             }
 
             $qb = $this->em->getRepository($objectClass)->createQueryBuilder('o')
