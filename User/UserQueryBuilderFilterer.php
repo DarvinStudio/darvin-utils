@@ -57,7 +57,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     public function filter(QueryBuilder $qb, UserInterface $user = null)
     {
         if (!$this->isFilterable($qb)) {
-            throw new UserException('Query builder is not filterable.');
+            throw new \LogicException('Query builder is not filterable.');
         }
         if (empty($user)) {
             $user = $this->getUser();
@@ -71,7 +71,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
         $userId = reset($userIds);
 
         if (empty($userId)) {
-            throw new UserException('User ID is empty.');
+            throw new \InvalidArgumentException('User ID is empty.');
         }
         foreach (array_combine($qb->getRootAliases(), $qb->getRootEntities()) as $alias => $entity) {
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($entity)['user'];

@@ -22,7 +22,8 @@ interface UserQueryBuilderFiltererInterface
      * @param \Doctrine\ORM\QueryBuilder                          $qb   Query builder
      * @param \Symfony\Component\Security\Core\User\UserInterface $user User
      *
-     * @throws \Darvin\Utils\User\UserException
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     public function filter(QueryBuilder $qb, UserInterface $user = null);
 
