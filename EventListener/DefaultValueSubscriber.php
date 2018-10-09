@@ -12,7 +12,7 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * Default value event subscriber
  */
-class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSubscriber
+class DefaultValueSubscriber implements EventSubscriber
 {
     /**
      * @var \Darvin\Utils\Mapping\MetadataFactoryInterface
@@ -57,23 +57,23 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        parent::onFlush($args);
+        $em = $args->getEntityManager();
+        $uow = $em->getUnitOfWork();
 
-        $setDefaultValuesCallback = [$this, 'setDefaultValues'];
-
-        $this
-            ->onInsert($setDefaultValuesCallback)
-            ->onUpdate($setDefaultValuesCallback);
+        foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $entity) {
+            $this->setDefaultValues($em, $entity);
+        }
     }
 
     /**
-     * @param object $entity Entity
+     * @param \Doctrine\ORM\EntityManager $em     Entity manager
+     * @param object                      $entity Entity
      *
      * @throws \RuntimeException
      */
-    protected function setDefaultValues($entity)
+    private function setDefaultValues(EntityManager $em, $entity)
     {
-        $entityClass = ClassUtils::getClass($entity);
+        $entityClass = get_class($entity);
 
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
@@ -109,7 +109,7 @@ class DefaultValueSubscriber extends AbstractOnFlushListener implements EventSub
             $recomputeChangeSet = true;
         }
         if ($recomputeChangeSet) {
-            $this->recomputeChangeSet($entity);
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata($entityClass), $entity);
         }
     }
 
