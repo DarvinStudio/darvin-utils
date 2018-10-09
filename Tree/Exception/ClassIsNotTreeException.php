@@ -13,7 +13,7 @@ namespace Darvin\Utils\Tree\Exception;
 /**
  * Class is not a tree exception
  */
-class ClassIsNotTreeException extends TreeException
+class ClassIsNotTreeException extends \Exception
 {
     /**
      * @param string $class Class

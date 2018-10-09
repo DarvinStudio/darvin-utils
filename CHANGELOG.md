@@ -8,4 +8,6 @@
 
 - remove redundant Composer script handler;
 
-- remove redundant exception classes.
+- remove redundant exception classes;
+
+- add tree sorter interface.

@@ -19,7 +19,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * Tree sorter
  */
-class TreeSorter
+class TreeSorter implements TreeSorterInterface
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -49,10 +49,7 @@ class TreeSorter
     }
 
     /**
-     * @param object[] $entities Entities
-     *
-     * @return object[]
-     * @throws \Darvin\Utils\Tree\Exception\ClassIsNotTreeException
+     * {@inheritdoc}
      */
     public function sortTree(array $entities)
     {

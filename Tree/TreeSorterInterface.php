@@ -8,14 +8,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Tree\Exception;
-
-use Darvin\Utils\Exception\DarvinUtilsException;
+namespace Darvin\Utils\Tree;
 
 /**
- * Tree exception
+ * Tree sorter
  */
-class TreeException extends DarvinUtilsException
+interface TreeSorterInterface
 {
-
+    /**
+     * @param object[] $entities Entities
+     *
+     * @return object[]
+     * @throws \Darvin\Utils\Tree\Exception\ClassIsNotTreeException
+     */
+    public function sortTree(array $entities);
 }
