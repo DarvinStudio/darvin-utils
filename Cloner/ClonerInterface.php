@@ -19,7 +19,8 @@ interface ClonerInterface
      * @param object $object Object to clone
      *
      * @return object
-     * @throws \Darvin\Utils\Cloner\ClonerException
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     public function createClone($object);
 }

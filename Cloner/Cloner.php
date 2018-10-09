@@ -78,7 +78,7 @@ class Cloner implements ClonerInterface
      * @param bool   $requireClonable Whether to require object to be clonable
      *
      * @return object
-     * @throws \Darvin\Utils\Cloner\ClonerException
+     * @throws \LogicException
      */
     private function cloneObject($object, $requireClonable)
     {
@@ -107,7 +107,7 @@ class Cloner implements ClonerInterface
                     Clonable::class
                 );
 
-                throw new ClonerException($message);
+                throw new \LogicException($message);
             }
             if ($isEntity) {
                 return $object;
@@ -146,7 +146,6 @@ class Cloner implements ClonerInterface
      * @param string           $property        Property
      *
      * @return mixed
-     * @throws \Darvin\Utils\Cloner\ClonerException
      */
     private function getValue($object, \ReflectionClass $reflectionClass, $property)
     {
@@ -154,11 +153,8 @@ class Cloner implements ClonerInterface
             return $this->propertyAccessor->getValue($object, $property);
         } catch (\Exception $ex) {
         }
-        try {
-            $reflectionProperty = $reflectionClass->getProperty($property);
-        } catch (\ReflectionException $ex) {
-            throw new ClonerException($ex->getMessage());
-        }
+
+        $reflectionProperty = $reflectionClass->getProperty($property);
 
         $reflectionProperty->setAccessible(true);
 
@@ -170,8 +166,6 @@ class Cloner implements ClonerInterface
      * @param \ReflectionClass $reflectionClass Reflection class
      * @param string           $property        Property
      * @param mixed            $value           Value
-     *
-     * @throws \Darvin\Utils\Cloner\ClonerException
      */
     private function setValue($object, \ReflectionClass $reflectionClass, $property, $value)
     {
@@ -181,11 +175,8 @@ class Cloner implements ClonerInterface
             return;
         } catch (\Exception $ex) {
         }
-        try {
-            $reflectionProperty = $reflectionClass->getProperty($property);
-        } catch (\ReflectionException $ex) {
-            throw new ClonerException($ex->getMessage());
-        }
+
+        $reflectionProperty = $reflectionClass->getProperty($property);
 
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $value);
@@ -195,7 +186,7 @@ class Cloner implements ClonerInterface
      * @param mixed $value Value to copy
      *
      * @return mixed
-     * @throws \Darvin\Utils\Cloner\ClonerException
+     * @throws \InvalidArgumentException
      */
     private function copyValue($value)
     {
@@ -209,7 +200,7 @@ class Cloner implements ClonerInterface
             return new ArrayCollection($this->copyArray($value->toArray(), false));
         }
         if ($value instanceof \Traversable) {
-            throw new ClonerException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
+            throw new \InvalidArgumentException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
         }
 
         return $this->cloneObject($value, false);
