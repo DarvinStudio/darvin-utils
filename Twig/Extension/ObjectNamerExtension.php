@@ -11,11 +11,13 @@
 namespace Darvin\Utils\Twig\Extension;
 
 use Darvin\Utils\ObjectNamer\ObjectNamerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Object namer Twig extension
  */
-class ObjectNamerExtension extends \Twig_Extension
+class ObjectNamerExtension extends AbstractExtension
 {
     /**
      * @var \Darvin\Utils\ObjectNamer\ObjectNamerInterface
@@ -36,7 +38,7 @@ class ObjectNamerExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('utils_name_object', [$this->objectNamer, 'name']),
+            new TwigFilter('utils_name_object', [$this->objectNamer, 'name']),
         ];
     }
 }

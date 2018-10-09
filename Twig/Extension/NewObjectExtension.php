@@ -11,11 +11,13 @@
 namespace Darvin\Utils\Twig\Extension;
 
 use Darvin\Utils\NewObject\NewObjectCounterInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * New object Twig extension
  */
-class NewObjectExtension extends \Twig_Extension
+class NewObjectExtension extends AbstractExtension
 {
     /**
      * @var \Darvin\Utils\NewObject\NewObjectCounterInterface
@@ -36,8 +38,8 @@ class NewObjectExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('utils_count_new_objects', [$this->newObjectCounter, 'count']),
-            new \Twig_SimpleFunction('utils_new_objects_countable', [$this->newObjectCounter, 'isCountable']),
+            new TwigFunction('utils_count_new_objects', [$this->newObjectCounter, 'count']),
+            new TwigFunction('utils_new_objects_countable', [$this->newObjectCounter, 'isCountable']),
         ];
     }
 }
