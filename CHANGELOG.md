@@ -12,4 +12,6 @@
 
 - add tree sorter interface;
 
-- remove "_" from transliterator's allowed symbol list.
+- remove "_" from transliterator's allowed symbol list;
+
+- rename events.
