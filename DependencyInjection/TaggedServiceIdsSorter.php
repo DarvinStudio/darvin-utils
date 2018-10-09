@@ -29,34 +29,33 @@ class TaggedServiceIdsSorter
     }
 
     /**
-     * @param array $taggedServiceIds Tagged service IDs
+     * @param array $ids Tagged service IDs
      */
-    public function sort(array &$taggedServiceIds)
+    public function sort(array &$ids)
     {
-        $defaultPos = $this->getMaxPosition($taggedServiceIds) + 1;
+        $defaultPos = $this->getMaxPosition($ids) + 1;
+        $posArg     = $this->positionArg;
 
-        $posArg = $this->positionArg;
-
-        uasort($taggedServiceIds, function (array $a, array $b) use ($defaultPos, $posArg) {
-            $posA = (int) (isset($a[0][$posArg]) ? $a[0][$posArg] : $defaultPos);
-            $posB = (int) (isset($b[0][$posArg]) ? $b[0][$posArg] : $defaultPos);
+        uasort($ids, function (array $a, array $b) use ($defaultPos, $posArg) {
+            $posA = (int)(isset($a[0][$posArg]) ? $a[0][$posArg] : $defaultPos);
+            $posB = (int)(isset($b[0][$posArg]) ? $b[0][$posArg] : $defaultPos);
 
             return $posA === $posB ? 0 : ($posA > $posB ? 1 : -1);
         });
     }
 
     /**
-     * @param array $taggedServiceIds Tagged service IDs
+     * @param array $ids Tagged service IDs
      *
      * @return int
      */
-    private function getMaxPosition(array $taggedServiceIds)
+    private function getMaxPosition(array $ids)
     {
         $positions = [];
 
-        foreach ($taggedServiceIds as $attr) {
+        foreach ($ids as $attr) {
             if (isset($attr[0][$this->positionArg])) {
-                $positions[] = (int) $attr[0][$this->positionArg];
+                $positions[] = (int)$attr[0][$this->positionArg];
             }
         }
 

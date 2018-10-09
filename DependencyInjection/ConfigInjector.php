@@ -13,19 +13,20 @@ namespace Darvin\Utils\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Config injector
+ * Configuration injector
  */
 class ConfigInjector
 {
     /**
-     * @param array                                                     $config    Config
+     * @param array                                                     $config    Configuration
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container DI container
      * @param string                                                    $prefix    Parameter name prefix
      */
     public function inject(array $config, ContainerInterface $container, $prefix)
     {
         foreach ($config as $name => $value) {
-            $name = $prefix.'.'.$name;
+            $name = implode('.', [$prefix, $name]);
+
             $container->setParameter($name, $value);
 
             if (is_array($value) && $this->isAssociative($value)) {
@@ -35,7 +36,7 @@ class ConfigInjector
     }
 
     /**
-     * @param array $array Array to check
+     * @param array $array Array
      *
      * @return bool
      */
