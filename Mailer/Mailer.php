@@ -31,14 +31,14 @@ class Mailer implements MailerInterface
     private $requestStack;
 
     /**
-     * @var \Swift_Mailer
-     */
-    private $swiftMailer;
-
-    /**
      * @var \Symfony\Component\Translation\TranslatorInterface
      */
     private $translator;
+
+    /**
+     * @var string
+     */
+    private $transDomain;
 
     /**
      * @var string
@@ -61,33 +61,41 @@ class Mailer implements MailerInterface
     private $prependHost;
 
     /**
+     * @var \Swift_Mailer
+     */
+    private $swiftMailer;
+
+    /**
      * @param \Psr\Log\LoggerInterface                           $logger       Logger
      * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack Request stack
-     * @param \Swift_Mailer                                      $swiftMailer  Swift Mailer
      * @param \Symfony\Component\Translation\TranslatorInterface $translator   Translator
+     * @param string                                             $transDomain  Translation domain
      * @param string                                             $charset      Charset
      * @param string                                             $from         From email
      * @param string|null                                        $fromName     From name
      * @param bool                                               $prependHost  Whether to prepend host to subject
+     * @param \Swift_Mailer|null                                 $swiftMailer  Swift Mailer
      */
     public function __construct(
         LoggerInterface $logger,
         RequestStack $requestStack,
-        \Swift_Mailer $swiftMailer = null,
         TranslatorInterface $translator,
+        $transDomain,
         $charset,
         $from,
         $fromName,
-        $prependHost
+        $prependHost,
+        \Swift_Mailer $swiftMailer = null
     ) {
         $this->logger = $logger;
         $this->requestStack = $requestStack;
-        $this->swiftMailer = $swiftMailer;
         $this->translator = $translator;
+        $this->transDomain = $transDomain;
         $this->charset = $charset;
         $this->from = $from;
         $this->fromName = $fromName;
         $this->prependHost = $prependHost;
+        $this->swiftMailer = $swiftMailer;
     }
 
     /**
@@ -150,11 +158,11 @@ class Mailer implements MailerInterface
     private function translateSubject($subject, array $subjectParams)
     {
         foreach ($subjectParams as &$param) {
-            $param = $this->translator->trans($param);
+            $param = $this->translator->trans($param, [], $this->transDomain);
         }
 
         unset($param);
 
-        return $this->translator->trans($subject, $subjectParams);
+        return $this->translator->trans($subject, $subjectParams, $this->transDomain);
     }
 }
