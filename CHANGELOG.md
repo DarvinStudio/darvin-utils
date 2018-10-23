@@ -14,4 +14,6 @@
 
 - remove "_" from transliterator's allowed symbol list;
 
-- rename events.
+- rename events;
+
+- object namer: remove "Interface" suffix.

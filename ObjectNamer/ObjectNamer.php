@@ -35,7 +35,7 @@ class ObjectNamer implements ObjectNamerInterface
      */
     public function name($objectOrClass)
     {
-        $class = is_object($objectOrClass) ? get_class($objectOrClass) : $objectOrClass;
+        $class = preg_replace('/(.*[^\\\]+)Interface$/', '$1', is_object($objectOrClass) ? get_class($objectOrClass) : $objectOrClass);
 
         if (!isset($this->names[$class])) {
             $nsParts = array_map(function ($nsPart) {
