@@ -28,7 +28,6 @@ class IntegerTypeExtension extends AbstractTypeExtension
         $builder->resetViewTransformers();
 
         $builder->addViewTransformer(new IntegerToLocalizedStringTransformer(
-            $options['scale'],
             $options['grouping'],
             $options['rounding_mode']
         ));

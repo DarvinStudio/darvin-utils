@@ -20,25 +20,10 @@ class IntegerToLocalizedStringTransformer extends BaseIntegerToLocalizedStringTr
     use NumberToLocalizedStringTransformerTrait;
 
     /**
-     * @var int|null
-     */
-    private $scale;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($scale = 0, $grouping = false, $roundingMode = self::ROUND_DOWN)
-    {
-        parent::__construct($scale, $grouping, $roundingMode);
-
-        $this->scale = $scale;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function getScale()
     {
-        return $this->scale;
+        return 0;
     }
 }
