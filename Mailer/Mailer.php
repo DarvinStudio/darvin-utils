@@ -13,7 +13,7 @@ namespace Darvin\Utils\Mailer;
 use Darvin\Utils\Strings\StringsUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Mailer
@@ -31,7 +31,7 @@ class Mailer implements MailerInterface
     private $requestStack;
 
     /**
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
     private $translator;
 
@@ -68,7 +68,7 @@ class Mailer implements MailerInterface
     /**
      * @param \Psr\Log\LoggerInterface                           $logger       Logger
      * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack Request stack
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator   Translator
+     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator   Translator
      * @param string                                             $transDomain  Translation domain
      * @param string                                             $charset      Charset
      * @param string                                             $from         From email

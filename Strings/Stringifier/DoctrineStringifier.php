@@ -11,7 +11,7 @@
 namespace Darvin\Utils\Strings\Stringifier;
 
 use Doctrine\DBAL\Types\Type;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Doctrine stringifier
@@ -29,12 +29,12 @@ class DoctrineStringifier implements StringifierInterface
     ];
 
     /**
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
     private $translator;
 
     /**
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator Translator
+     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator Translator
      */
     public function __construct(TranslatorInterface $translator)
     {
