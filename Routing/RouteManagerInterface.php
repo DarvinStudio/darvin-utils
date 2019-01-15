@@ -51,6 +51,7 @@ interface RouteManagerInterface
      *
      * @return string
      * @throws \Darvin\Utils\Routing\Exception\RouteNotExistException
+     * @throws \Darvin\Utils\Routing\Exception\RouteHasNoPathException
      */
     public function getPath($routeName);
 

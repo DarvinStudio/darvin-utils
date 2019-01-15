@@ -18,7 +18,7 @@ class RouteNotExistException extends \Exception
     /**
      * @param string $routeName Route name
      *
-     * @return \Darvin\Utils\Routing\Exception\RouteNotExistException
+     * @return RouteNotExistException
      */
     public static function create($routeName)
     {

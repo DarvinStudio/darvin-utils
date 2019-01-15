@@ -10,7 +10,9 @@
 
 namespace Darvin\Utils\Routing;
 
+use Darvin\Utils\Locale\LocaleProviderInterface;
 use Darvin\Utils\Routing\Exception\RouteHasNoOptionException;
+use Darvin\Utils\Routing\Exception\RouteHasNoPathException;
 use Darvin\Utils\Routing\Exception\RouteNotExistException;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Routing\RouterInterface;
@@ -21,6 +23,11 @@ use Symfony\Component\Routing\RouterInterface;
 class CachedRouteManager implements RouteManagerInterface
 {
     const REQUIREMENT_LOCALE = '_locale';
+
+    /**
+     * @var \Darvin\Utils\Locale\LocaleProviderInterface
+     */
+    private $localeProvider;
 
     /**
      * @var \Symfony\Component\Routing\RouterInterface
@@ -38,20 +45,29 @@ class CachedRouteManager implements RouteManagerInterface
     private $debug;
 
     /**
+     * @var string[]
+     */
+    private $locales;
+
+    /**
      * @var array|null
      */
     private $routes;
 
     /**
-     * @param \Symfony\Component\Routing\RouterInterface $router        Router
-     * @param string                                     $cachePathname Cache pathname
-     * @param bool                                       $debug         Whether debug mode is enabled
+     * @param \Darvin\Utils\Locale\LocaleProviderInterface $localeProvider Locale provider
+     * @param \Symfony\Component\Routing\RouterInterface   $router         Router
+     * @param string                                       $cachePathname  Cache pathname
+     * @param bool                                         $debug          Whether debug mode is enabled
+     * @param string[]                                     $locales        Locales
      */
-    public function __construct(RouterInterface $router, $cachePathname, $debug)
+    public function __construct(LocaleProviderInterface $localeProvider, RouterInterface $router, $cachePathname, $debug, array $locales)
     {
+        $this->localeProvider = $localeProvider;
         $this->router = $router;
         $this->cachePathname = $cachePathname;
         $this->debug = $debug;
+        $this->locales = $locales;
 
         $this->routes = null;
     }
@@ -101,7 +117,19 @@ class CachedRouteManager implements RouteManagerInterface
      */
     public function getPath($routeName)
     {
-        return $this->getRoute($routeName)['path'];
+        $paths = $this->getRoute($routeName)['paths'];
+
+        if (isset($paths[''])) {
+            return $paths[''];
+        }
+
+        $locale = $this->localeProvider->getCurrentLocale();
+
+        if (!isset($paths[$locale])) {
+            throw RouteHasNoPathException::create($routeName, $locale);
+        }
+
+        return $paths[$locale];
     }
 
     /**
@@ -130,14 +158,36 @@ class CachedRouteManager implements RouteManagerInterface
             return;
         }
 
-        $routes = [];
+        $localePattern = implode('|', $this->locales);
+        $routes        = [];
 
         foreach ($this->router->getRouteCollection() as $name => $symfonyRoute) {
-            $routes[$name] = [
-                'options'      => $symfonyRoute->getOptions(),
-                'path'         => $symfonyRoute->getPath(),
-                'requirements' => $symfonyRoute->getRequirements(),
-            ];
+            $requirements = $symfonyRoute->getRequirements();
+            $routeLocale  = '';
+
+            foreach ($this->locales as $locale) {
+                $delocalizedName = preg_replace(sprintf('/\.%s$/', $locale), '', $name);
+
+                if ($delocalizedName !== $name) {
+                    $name        = $delocalizedName;
+                    $routeLocale = $locale;
+
+                    break;
+                }
+            }
+            if (!isset($routes[$name])) {
+                if (!empty($routeLocale)) {
+                    $requirements[self::REQUIREMENT_LOCALE] = $localePattern;
+                }
+
+                $routes[$name] = [
+                    'options'      => $symfonyRoute->getOptions(),
+                    'paths'        => [],
+                    'requirements' => $requirements,
+                ];
+            }
+
+            $routes[$name]['paths'][$routeLocale] = $symfonyRoute->getPath();
         }
 
         $cache->write(sprintf('<?php return %s;', var_export($routes, true)));
