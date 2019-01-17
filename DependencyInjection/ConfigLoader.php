@@ -10,15 +10,15 @@
 
 namespace Darvin\Utils\DependencyInjection;
 
-use Darvin\Utils\DependencyInjection\Exception\ConfigNotLoadableException;
+use Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
- * Configuration file loader
+ * Configuration loader
  */
-class ConfigFileLoader
+class ConfigLoader
 {
     public const PARAM_BUNDLE   = 'bundle';
     public const PARAM_CALLBACK = 'callback';
@@ -61,7 +61,7 @@ class ConfigFileLoader
      * @param array|string $configs   Configuration files
      * @param string       $extension File extension
      *
-     * @throws \Darvin\Utils\DependencyInjection\Exception\ConfigNotLoadableException
+     * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException
      */
     public function load($configs, string $extension = 'yaml'): void
     {
@@ -80,7 +80,7 @@ class ConfigFileLoader
                 try {
                     $this->loader->load($name);
                 } catch (\Exception $ex) {
-                    throw new ConfigNotLoadableException($name, $this->dir, $ex->getMessage());
+                    throw new UnableToLoadConfigException($name, $this->dir, $ex->getMessage());
                 }
             }
         }
@@ -91,7 +91,7 @@ class ConfigFileLoader
      * @param array  $params Parameters
      *
      * @return bool
-     * @throws \Darvin\Utils\DependencyInjection\Exception\ConfigNotLoadableException
+     * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException
      */
     private function isLoadable(string $name, array $params): bool
     {
@@ -110,13 +110,13 @@ class ConfigFileLoader
                     break;
                 case self::PARAM_CALLBACK:
                     if (!is_callable($value)) {
-                        throw new ConfigNotLoadableException($name, $this->dir, '"callback" parameter\'s value is not callable');
+                        throw new UnableToLoadConfigException($name, $this->dir, '"callback" parameter\'s value is not callable');
                     }
 
                     $result = $value();
 
                     if (!is_bool($result)) {
-                        throw new ConfigNotLoadableException($name, $this->dir, sprintf('callback must return boolean, got "%s"', gettype($result)));
+                        throw new UnableToLoadConfigException($name, $this->dir, sprintf('callback must return boolean, got "%s"', gettype($result)));
                     }
                     if (!$result) {
                         return false;
@@ -133,7 +133,7 @@ class ConfigFileLoader
 
                     break;
                 default:
-                    throw new ConfigNotLoadableException($name, $this->dir, sprintf('parameter "%s" is not supported', $key));
+                    throw new UnableToLoadConfigException($name, $this->dir, sprintf('parameter "%s" is not supported', $key));
             }
         }
 

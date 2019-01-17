@@ -10,15 +10,15 @@
 
 namespace Darvin\Utils\DependencyInjection;
 
-use Darvin\Utils\DependencyInjection\Exception\ExtensionConfigNotPrependableException;
+use Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Extension configuration prepender
+ * Extension configurator
  */
-class ExtensionConfigPrepender
+class ExtensionConfigurator
 {
     /**
      * @var \Symfony\Component\Config\FileLocator
@@ -37,7 +37,7 @@ class ExtensionConfigPrepender
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container  Container builder
      * @param string[]|string                                         $extensions Extension aliases
      *
-     * @throws \Darvin\Utils\DependencyInjection\Exception\ExtensionConfigNotPrependableException
+     * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
     public function prependConfigs(ContainerBuilder $container, $extensions): void
     {
@@ -51,24 +51,24 @@ class ExtensionConfigPrepender
             try {
                 $filename = $this->fileLocator->locate(sprintf('%s.yaml', $extension));
             } catch (\Exception $ex) {
-                throw new ExtensionConfigNotPrependableException($extension, $ex->getMessage());
+                throw new UnableToConfigureExtensionException($extension, $ex->getMessage());
             }
 
             $yaml = @file_get_contents($filename);
 
             if (false === $yaml) {
-                throw new ExtensionConfigNotPrependableException($extension, sprintf('unable to read file "%s"', $filename));
+                throw new UnableToConfigureExtensionException($extension, sprintf('unable to read file "%s"', $filename));
             }
             try {
                 $config = Yaml::parse($yaml);
             } catch (\Exception $ex) {
-                throw new ExtensionConfigNotPrependableException($extension, $ex->getMessage());
+                throw new UnableToConfigureExtensionException($extension, $ex->getMessage());
             }
             if (!is_array($config)) {
-                throw new ExtensionConfigNotPrependableException($extension, 'configuration is not array');
+                throw new UnableToConfigureExtensionException($extension, 'configuration is not array');
             }
             if (!isset($config[$extension])) {
-                throw new ExtensionConfigNotPrependableException($extension, sprintf('configuration does not contain root key "%s"', $extension));
+                throw new UnableToConfigureExtensionException($extension, sprintf('configuration does not contain root key "%s"', $extension));
             }
             if (isset($config['parameters']) && is_array($config['parameters'])) {
                 foreach ($config['parameters'] as $key => $value) {

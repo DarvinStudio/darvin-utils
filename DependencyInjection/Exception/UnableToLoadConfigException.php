@@ -11,12 +11,12 @@
 namespace Darvin\Utils\DependencyInjection\Exception;
 
 /**
- * Configuration file not loadable exception
+ * Unable to load configuration exception
  */
-class ConfigNotLoadableException extends \Exception
+class UnableToLoadConfigException extends \Exception
 {
     /**
-     * @param string $name  Configuration file name
+     * @param string $name  Configuration filename
      * @param string $dir   Configuration file directory
      * @param string $error Error message
      */

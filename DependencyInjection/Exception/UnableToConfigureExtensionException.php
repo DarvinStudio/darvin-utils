@@ -11,9 +11,9 @@
 namespace Darvin\Utils\DependencyInjection\Exception;
 
 /**
- * Extension configuration not prependable exception
+ * Unable to configure extension exception
  */
-class ExtensionConfigNotPrependableException extends \Exception
+class UnableToConfigureExtensionException extends \Exception
 {
     /**
      * @param string $extension Extension alias
@@ -21,6 +21,6 @@ class ExtensionConfigNotPrependableException extends \Exception
      */
     public function __construct(string $extension, string $error)
     {
-        parent::__construct(sprintf('Unable to prepend "%s" extension\'s configuration: %s.', $extension, lcfirst($error)));
+        parent::__construct(sprintf('Unable to configure extension "%s": %s.', $extension, lcfirst($error)));
     }
 }
