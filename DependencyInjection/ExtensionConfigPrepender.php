@@ -21,35 +21,28 @@ use Symfony\Component\Yaml\Yaml;
 class ExtensionConfigPrepender
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
-     */
-    private $container;
-
-    /**
      * @var \Symfony\Component\Config\FileLocator
      */
     private $fileLocator;
 
     /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container Container builder
-     * @param string                                                  $configDir Extension configuration file directory
+     * @param string $configDir Extension configuration file directory
      */
-    public function __construct(ContainerBuilder $container, string $configDir)
+    public function __construct(string $configDir)
     {
-        $this->container = $container;
-
         $this->fileLocator = new FileLocator($configDir);
     }
 
     /**
-     * @param string[] $extensions Extension aliases
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container  Container builder
+     * @param string[]                                                $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\ExtensionConfigNotPrependableException
      */
-    public function prependConfigs(array $extensions): void
+    public function prependConfigs(ContainerBuilder $container, array $extensions): void
     {
         foreach ($extensions as $extension) {
-            if (!$this->container->hasExtension($extension)) {
+            if (!$container->hasExtension($extension)) {
                 continue;
             }
             try {
@@ -76,11 +69,11 @@ class ExtensionConfigPrepender
             }
             if (isset($config['parameters']) && is_array($config['parameters'])) {
                 foreach ($config['parameters'] as $key => $value) {
-                    $this->container->setParameter($key, $value);
+                    $container->setParameter($key, $value);
                 }
             }
 
-            $this->container->prependExtensionConfig($extension, $config[$extension]);
+            $container->prependExtensionConfig($extension, $config[$extension]);
         }
     }
 }

@@ -25,11 +25,6 @@ class ConfigFileLoader
     public const PARAM_ENV      = 'env';
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
-     */
-    private $container;
-
-    /**
      * @var string
      */
     private $dir;
@@ -55,8 +50,7 @@ class ConfigFileLoader
      */
     public function __construct(ContainerBuilder $container, string $dir)
     {
-        $this->container = $container;
-        $this->dir       = $dir;
+        $this->dir = $dir;
 
         $this->bundles = $container->getParameter('kernel.bundles');
         $this->env     = $container->getParameter('kernel.environment');
