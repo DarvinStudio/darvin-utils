@@ -59,12 +59,12 @@ class ConfigLoader
     }
 
     /**
-     * @param array|string $configs   Configuration files
-     * @param string       $extension File extension
+     * @param array|string $configs       Configuration files
+     * @param string       $fileExtension File extension
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException
      */
-    public function load($configs, string $extension = 'yaml'): void
+    public function load($configs, string $fileExtension = 'yaml'): void
     {
         if (!is_array($configs)) {
             $configs = [$configs];
@@ -75,7 +75,7 @@ class ConfigLoader
                 $params = [];
             }
             if (!preg_match('/\.[0-9a-z]+$/i', $name)) {
-                $name .= sprintf('.%s', $extension);
+                $name .= sprintf('.%s', $fileExtension);
             }
             if ($this->isLoadable($name, $params)) {
                 try {
