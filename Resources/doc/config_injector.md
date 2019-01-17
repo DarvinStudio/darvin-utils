@@ -24,8 +24,8 @@ class AppExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $configInjector = new ConfigInjector();
-        $configInjector->inject($config, $container, 'app');
+        $configInjector = new ConfigInjector($container);
+        $configInjector->inject($config, 'app');
     }
 }
 ```
