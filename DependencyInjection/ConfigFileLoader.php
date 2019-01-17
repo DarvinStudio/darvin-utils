@@ -84,7 +84,7 @@ class ConfigFileLoader
     }
 
     /**
-     * @param string $name   Configuration file name
+     * @param string $name   Configuration filename
      * @param array  $params Parameters
      *
      * @return bool
