@@ -20,36 +20,45 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ExtensionConfigurator
 {
+    private const FILE_EXTENSION = '.yaml';
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     */
+    private $container;
+
     /**
      * @var \Symfony\Component\Config\FileLocator
      */
     private $fileLocator;
 
     /**
-     * @param string $configDir Extension configuration file directory
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container Container builder
+     * @param string                                                  $configDir Extension configuration file directory
      */
-    public function __construct(string $configDir)
+    public function __construct(ContainerBuilder $container, string $configDir)
     {
+        $this->container = $container;
+
         $this->fileLocator = new FileLocator($configDir);
     }
 
     /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container  Container builder
-     * @param string[]|string                                         $extensions Extension aliases
+     * @param string[]|string $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
-    public function configure(ContainerBuilder $container, $extensions): void
+    public function configure($extensions): void
     {
         if (!is_array($extensions)) {
             $extensions = [$extensions];
         }
         foreach ($extensions as $extension) {
-            if (!$container->hasExtension($extension)) {
+            if (!$this->container->hasExtension($extension)) {
                 continue;
             }
             try {
-                $filename = $this->fileLocator->locate(sprintf('%s.yaml', $extension));
+                $filename = $this->fileLocator->locate($extension.self::FILE_EXTENSION);
             } catch (\Exception $ex) {
                 throw new UnableToConfigureExtensionException($extension, $ex->getMessage());
             }
@@ -72,11 +81,11 @@ class ExtensionConfigurator
             }
             if (isset($config['parameters']) && is_array($config['parameters'])) {
                 foreach ($config['parameters'] as $key => $value) {
-                    $container->setParameter($key, $value);
+                    $this->container->setParameter($key, $value);
                 }
             }
 
-            $container->prependExtensionConfig($extension, $config[$extension]);
+            $this->container->prependExtensionConfig($extension, $config[$extension]);
         }
     }
 }
