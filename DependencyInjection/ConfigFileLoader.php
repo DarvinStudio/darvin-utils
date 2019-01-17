@@ -58,13 +58,16 @@ class ConfigFileLoader
     }
 
     /**
-     * @param array  $configs   Configuration files
-     * @param string $extension File extension
+     * @param array|string $configs   Configuration files
+     * @param string       $extension File extension
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\ConfigNotLoadableException
      */
-    public function load(array $configs, string $extension = 'yaml'): void
+    public function load($configs, string $extension = 'yaml'): void
     {
+        if (!is_array($configs)) {
+            $configs = [$configs];
+        }
         foreach ($configs as $name => $params) {
             if (!is_array($params)) {
                 $name   = $params;

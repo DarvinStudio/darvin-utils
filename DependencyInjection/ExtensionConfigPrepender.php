@@ -35,12 +35,15 @@ class ExtensionConfigPrepender
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container  Container builder
-     * @param string[]                                                $extensions Extension aliases
+     * @param string[]|string                                         $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\ExtensionConfigNotPrependableException
      */
-    public function prependConfigs(ContainerBuilder $container, array $extensions): void
+    public function prependConfigs(ContainerBuilder $container, $extensions): void
     {
+        if (!is_array($extensions)) {
+            $extensions = [$extensions];
+        }
         foreach ($extensions as $extension) {
             if (!$container->hasExtension($extension)) {
                 continue;
