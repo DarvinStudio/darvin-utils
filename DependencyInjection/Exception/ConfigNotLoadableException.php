@@ -22,6 +22,6 @@ class ConfigNotLoadableException extends \Exception
      */
     public function __construct(string $name, string $dir, string $error)
     {
-        parent::__construct(sprintf('Unable to load configuration file "%s" from directory "%s": %s.', $name, $dir, $error));
+        parent::__construct(sprintf('Unable to load configuration file "%s" from directory "%s": %s.', $name, $dir, lcfirst($error)));
     }
 }

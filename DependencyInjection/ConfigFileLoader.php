@@ -65,7 +65,7 @@ class ConfigFileLoader
 
     /**
      * @param array  $configs   Configuration files
-     * @param string $extension File name extension
+     * @param string $extension File extension
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\ConfigNotLoadableException
      */
