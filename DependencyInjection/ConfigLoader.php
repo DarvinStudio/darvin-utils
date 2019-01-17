@@ -20,9 +20,10 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  */
 class ConfigLoader
 {
-    public const PARAM_BUNDLE   = 'bundle';
-    public const PARAM_CALLBACK = 'callback';
-    public const PARAM_ENV      = 'env';
+    public const PARAM_BUNDLE    = 'bundle';
+    public const PARAM_CALLBACK  = 'callback';
+    public const PARAM_ENV       = 'env';
+    public const PARAM_EXTENSION = 'extension';
 
     /**
      * @var string
@@ -129,6 +130,17 @@ class ConfigLoader
                     }
                     if (!in_array($this->env, $value)) {
                         return false;
+                    }
+
+                    break;
+                case self::PARAM_EXTENSION:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $extension) {
+                        if (!extension_loaded($extension)) {
+                            return false;
+                        }
                     }
 
                     break;
