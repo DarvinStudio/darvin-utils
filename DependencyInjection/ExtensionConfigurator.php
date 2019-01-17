@@ -39,7 +39,7 @@ class ExtensionConfigurator
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
-    public function prependConfigs(ContainerBuilder $container, $extensions): void
+    public function configure(ContainerBuilder $container, $extensions): void
     {
         if (!is_array($extensions)) {
             $extensions = [$extensions];
