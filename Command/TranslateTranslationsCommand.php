@@ -81,7 +81,7 @@ class TranslateTranslationsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         /** @var \SplFileInfo $file */
-        foreach ((new Finder())->in($input->getArgument('directory'))->files()->name(sprintf('*.%s.yml', $from)) as $file) {
+        foreach ((new Finder())->in($input->getArgument('directory'))->files()->name(sprintf('*.%s.yaml', $from)) as $file) {
             $io->comment('Translating '.$file->getPathname());
 
             file_put_contents(
