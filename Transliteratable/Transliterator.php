@@ -15,10 +15,7 @@ namespace Darvin\Utils\Transliteratable;
  */
 class Transliterator implements TransliteratorInterface
 {
-    /**
-     * @var array
-     */
-    private static $replacements = [
+    private const REPLACEMENTS = [
         'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',  'е' => 'e', 'ё' => 'yo', 'ж' => 'zh', 'з' => 'z',
         'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm',  'н' => 'n', 'о' => 'o',  'п' => 'p',  'р' => 'r',
         'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h',  'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sh',
@@ -32,7 +29,7 @@ class Transliterator implements TransliteratorInterface
     {
         $lowercase = mb_strtolower($text);
 
-        $transliterated = strtr($lowercase, self::$replacements);
+        $transliterated = strtr($lowercase, self::REPLACEMENTS);
         $transliterated = \Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($transliterated));
         $transliterated = strtolower($transliterated);
 

@@ -18,10 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class DoctrineStringifier implements StringifierInterface
 {
-    /**
-     * @var array
-     */
-    private static $datetimeFormats = [
+    private const DATETIME_FORMATS = [
         Type::DATE       => 'd.m.Y',
         Type::DATETIME   => 'd.m.Y H:i:s',
         Type::DATETIMETZ => 'd.m.Y H:i:s',
@@ -68,7 +65,7 @@ class DoctrineStringifier implements StringifierInterface
             case Type::DATETIME:
             case Type::DATETIMETZ:
             case Type::TIME:
-                return $this->stringifyDatetime($value, self::$datetimeFormats[$dataType]);
+                return $this->stringifyDatetime($value, self::DATETIME_FORMATS[$dataType]);
 
             case Type::JSON_ARRAY:
             case Type::SIMPLE_ARRAY:

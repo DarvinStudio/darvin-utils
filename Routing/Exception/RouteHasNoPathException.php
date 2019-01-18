@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2019, Darvin Studio
@@ -18,11 +18,9 @@ class RouteHasNoPathException extends \Exception
     /**
      * @param string $routeName Route name
      * @param string $locale    Locale
-     *
-     * @return RouteHasNoPathException
      */
-    public static function create($routeName, $locale)
+    public function __construct(string $routeName, string $locale)
     {
-        return new self(sprintf('Route "%s" has no path for locale "%s".', $routeName, $locale));
+        parent::__construct(sprintf('Route "%s" has no path for locale "%s".', $routeName, $locale));
     }
 }

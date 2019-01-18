@@ -96,7 +96,7 @@ class CachedRouteManager implements RouteManagerInterface
     public function getOption($routeName, $option)
     {
         if (!$this->hasOption($routeName, $option)) {
-            throw RouteHasNoOptionException::create($routeName, $option);
+            throw new RouteHasNoOptionException($routeName, $option);
         }
 
         return $this->getRoute($routeName)['options'][$option];
@@ -126,7 +126,7 @@ class CachedRouteManager implements RouteManagerInterface
         $locale = $this->localeProvider->getCurrentLocale();
 
         if (!isset($paths[$locale])) {
-            throw RouteHasNoPathException::create($routeName, $locale);
+            throw new RouteHasNoPathException($routeName, $locale);
         }
 
         return $paths[$locale];
@@ -202,7 +202,7 @@ class CachedRouteManager implements RouteManagerInterface
     private function getRoute($routeName)
     {
         if (!$this->exists($routeName)) {
-            throw RouteNotExistException::create($routeName);
+            throw new RouteNotExistException($routeName);
         }
 
         return $this->getRoutes()[$routeName];

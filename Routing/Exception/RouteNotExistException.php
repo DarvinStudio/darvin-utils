@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2017-2018, Darvin Studio
@@ -17,11 +17,9 @@ class RouteNotExistException extends \Exception
 {
     /**
      * @param string $routeName Route name
-     *
-     * @return RouteNotExistException
      */
-    public static function create($routeName)
+    public function __construct(string $routeName)
     {
-        return new self(sprintf('Route "%s" does not exist.', $routeName));
+        parent::__construct(sprintf('Route "%s" does not exist.', $routeName));
     }
 }
