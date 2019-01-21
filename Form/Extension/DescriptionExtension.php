@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015, Darvin Studio
@@ -21,12 +21,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class DescriptionExtension extends AbstractTypeExtension
 {
-    const OPTION = 'description';
+    private const OPTION = 'description';
 
     /**
      * {@inheritdoc}
      */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars[self::OPTION] = $options[self::OPTION];
     }
@@ -34,21 +34,18 @@ class DescriptionExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefault(self::OPTION, null)
-            ->setAllowedTypes(self::OPTION, [
-                'null',
-                'string',
-            ]);
+            ->setAllowedTypes(self::OPTION, ['string', 'null']);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExtendedType()
+    public static function getExtendedTypes(): iterable
     {
-        return FormType::class;
+        yield FormType::class;
     }
 }
