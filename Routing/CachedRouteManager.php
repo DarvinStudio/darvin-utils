@@ -22,7 +22,7 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class CachedRouteManager implements RouteManagerInterface
 {
-    const REQUIREMENT_LOCALE = '_locale';
+    private const REQUIREMENT_LOCALE = '_locale';
 
     /**
      * @var \Darvin\Utils\Locale\LocaleProviderInterface

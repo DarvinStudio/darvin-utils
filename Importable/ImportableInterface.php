@@ -15,7 +15,7 @@ namespace Darvin\Utils\Importable;
  */
 interface ImportableInterface
 {
-    const IMPORT_ID_FIELD = 'importId';
+    public const IMPORT_ID_FIELD = 'importId';
 
     /**
      * @return string

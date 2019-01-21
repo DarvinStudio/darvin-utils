@@ -15,10 +15,10 @@ namespace Darvin\Utils\Flash;
  */
 interface FlashNotifierInterface
 {
-    const MESSAGE_FORM_ERROR = 'flash.error.form';
+    public const MESSAGE_FORM_ERROR = 'flash.error.form';
 
-    const TYPE_ERROR   = 'error';
-    const TYPE_SUCCESS = 'success';
+    public const TYPE_ERROR   = 'error';
+    public const TYPE_SUCCESS = 'success';
 
     /**
      * Adds form error message.
