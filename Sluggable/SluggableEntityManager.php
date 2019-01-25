@@ -129,7 +129,7 @@ class SluggableEntityManager implements SluggableManagerInterface
                 continue;
             }
             foreach ($this->slugHandlers as $slugHandler) {
-                $slugHandler->handle($entity, $newSlug, $slugSuffix, $em);
+                $slugHandler->handle($newSlug, $slugSuffix, $entity, $em);
             }
 
             $slugsChangeSet[$oldSlug] = $newSlug;

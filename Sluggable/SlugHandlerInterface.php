@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -18,10 +18,10 @@ use Doctrine\ORM\EntityManager;
 interface SlugHandlerInterface
 {
     /**
-     * @param object                      $entity Entity
      * @param string                      $slug   Slug
      * @param string                      $suffix Slug suffix
+     * @param object                      $entity Entity
      * @param \Doctrine\ORM\EntityManager $em     Entity manager
      */
-    public function handle($entity, &$slug, &$suffix, EntityManager $em);
+    public function handle(string &$slug, string &$suffix, $entity, EntityManager $em): void;
 }
