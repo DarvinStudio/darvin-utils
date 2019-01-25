@@ -14,7 +14,7 @@ use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Knp\DoctrineBehaviors\ORM\Translatable\TranslatableSubscriber as BaseTranslatableSubscriber;
 use Knp\DoctrineBehaviors\Reflection\ClassAnalyzer;
 
@@ -80,8 +80,8 @@ class TranslatableSubscriber extends BaseTranslatableSubscriber
         $this->translatableTrait = $translatableTrait;
         $this->translationTrait = $translationTrait;
 
-        $this->translatableFetchMode = constant(ClassMetadata::class.'::FETCH_'.$translatableFetchMode);
-        $this->translationFetchMode  = constant(ClassMetadata::class.'::FETCH_'.$translationFetchMode);
+        $this->translatableFetchMode = constant(ClassMetadataInfo::class.'::FETCH_'.$translatableFetchMode);
+        $this->translationFetchMode  = constant(ClassMetadataInfo::class.'::FETCH_'.$translationFetchMode);
 
         $this->entityResolver = $entityResolver;
     }
@@ -91,7 +91,7 @@ class TranslatableSubscriber extends BaseTranslatableSubscriber
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
-        /** @var \Doctrine\ORM\Mapping\ClassMetadata $meta */
+        /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $meta */
         $meta = $args->getClassMetadata();
 
         if ($this->isTranslatable($meta)) {
@@ -103,9 +103,9 @@ class TranslatableSubscriber extends BaseTranslatableSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $meta Metadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $meta Metadata
      */
-    private function mapTranslatable(ClassMetadata $meta)
+    private function mapTranslatable(ClassMetadataInfo $meta)
     {
         if (!$meta->hasAssociation('translations')) {
             $class = $this->entityResolver->resolve($meta->getName());
@@ -123,9 +123,9 @@ class TranslatableSubscriber extends BaseTranslatableSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $meta Metadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $meta Metadata
      */
-    private function mapTranslation(ClassMetadata $meta)
+    private function mapTranslation(ClassMetadataInfo $meta)
     {
         if (!$meta->hasField('id')) {
             (new ClassMetadataBuilder($meta))->createField('id', 'integer')->generatedValue('IDENTITY')->makePrimaryKey()->build();
@@ -167,21 +167,21 @@ class TranslatableSubscriber extends BaseTranslatableSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $meta Metadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $meta Metadata
      *
      * @return bool
      */
-    private function isTranslatable(ClassMetadata $meta)
+    private function isTranslatable(ClassMetadataInfo $meta)
     {
         return $this->getClassAnalyzer()->hasTrait($meta->getReflectionClass(), $this->translatableTrait, true);
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $meta Metadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $meta Metadata
      *
      * @return bool
      */
-    private function isTranslation(ClassMetadata $meta)
+    private function isTranslation(ClassMetadataInfo $meta)
     {
         return $this->getClassAnalyzer()->hasTrait($meta->getReflectionClass(), $this->translationTrait, true);
     }
