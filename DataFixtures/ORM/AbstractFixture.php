@@ -64,41 +64,6 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     }
 
     /**
-     * Generate a new image to disk and return its location.
-     *
-     * @example '/path/to/dir/13b73edae8443990be1aa8f1a483bc27.jpg'
-     *
-     * @param int         $width           Width of the picture in pixels
-     * @param int         $height          Height of the picture in pixels
-     * @param string|null $text            Text to generate on the picture
-     * @param string|null $textColor       Text color in hexadecimal format
-     * @param string|null $backgroundColor Background color in hexadecimal format
-     * @param string|null $fontPath        The name/path to the font
-     * @param string      $format          Image format, jpg or png
-     *
-     * @return \Symfony\Component\HttpFoundation\File\UploadedFile
-     * @throws \RuntimeException
-     */
-    final protected function createImageFile(
-        int $width = 800,
-        int $height = 600,
-        ?string $text = null,
-        ?string $textColor = null,
-        ?string $backgroundColor = null,
-        ?string $fontPath = null,
-        string $format = 'png'
-    ): UploadedFile
-    {
-        if (!class_exists('Andyftw\Faker\ImageProvider')) {
-            throw new \RuntimeException('Please install "andyftw/image-faker" in order to generate images.');
-        }
-
-        $pathname = $this->getFaker()->imageFile(null, $width, $height, $format, true, $text, $textColor, $backgroundColor, $fontPath);
-
-        return new UploadedFile($pathname, $pathname, null, null, null, true);
-    }
-
-    /**
      * @param string $fakerLocale Faker locale
      *
      * @return string
@@ -119,6 +84,41 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
         }
 
         return implode(PHP_EOL, $parts);
+    }
+
+    /**
+     * Generate a new image to disk and return its location.
+     *
+     * @example '/path/to/dir/13b73edae8443990be1aa8f1a483bc27.jpg'
+     *
+     * @param int         $width           Width of the picture in pixels
+     * @param int         $height          Height of the picture in pixels
+     * @param string|null $text            Text to generate on the picture
+     * @param string|null $textColor       Text color in hexadecimal format
+     * @param string|null $backgroundColor Background color in hexadecimal format
+     * @param string|null $fontPath        The name/path to the font
+     * @param string      $format          Image format, jpg or png
+     *
+     * @return \Symfony\Component\HttpFoundation\File\UploadedFile
+     * @throws \RuntimeException
+     */
+    final protected function generateImageFile(
+        int $width = 800,
+        int $height = 600,
+        ?string $text = null,
+        ?string $textColor = null,
+        ?string $backgroundColor = null,
+        ?string $fontPath = null,
+        string $format = 'png'
+    ): UploadedFile
+    {
+        if (!class_exists('Andyftw\Faker\ImageProvider')) {
+            throw new \RuntimeException('Please install "andyftw/image-faker" in order to generate images.');
+        }
+
+        $pathname = $this->getFaker()->imageFile(null, $width, $height, $format, true, $text, $textColor, $backgroundColor, $fontPath);
+
+        return new UploadedFile($pathname, $pathname, null, null, null, true);
     }
 
     /**
