@@ -27,6 +27,10 @@ class Transliterator implements TransliteratorInterface
      */
     public function transliterate($text, $sanitize = true, array $allowedSymbols = [], $separator = '-')
     {
+        if (null === $text) {
+            return $text;
+        }
+
         $lowercase = mb_strtolower($text);
 
         $transliterated = strtr($lowercase, self::REPLACEMENTS);
