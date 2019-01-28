@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\DataFixtures\ORM;
 
+use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\ORM\EntityManager;
 use Faker\Factory;
@@ -196,10 +197,48 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     }
 
     /**
+     * @param string $entity Entity class or interface
+     *
+     * @return object
+     */
+    final protected function instantiateEntity(string $entity)
+    {
+        $class = $this->getEntityResolver()->resolve($entity);
+
+        return new $class();
+    }
+
+    /**
+     * @param string $entity Entity class or interface
+     *
+     * @return object
+     */
+    final protected function instantiateTranslation(string $entity)
+    {
+        $callback = [$this->getEntityResolver()->resolve($entity), 'getTranslationEntityClass'];
+
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException(sprintf('"%s" is not translatable.', $entity));
+        }
+
+        $class = $callback();
+
+        return new $class();
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityManager
      */
     final protected function getEntityManager(): EntityManager
     {
         return $this->container->get('doctrine.orm.entity_manager');
+    }
+
+    /**
+     * @return \Darvin\Utils\ORM\EntityResolverInterface
+     */
+    final protected function getEntityResolver(): EntityResolverInterface
+    {
+        return $this->container->get('darvin_utils.orm.entity_resolver');
     }
 }
