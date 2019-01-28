@@ -122,25 +122,29 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     }
 
     /**
-     * @param string $class      Entity class
+     * @param string $entity     Entity class or interface
      * @param string $idProperty ID property
      *
      * @return object|null
      */
-    final protected function getRandomEntity(string $class, string $idProperty = 'id')
+    final protected function getRandomEntity(string $entity, string $idProperty = 'id')
     {
-        $em = $this->getEntityManager();
+        $entity = $this->getEntityResolver()->resolve($entity);
 
-        if (!isset($this->entityIds[$class])) {
-            $this->entityIds[$class] = array_column(
-                $em->getRepository($class)->createQueryBuilder('o')->select('o.'.$idProperty)->getQuery()->getScalarResult(),
+        if (!isset($this->entityIds[$entity])) {
+            $this->entityIds[$entity] = array_column(
+                $this->getEntityManager()->getRepository($entity)->createQueryBuilder('o')->select('o.'.$idProperty)->getQuery()->getScalarResult(),
                 $idProperty
             );
         }
 
-        $ids = $this->entityIds[$class];
+        $ids = $this->entityIds[$entity];
 
-        return !empty($ids) ? $em->getReference($class, $ids[array_rand($ids)]) : null;
+        if (!empty($ids)) {
+            return $this->getEntityManager()->getReference($entity, $ids[array_rand($ids)]);
+        }
+
+        return null;
     }
 
     /**
