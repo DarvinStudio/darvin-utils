@@ -103,7 +103,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      *
      * @return string
      */
-    final protected function generateHtml(string $fakerLocale = Factory::DEFAULT_LOCALE): string
+    final protected function generateHtml(string $fakerLocale): string
     {
         if ('ru_RU' === $fakerLocale && class_exists('Darvin\TextGenerator\TextGenerator')) {
             return call_user_func(['Darvin\TextGenerator\TextGenerator', 'html'], 20);
