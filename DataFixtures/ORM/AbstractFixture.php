@@ -115,11 +115,12 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
         if (!class_exists('Andyftw\Faker\ImageProvider')) {
             throw new \RuntimeException('Please install "andyftw/image-faker" in order to generate images.');
         }
+        if (null !== $text) {
+            $text = trim($text);
 
-        $text = trim($text);
-
-        if (empty($text)) {
-            $text = null;
+            if (empty($text)) {
+                $text = null;
+            }
         }
 
         $pathname = $this->getFaker()->imageFile(null, $width, $height, $format, true, $text, $textColor, $backgroundColor, $fontPath);
