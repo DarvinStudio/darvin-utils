@@ -30,32 +30,44 @@ class StringsUtil
     }
 
     /**
-     * @param string $word Word
+     * @param string|null $word Word
      *
      * @return bool
      */
     public static function isUppercase($word)
     {
+        if (null === $word) {
+            return false;
+        }
+
         return mb_strtoupper($word) === $word;
     }
 
     /**
-     * @param string $text Text
+     * @param string|null $text Text
      *
-     * @return string
+     * @return string|null
      */
     public static function lowercaseFirst($text)
     {
+        if (null === $text) {
+            return $text;
+        }
+
         return mb_strtolower(mb_substr($text, 0, 1)).mb_substr($text, 1);
     }
 
     /**
-     * @param string $text Text
+     * @param string|null $text Text
      *
-     * @return string
+     * @return string|null
      */
     public static function toCamelCase($text)
     {
+        if (null === $text) {
+            return $text;
+        }
+
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $text)));
     }
 
