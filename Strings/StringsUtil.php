@@ -16,12 +16,16 @@ namespace Darvin\Utils\Strings;
 class StringsUtil
 {
     /**
-     * @param string $text Text
+     * @param string|null $text Text
      *
-     * @return string
+     * @return string|null
      */
     public static function humanize($text)
     {
+        if (null === $text) {
+            return $text;
+        }
+
         return ucfirst(trim(strtolower(preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], $text))));
     }
 
@@ -56,12 +60,16 @@ class StringsUtil
     }
 
     /**
-     * @param string $text Text
+     * @param string|null $text Text
      *
-     * @return string
+     * @return string|null
      */
     public static function toUnderscore($text)
     {
+        if (null === $text) {
+            return $text;
+        }
+
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $text));
     }
 }
