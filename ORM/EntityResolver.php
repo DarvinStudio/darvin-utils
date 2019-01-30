@@ -44,4 +44,12 @@ class EntityResolver implements EntityResolverInterface
     {
         return $this->replacements[$entity] ?? $entity;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function reverseResolve(string $entity): string
+    {
+        return array_search($entity, $this->replacements) ?: $entity;
+    }
 }

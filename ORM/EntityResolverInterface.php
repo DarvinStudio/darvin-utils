@@ -21,4 +21,11 @@ interface EntityResolverInterface
      * @return string
      */
     public function resolve(string $entity): string;
+
+    /**
+     * @param string $entity Entity class or interface
+     *
+     * @return string
+     */
+    public function reverseResolve(string $entity): string;
 }
