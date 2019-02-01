@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -36,24 +36,9 @@ class Mailer implements MailerInterface
     private $translator;
 
     /**
-     * @var string
+     * @var array
      */
-    private $transDomain;
-
-    /**
-     * @var string
-     */
-    private $charset;
-
-    /**
-     * @var string
-     */
-    private $from;
-
-    /**
-     * @var string|null
-     */
-    private $fromName;
+    private $defaultOptions;
 
     /**
      * @var bool
@@ -61,108 +46,115 @@ class Mailer implements MailerInterface
     private $prependHost;
 
     /**
+     * @var string
+     */
+    private $fromEmail;
+
+    /**
+     * @var string|null
+     */
+    private $fromName;
+
+    /**
      * @var \Swift_Mailer
      */
     private $swiftMailer;
 
     /**
-     * @param \Psr\Log\LoggerInterface                           $logger       Logger
-     * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack Request stack
-     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator   Translator
-     * @param string                                             $transDomain  Translation domain
-     * @param string                                             $charset      Charset
-     * @param string                                             $from         From email
-     * @param string|null                                        $fromName     From name
-     * @param bool                                               $prependHost  Whether to prepend host to subject
-     * @param \Swift_Mailer|null                                 $swiftMailer  Swift Mailer
+     * @param \Psr\Log\LoggerInterface                           $logger         Logger
+     * @param \Symfony\Component\HttpFoundation\RequestStack     $requestStack   Request stack
+     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator     Translator
+     * @param array                                              $defaultOptions Default options
+     * @param bool                                               $prependHost    Whether to prepend host to subject
+     * @param string                                             $fromEmail      From email
+     * @param string|null                                        $fromName       From name
+     * @param \Swift_Mailer|null                                 $swiftMailer    Swift Mailer
      */
     public function __construct(
         LoggerInterface $logger,
         RequestStack $requestStack,
         TranslatorInterface $translator,
-        $transDomain,
-        $charset,
-        $from,
-        $fromName,
-        $prependHost,
+        array $defaultOptions,
+        bool $prependHost,
+        string $fromEmail,
+        ?string $fromName = null,
         \Swift_Mailer $swiftMailer = null
     ) {
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->translator = $translator;
-        $this->transDomain = $transDomain;
-        $this->charset = $charset;
-        $this->from = $from;
-        $this->fromName = $fromName;
+        $this->defaultOptions = $defaultOptions;
         $this->prependHost = $prependHost;
+        $this->fromEmail = $fromEmail;
+        $this->fromName = $fromName;
         $this->swiftMailer = $swiftMailer;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [], array $messageProperties = [])
+    public function send(string $subject, string $body, $to, array $subjectParams = [], array $attachments = [], array $options = []): int
     {
         if (empty($this->swiftMailer) || empty($to)) {
             return 0;
         }
 
+        $request = $this->requestStack->getCurrentRequest();
         $subject = $this->translateSubject($subject, $subjectParams);
 
-        $request = $this->requestStack->getCurrentRequest();
-
         if ($this->prependHost && !empty($request)) {
-            $subject = $request->getHost().' '.$subject;
+            $subject = implode(' ', [$request->getHost(), $subject]);
         }
 
-        $message = new \Swift_Message($subject, $body, $contentType, $this->charset);
-        $message
-            ->setFrom($this->from, $this->fromName)
-            ->setTo($to);
+        $message = new \Swift_Message($subject, $body);
+        $message->setFrom($this->fromEmail, $this->fromName);
+        $message->setTo($to);
 
-        foreach ($filePathnames as $filePathname) {
-            if (!is_readable($filePathname)) {
-                throw new \RuntimeException(sprintf('File "%s" is not readable.', $filePathname));
+        foreach ($attachments as $attachment) {
+            if (!is_readable($attachment)) {
+                throw new \RuntimeException(sprintf('Attachment file "%s" is not readable.', $attachment));
             }
 
-            $message->attach(\Swift_Attachment::fromPath($filePathname));
+            $message->attach(\Swift_Attachment::fromPath($attachment));
         }
-        foreach ($messageProperties as $property => $value) {
-            $setter = sprintf('set%s', StringsUtil::toCamelCase($property));
+        foreach ($options as $name => $value) {
+            $setter = sprintf('set%s', StringsUtil::toCamelCase($name));
+
+            if (!method_exists($message, $setter)) {
+                throw new \InvalidArgumentException(sprintf('Option "%s" does not exist.', $name));
+            }
 
             $message->{$setter}($value);
         }
 
-        $failedRecipients = [];
-        $sent = $this->swiftMailer->send($message, $failedRecipients);
+        $failed = [];
 
-        if (!empty($failedRecipients)) {
-            $message = sprintf(
+        $sent = $this->swiftMailer->send($message, $failed);
+
+        if (!empty($failed)) {
+            $this->logger->error(sprintf(
                 '%s: unable to send e-mail with subject "%s" to recipient(s) "%s".',
                 __METHOD__,
                 $subject,
-                implode('", "', $failedRecipients)
-            );
-            $this->logger->error($message);
+                implode('", "', $failed)
+            ));
         }
 
         return $sent;
     }
 
     /**
-     * @param string $subject       Subject
-     * @param array  $subjectParams Subject translation parameters
+     * @param string $subject Subject
+     * @param array  $params  Subject translation parameters
      *
      * @return string
      */
-    private function translateSubject($subject, array $subjectParams)
+    private function translateSubject(string $subject, array $params): string
     {
-        foreach ($subjectParams as &$param) {
-            $param = $this->translator->trans($param, [], $this->transDomain);
+        foreach ($params as $key => $param) {
+            $params[$key] = $this->translator->trans($param);
         }
 
-        unset($param);
-
-        return $this->translator->trans($subject, $subjectParams, $this->transDomain);
+        return $this->translator->trans($subject, $params);
     }
 }

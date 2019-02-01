@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -16,16 +16,15 @@ namespace Darvin\Utils\Mailer;
 interface MailerInterface
 {
     /**
-     * @param string   $subject           Subject
-     * @param string   $body              Body
-     * @param mixed    $to                To
-     * @param array    $subjectParams     Subject translation parameters
-     * @param string   $contentType       Content type
-     * @param string[] $filePathnames     Attached file pathnames
-     * @param array    $messageProperties Message object property values, for example "['reply_to' => 'me@example.com']"
+     * @param string   $subject       Subject
+     * @param string   $body          Body
+     * @param mixed    $to            To
+     * @param array    $subjectParams Subject translation parameters
+     * @param string[] $attachments   Attachment file pathnames
+     * @param array    $options       Message object property values, for example "['reply_to' => 'me@example.com']"
      *
      * @return int
      * @throws \RuntimeException
      */
-    public function send($subject, $body, $to, array $subjectParams = [], $contentType = 'text/html', array $filePathnames = [], array $messageProperties = []);
+    public function send(string $subject, string $body, $to, array $subjectParams = [], array $attachments = [], array $options = []): int;
 }
