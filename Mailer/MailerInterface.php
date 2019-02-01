@@ -19,12 +19,13 @@ interface MailerInterface
      * @param string   $subject       Subject
      * @param string   $body          Body
      * @param mixed    $to            To
+     * @param array    $options       Message object property values, for example "['reply_to' => 'me@example.com']"
      * @param array    $subjectParams Subject translation parameters
      * @param string[] $attachments   Attachment file pathnames
-     * @param array    $options       Message object property values, for example "['reply_to' => 'me@example.com']"
      *
      * @return int
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function send(string $subject, string $body, $to, array $subjectParams = [], array $attachments = [], array $options = []): int;
+    public function send(string $subject, string $body, $to, array $options = [], array $subjectParams = [], array $attachments = []): int;
 }

@@ -93,7 +93,7 @@ class Mailer implements MailerInterface
     /**
      * {@inheritdoc}
      */
-    public function send(string $subject, string $body, $to, array $subjectParams = [], array $attachments = [], array $options = []): int
+    public function send(string $subject, string $body, $to, array $options = [], array $subjectParams = [], array $attachments = []): int
     {
         if (empty($this->swiftMailer) || empty($to)) {
             return 0;
