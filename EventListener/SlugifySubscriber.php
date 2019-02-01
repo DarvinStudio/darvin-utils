@@ -13,6 +13,7 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Darvin\Utils\Sluggable\SluggableManagerInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -96,7 +97,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
             return;
         }
         if ($this->sluggableManager->generateSlugs($entity, $dispatchUpdateEvent)) {
-            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata(get_class($entity)), $entity);
+            $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata(ClassUtils::getClass($entity)), $entity);
         }
     }
 
@@ -108,7 +109,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
      */
     private function hashEntity(EntityManager $em, $entity)
     {
-        $class = get_class($entity);
+        $class = ClassUtils::getClass($entity);
 
         $ids = $em->getClassMetadata($class)->getIdentifierValues($entity);
 

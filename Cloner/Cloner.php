@@ -17,6 +17,7 @@ use Darvin\Utils\Mapping\MappingException;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -90,7 +91,7 @@ class Cloner implements ClonerInterface
         $meta = [];
         $isClonable = $isEntity = false;
 
-        $class = get_class($object);
+        $class = ClassUtils::getClass($object);
 
         try {
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($class);
@@ -199,7 +200,7 @@ class Cloner implements ClonerInterface
             return new ArrayCollection($this->copyArray($value->toArray(), false));
         }
         if ($value instanceof \Traversable) {
-            throw new \InvalidArgumentException(sprintf('Traversable class "%s" is not supported.', get_class($value)));
+            throw new \InvalidArgumentException(sprintf('Traversable class "%s" is not supported.', ClassUtils::getClass($value)));
         }
 
         return $this->cloneObject($value, false);

@@ -13,6 +13,7 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Transliteratable\TransliteratorInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -84,7 +85,7 @@ class TransliterateSubscriber implements EventSubscriber
      */
     private function transliterate(EntityManager $em, $entity)
     {
-        $entityClass = get_class($entity);
+        $entityClass = ClassUtils::getClass($entity);
 
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 

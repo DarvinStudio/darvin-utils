@@ -12,6 +12,7 @@ namespace Darvin\Utils\EventListener;
 
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -73,7 +74,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
      */
     private function setDefaultValues(EntityManager $em, $entity)
     {
-        $entityClass = get_class($entity);
+        $entityClass = ClassUtils::getClass($entity);
 
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
