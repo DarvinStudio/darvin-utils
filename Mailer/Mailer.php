@@ -99,6 +99,7 @@ class Mailer implements MailerInterface
             return 0;
         }
 
+        $options = array_merge($this->defaultOptions, $options);
         $request = $this->requestStack->getCurrentRequest();
         $subject = $this->translateSubject($subject, $subjectParams);
 
