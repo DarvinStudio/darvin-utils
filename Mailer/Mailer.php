@@ -78,7 +78,7 @@ class Mailer implements MailerInterface
         bool $prependHost,
         string $fromEmail,
         ?string $fromName = null,
-        \Swift_Mailer $swiftMailer = null
+        ?\Swift_Mailer $swiftMailer = null
     ) {
         $this->logger = $logger;
         $this->requestStack = $requestStack;
