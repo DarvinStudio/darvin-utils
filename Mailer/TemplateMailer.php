@@ -50,6 +50,10 @@ class TemplateMailer implements TemplateMailerInterface
         array $subjectParams = [],
         array $attachments = []
     ): int {
+        if (empty($to)) {
+            return 0;
+        }
+
         $body = $this->getTemplating()->render($template, array_merge([
             'email_type' => TemplateMailerInterface::TYPE_PUBLIC,
         ], $templateParams));
@@ -69,6 +73,10 @@ class TemplateMailer implements TemplateMailerInterface
         array $subjectParams = [],
         array $attachments = []
     ): int {
+        if (empty($to)) {
+            return 0;
+        }
+
         $body = $this->getTemplating()->render($template, array_merge([
             'email_type' => TemplateMailerInterface::TYPE_SERVICE,
         ], $templateParams));
