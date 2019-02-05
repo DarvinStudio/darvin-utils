@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Alexey Gorshkov <moonhorn33@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @copyright Copyright (c) 2018-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -36,7 +37,7 @@ class TitleCaseTranslationsCommand extends Command
      * @param string $baseUrl Base URL
      * @param int    $timeout HTTP timeout
      */
-    public function __construct($name, $baseUrl, $timeout)
+    public function __construct(string $name, string $baseUrl, int $timeout)
     {
         parent::__construct($name);
 
@@ -47,12 +48,12 @@ class TitleCaseTranslationsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Converts translations to title case')
             ->setDefinition([
-                new InputArgument('pathname', InputArgument::REQUIRED, 'File pathname'),
+                new InputArgument('pathname', InputArgument::REQUIRED, 'File or directory pathname'),
             ]);
     }
 
@@ -63,10 +64,24 @@ class TitleCaseTranslationsCommand extends Command
     {
         $pathname = $input->getArgument('pathname');
 
-        if (!is_file($pathname)) {
-            throw new \InvalidArgumentException(sprintf('"%s" is not file.', $pathname));
-        }
+        if (!is_dir($pathname)) {
+            $this->titleCaseFile($pathname);
 
+            return;
+        }
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ((new Finder())->in($pathname)->files() as $file) {
+            $this->titleCaseFile($file->getPathname());
+        }
+    }
+
+    /**
+     * @param string $pathname File pathname
+     *
+     * @throws \RuntimeException
+     */
+    private function titleCaseFile(string $pathname): void
+    {
         $content = @file_get_contents($pathname);
 
         if (false === $content) {
@@ -102,8 +117,9 @@ class TitleCaseTranslationsCommand extends Command
      * @param string $content Translation file content
      *
      * @return string
+     * @throws \RuntimeException
      */
-    final protected function toTitleCase($content)
+    private function toTitleCase(string $content): string
     {
         $curl = curl_init(sprintf('%s/titlecase/', $this->baseUrl));
 
