@@ -63,6 +63,10 @@ class TitleCaseTranslationsCommand extends Command
     {
         $pathname = $input->getArgument('pathname');
 
+        if (!is_file($pathname)) {
+            throw new \InvalidArgumentException(sprintf('"%s" is not file.', $pathname));
+        }
+
         $content = @file_get_contents($pathname);
 
         if (false === $content) {
