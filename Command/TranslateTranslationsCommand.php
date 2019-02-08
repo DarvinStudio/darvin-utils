@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2017, Darvin Studio
+ * @copyright Copyright (c) 2017-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -35,10 +35,10 @@ class TranslateTranslationsCommand extends Command
     private $direction;
 
     /**
-     * @param string $name   Command name
-     * @param string $apiKey Yandex Translate API key
+     * @param string      $name   Command name
+     * @param string|null $apiKey Yandex Translate API key
      */
-    public function __construct($name, $apiKey)
+    public function __construct(string $name, ?string $apiKey = null)
     {
         parent::__construct($name);
 
@@ -47,7 +47,7 @@ class TranslateTranslationsCommand extends Command
         $this->direction = null;
 
         $this->setDefinition([
-            new InputArgument('target_language', InputArgument::REQUIRED, 'Target language'),
+            new InputArgument('target_languages', InputArgument::REQUIRED, 'Target language(s), comma separated'),
             new InputArgument('directory', InputArgument::REQUIRED, 'Translation file directory'),
             new InputArgument('yandex_translate_api_key', !empty($apiKey) ? InputArgument::OPTIONAL : InputArgument::REQUIRED, 'Yandex Translate API key'),
             new InputOption('source_language', 's', InputOption::VALUE_OPTIONAL, 'Source language', 'en'),
@@ -57,7 +57,7 @@ class TranslateTranslationsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Translates translation files from one language to another.');
     }
@@ -67,27 +67,26 @@ class TranslateTranslationsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $from = $input->getOption('source_language');
-        $to   = $input->getArgument('target_language');
-
+        $from   = $input->getOption('source_language');
         $apiKey = $input->getArgument('yandex_translate_api_key');
 
         if (!empty($apiKey)) {
             $this->apiKey = $apiKey;
         }
+        foreach (array_map('trim', explode(',', $input->getArgument('target_languages'))) as $to) {
+            $this->direction = implode('-', [$from, $to]);
 
-        $this->direction = implode('-', [$from, $to]);
+            $io = new SymfonyStyle($input, $output);
 
-        $io = new SymfonyStyle($input, $output);
+            /** @var \SplFileInfo $file */
+            foreach ((new Finder())->in($input->getArgument('directory'))->files()->name(sprintf('*.%s.yaml', $from)) as $file) {
+                $io->comment('Translating '.$file->getPathname());
 
-        /** @var \SplFileInfo $file */
-        foreach ((new Finder())->in($input->getArgument('directory'))->files()->name(sprintf('*.%s.yaml', $from)) as $file) {
-            $io->comment('Translating '.$file->getPathname());
-
-            file_put_contents(
-                $file->getPath().DIRECTORY_SEPARATOR.str_replace(sprintf('.%s.', $from), sprintf('.%s.', $to), $file->getFilename()),
-                Yaml::dump($this->translate(Yaml::parse(file_get_contents($file->getPathname()))), 100, 4)
-            );
+                file_put_contents(
+                    $file->getPath().DIRECTORY_SEPARATOR.str_replace(sprintf('.%s.', $from), sprintf('.%s.', $to), $file->getFilename()),
+                    Yaml::dump($this->translate(Yaml::parse(file_get_contents($file->getPathname()))), 100, 4)
+                );
+            }
         }
     }
 
@@ -96,7 +95,7 @@ class TranslateTranslationsCommand extends Command
      *
      * @return array
      */
-    private function translate(array $translations)
+    private function translate(array $translations): array
     {
         foreach ($translations as $key => $part) {
             if (is_array($part)) {
@@ -110,11 +109,11 @@ class TranslateTranslationsCommand extends Command
     }
 
     /**
-     * @param string $text Text
+     * @param string|null $text Text
      *
-     * @return string
+     * @return string|null
      */
-    private function translateText($text)
+    private function translateText(?string $text): ?string
     {
         if (empty($text) || preg_match('/^\s+$/', $text)) {
             return $text;
