@@ -30,8 +30,10 @@ class TaggedServiceIdsSorter
 
     /**
      * @param array $ids Tagged service IDs
+     *
+     * @return array
      */
-    public function sort(array &$ids): void
+    public function sort(array &$ids): array
     {
         $defaultPos = $this->getMaxPosition($ids) + 1;
         $posArg     = $this->positionArg;
@@ -42,6 +44,8 @@ class TaggedServiceIdsSorter
 
             return $posA <=> $posB;
         });
+
+        return $ids;
     }
 
     /**
