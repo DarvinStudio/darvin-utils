@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2017, Darvin Studio
+ * @copyright Copyright (c) 2017-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -23,17 +23,17 @@ interface HomepageRouterInterface
      *
      * @return null|string
      */
-    public function generate($referenceType = UrlGeneratorInterface::ABSOLUTE_PATH, array $params = []);
+    public function generate(int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH, array $params = []): ?string;
 
     /**
      * @param object $object Object to check
      *
      * @return bool
      */
-    public function isHomepage($object);
+    public function isHomepage($object): bool;
 
     /**
      * @return string|null
      */
-    public function getHomepageRoute();
+    public function getHomepageRoute(): ?string;
 }
