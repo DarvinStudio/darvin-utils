@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -25,15 +25,20 @@ class Transliterator implements TransliteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function transliterate($text, $sanitize = true, array $allowedSymbols = [], $separator = '-')
+    public function transliterate($text, bool $sanitize = true, array $allowedSymbols = [], string $separator = '-'): string
     {
         if (null === $text) {
-            return $text;
+            return '';
         }
 
-        $lowercase = mb_strtolower($text);
+        $text = (string)$text;
 
-        $transliterated = strtr($lowercase, self::REPLACEMENTS);
+        if ('' === $text) {
+            return '';
+        }
+
+        $transliterated = mb_strtolower($text);
+        $transliterated = strtr($transliterated, self::REPLACEMENTS);
         $transliterated = \Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($transliterated));
         $transliterated = strtolower($transliterated);
 
@@ -41,24 +46,12 @@ class Transliterator implements TransliteratorInterface
             return $transliterated;
         }
 
-        $sanitized = preg_replace('/[\s_-]+/u', $separator, $transliterated);
-        $sanitized = preg_replace($this->createSanitizePattern($allowedSymbols, $separator), '', $sanitized);
-        $sanitized = preg_replace(sprintf('/%s+/', $separator), $separator, $sanitized);
-        $sanitized = trim($sanitized, $separator);
+        preg_match_all(sprintf('/[0-9a-zA-Z%s]+/', implode('', array_unique($allowedSymbols))), $transliterated, $matches);
 
-        return $sanitized;
-    }
+        if (!isset($matches[0]) || empty($matches[0])) {
+            return '';
+        }
 
-    /**
-     * @param string[] $allowedSymbols Allowed symbols
-     * @param string   $separator      Word separator
-     *
-     * @return string
-     */
-    private function createSanitizePattern(array $allowedSymbols, $separator)
-    {
-        $allowedSymbols[] = $separator;
-
-        return sprintf('/[^0-9a-zA-Z%s]+/', implode('', array_unique($allowedSymbols)));
+        return implode($separator, $matches[0]);
     }
 }
