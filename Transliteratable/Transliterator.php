@@ -42,9 +42,9 @@ class Transliterator implements TransliteratorInterface
         }
 
         $sanitized = preg_replace('/[\s_-]+/u', $separator, $transliterated);
-        $sanitized = trim($sanitized, $separator);
         $sanitized = preg_replace($this->createSanitizePattern($allowedSymbols, $separator), '', $sanitized);
         $sanitized = preg_replace(sprintf('/%s+/', $separator), $separator, $sanitized);
+        $sanitized = trim($sanitized, $separator);
 
         return $sanitized;
     }
