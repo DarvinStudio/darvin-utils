@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -11,11 +11,14 @@
 namespace Darvin\Utils\Transliteratable;
 
 /**
- * Transliterator
+ * Strict transliterator
  */
-class Transliterator implements TransliteratorInterface
+class StrictTransliterator implements TransliteratorInterface
 {
-    private const REPLACEMENTS = [
+    /**
+     * @var array
+     */
+    private static $replacements = [
         'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',  'е' => 'e', 'ё' => 'yo', 'ж' => 'zh', 'з' => 'z',
         'и' => 'i', 'й' => 'y', 'к' => 'k', 'л' => 'l', 'м' => 'm',  'н' => 'n', 'о' => 'o',  'п' => 'p',  'р' => 'r',
         'с' => 's', 'т' => 't', 'у' => 'u', 'ф' => 'f', 'х' => 'h',  'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sh',
@@ -25,7 +28,7 @@ class Transliterator implements TransliteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function transliterate($text, bool $sanitize = true, array $allowedSymbols = [], string $separator = '-'): string
+    public function transliterate($text, $sanitize = true, array $allowedSymbols = ['_'], $separator = '-')
     {
         if (null === $text) {
             return '';
@@ -38,7 +41,7 @@ class Transliterator implements TransliteratorInterface
         }
 
         $transliterated = mb_strtolower($text);
-        $transliterated = strtr($transliterated, self::REPLACEMENTS);
+        $transliterated = strtr($transliterated, self::$replacements);
         $transliterated = \Transliterator::create('Latin-ASCII')->transliterate(\Transliterator::create('Any-Latin')->transliterate($transliterated));
         $transliterated = strtolower($transliterated);
 
@@ -46,7 +49,7 @@ class Transliterator implements TransliteratorInterface
             return $transliterated;
         }
 
-        preg_match_all(sprintf('/[0-9a-z%s]+/', implode('', array_unique($allowedSymbols))), $transliterated, $matches);
+        preg_match_all('/[0-9a-z]+/', $transliterated, $matches);
 
         return implode($separator, $matches[0]);
     }

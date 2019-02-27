@@ -6,6 +6,8 @@
 
 6.6.0: Add "format_price" Twig filter.
 
+6.6.1: Add strict transliterator.
+
 7.0.0: 
 
 - remove redundant Composer script handler;
