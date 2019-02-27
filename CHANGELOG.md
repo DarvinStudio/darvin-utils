@@ -5,3 +5,5 @@
 6.5.6: Add importable interface.
 
 6.6.0: Add "format_price" Twig filter.
+
+6.6.1: Add strict transliterator.

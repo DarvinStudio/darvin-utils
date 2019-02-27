@@ -11,9 +11,9 @@
 namespace Darvin\Utils\Transliteratable;
 
 /**
- * Transliterator
+ * Default transliterator
  */
-class Transliterator implements TransliteratorInterface
+class DefaultTransliterator implements TransliteratorInterface
 {
     /**
      * @var array
