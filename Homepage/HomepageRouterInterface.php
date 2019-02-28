@@ -26,7 +26,7 @@ interface HomepageRouterInterface
     public function generate(int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH, array $params = []): ?string;
 
     /**
-     * @param object $object Object to check
+     * @param object|null $object Object to check
      *
      * @return bool
      */
