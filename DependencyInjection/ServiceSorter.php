@@ -11,9 +11,9 @@
 namespace Darvin\Utils\DependencyInjection;
 
 /**
- * Tagged service IDs sorter
+ * Service sorter
  */
-class TaggedServiceIdsSorter
+class ServiceSorter
 {
     /**
      * @var string
@@ -33,7 +33,7 @@ class TaggedServiceIdsSorter
      *
      * @return array
      */
-    public function sort(array &$ids): array
+    public function sort(array $ids): array
     {
         $defaultPos = $this->getMaxPosition($ids) + 1;
         $posArg     = $this->positionArg;
