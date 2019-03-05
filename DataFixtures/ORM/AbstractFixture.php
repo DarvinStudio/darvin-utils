@@ -159,9 +159,17 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      */
     final protected function getRandomFaker(): Generator
     {
+        return $this->getFaker($this->getRandomFakerLocale());
+    }
+
+    /**
+     * @return string
+     */
+    final protected function getRandomFakerLocale(): string
+    {
         $fakerLocales = $this->getFakerLocales();
 
-        return $this->getFaker($fakerLocales[array_rand($fakerLocales)]);
+        return $fakerLocales[array_rand($fakerLocales)];
     }
 
     /**
