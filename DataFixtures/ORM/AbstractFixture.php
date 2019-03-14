@@ -62,6 +62,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     {
         return [
             'Andyftw\Faker\ImageProvider',
+            'Bezhanov\Faker\Provider\Commerce',
             'insolita\faker\ShopProvider',
         ];
     }
@@ -106,8 +107,8 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      * @throws \RuntimeException
      */
     final protected function generateImageFile(
-        ?int $width,
-        ?int $height,
+        ?int $width = null,
+        ?int $height = null,
         ?string $text = null,
         ?string $textColor = null,
         ?string $backgroundColor = null,
