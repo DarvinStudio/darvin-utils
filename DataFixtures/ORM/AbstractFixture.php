@@ -24,6 +24,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterface
 {
+    protected const DEFAULT_IMAGE_WIDTH  = 800;
+    protected const DEFAULT_IMAGE_HEIGHT = 600;
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
@@ -91,8 +94,8 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      *
      * @example '/path/to/dir/13b73edae8443990be1aa8f1a483bc27.jpg'
      *
-     * @param int         $width           Width of the picture in pixels
-     * @param int         $height          Height of the picture in pixels
+     * @param int|null    $width           Width of the picture in pixels
+     * @param int|null    $height          Height of the picture in pixels
      * @param string|null $text            Text to generate on the picture
      * @param string|null $textColor       Text color in hexadecimal format
      * @param string|null $backgroundColor Background color in hexadecimal format
@@ -103,8 +106,8 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      * @throws \RuntimeException
      */
     final protected function generateImageFile(
-        int $width = 800,
-        int $height = 600,
+        ?int $width,
+        ?int $height,
         ?string $text = null,
         ?string $textColor = null,
         ?string $backgroundColor = null,
@@ -114,6 +117,12 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     {
         if (!class_exists('Andyftw\Faker\ImageProvider')) {
             throw new \RuntimeException('Please install "andyftw/image-faker" in order to generate images.');
+        }
+        if (null === $width) {
+            $width = self::DEFAULT_IMAGE_WIDTH;
+        }
+        if (null === $height) {
+            $height = self::DEFAULT_IMAGE_HEIGHT;
         }
         if (null !== $text) {
             $text = trim($text);
