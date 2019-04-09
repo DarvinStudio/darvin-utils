@@ -46,7 +46,12 @@ class Transliterator implements TransliteratorInterface
             return $transliterated;
         }
 
-        preg_match_all(sprintf('/[0-9a-z%s]+/', implode('', array_unique($allowedSymbols))), $transliterated, $matches);
+        $allowedSymbols = array_unique($allowedSymbols);
+        $allowedSymbols = array_map(function ($symbol) {
+            return str_replace('/', '\/', preg_quote((string)$symbol));
+        }, $allowedSymbols);
+
+        preg_match_all(sprintf('/[0-9a-z%s]+/', implode('', $allowedSymbols)), $transliterated, $matches);
 
         return implode($separator, $matches[0]);
     }
