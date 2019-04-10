@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Transliterator test
+ *
+ * @group transliterator
  */
 class TransliteratorTest extends TestCase
 {
