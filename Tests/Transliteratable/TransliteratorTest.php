@@ -8,9 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\Tests\Transliteratable;
+namespace Darvin\Utils\Transliteratable;
 
-use Darvin\Utils\Transliteratable\Transliterator;
 use PHPUnit\Framework\TestCase;
 
 /**
