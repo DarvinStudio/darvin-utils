@@ -20,25 +20,18 @@ use PHPUnit\Framework\TestCase;
  */
 class StringsUtilTest extends TestCase
 {
-
     public function testIsUppercase()
     {
-
         $positive = ['', 'TEST', 'ТЕСТ', 'ТЕСТ ТЕСТ', '!@#$%^&*', '123123123', ' ТЕСТ '];
         $negative = [null, 123456789, -1234567890, 123.3366, 'test', 'тест', 'Тест', NAN];
 
         foreach ($positive as $item) {
-
             self::assertTrue(StringsUtil::isUppercase($item));
-
         }
 
         foreach ($negative as $item) {
-
             self::assertFalse(StringsUtil::isUppercase($item));
-
         }
-
     }
 
     /**
@@ -49,9 +42,7 @@ class StringsUtilTest extends TestCase
      */
     public function testHumanize($expected, $input)
     {
-
         self::assertEquals($expected, StringsUtil::humanize($input));
-
     }
 
     /**
@@ -62,10 +53,7 @@ class StringsUtilTest extends TestCase
      */
     public function testLowercaseFirst($expected, $input)
     {
-
         self::assertEquals($expected, StringsUtil::lowercaseFirst($input));
-
-
     }
 
     /**
@@ -77,9 +65,7 @@ class StringsUtilTest extends TestCase
 
     public function testToUnderscore($expected, $input)
     {
-
         self::assertEquals($expected,StringsUtil::toUnderscore($input));
-
     }
 
     /**
@@ -90,9 +76,7 @@ class StringsUtilTest extends TestCase
      */
     public function testToCamelCase($expected, $input)
     {
-
         self::assertEquals($expected,StringsUtil::toCamelCase($input));
-
     }
 
     /**
@@ -100,7 +84,6 @@ class StringsUtilTest extends TestCase
      */
     public function dataProviderHumanize()
     {
-
         return [
             [null, null],
             ['User type', 'user_type'],
@@ -109,7 +92,6 @@ class StringsUtilTest extends TestCase
             ['Test test', 'TestTest'],
             ['Test', 'Test'],
         ];
-
     }
 
     /**
@@ -117,7 +99,6 @@ class StringsUtilTest extends TestCase
      */
     public function dataProviderLowercaseFirst()
     {
-
         return [
             [null, null],
             ['', ''],
@@ -126,7 +107,6 @@ class StringsUtilTest extends TestCase
             ['123', '123'],
             ['test_Test', 'Test_Test'],
         ];
-
     }
 
     /**
@@ -134,14 +114,12 @@ class StringsUtilTest extends TestCase
      */
     public function dataProviderToUnderscore()
     {
-
         return [
             [null, null],
             ['', ''],
             ['test_test', 'testTest'],
             ['test_test_test', 'testTestTest'],
         ];
-
     }
 
     /**
@@ -149,7 +127,6 @@ class StringsUtilTest extends TestCase
      */
     public function dataProviderToCamelCase()
     {
-
         return [
             [null, null],
             ['', ''],
@@ -159,7 +136,5 @@ class StringsUtilTest extends TestCase
             ['TestTest', 'Test_Test'],
             ['123123', '123_123'],
         ];
-
     }
-
 }
