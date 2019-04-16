@@ -41,7 +41,7 @@ class TransliteratorTest extends TestCase
     }
 
     /**
-     * @dataProvider stringProvider
+     * @dataProvider dataProviderString
      *
      * @param string $expected
      * @param mixed  $input
@@ -52,7 +52,7 @@ class TransliteratorTest extends TestCase
     }
 
     /**
-     * @dataProvider noSanitizeProvider
+     * @dataProvider dataProviderNoSanitize
      *
      * @param string $expected
      * @param mixed  $input
@@ -63,7 +63,7 @@ class TransliteratorTest extends TestCase
     }
 
     /**
-     * @dataProvider allowedSymbolsProvider
+     * @dataProvider dataProviderAllowedSymbols
      *
      * @param string   $expected
      * @param mixed    $input
@@ -75,7 +75,7 @@ class TransliteratorTest extends TestCase
     }
 
     /**
-     * @dataProvider separatorProvider
+     * @dataProvider dataProviderSeparator
      *
      * @param string $expected
      * @param mixed  $input
@@ -89,7 +89,7 @@ class TransliteratorTest extends TestCase
     /**
      * @return array
      */
-    public function stringProvider()
+    public function dataProviderString()
     {
         return [
             'alphabet' => ['abvgdeyozhziyklmnoprstufhcchshshyeyuya', 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'],
@@ -109,7 +109,7 @@ class TransliteratorTest extends TestCase
     /**
      * @return array
      */
-    public function noSanitizeProvider()
+    public function dataProviderNoSanitize()
     {
         return [
             'text' => ['test test test', 'тест тест тест'],
@@ -128,7 +128,7 @@ class TransliteratorTest extends TestCase
     /**
      * @return array
      */
-    public function allowedSymbolsProvider()
+    public function dataProviderAllowedSymbols()
     {
         return [
             ['!', '!', ['!']],
@@ -163,7 +163,7 @@ class TransliteratorTest extends TestCase
     /**
      * @return array
      */
-    public function separatorProvider()
+    public function dataProviderSeparator()
     {
         return [
             ['test!test', 'тест тест', '!'],
