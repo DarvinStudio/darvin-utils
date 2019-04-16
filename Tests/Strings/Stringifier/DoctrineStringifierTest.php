@@ -22,7 +22,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class DoctrineStringifierTest extends TestCase
 {
-
+    /**
+     * @var StringifierInterface
+     */
     private $stringifier;
 
     /**
@@ -30,7 +32,6 @@ class DoctrineStringifierTest extends TestCase
      */
     public function setUp()
     {
-
         $translator = $this->getMockBuilder(TranslatorInterface::class)
             ->setMethods(['trans'])
             ->getMock();
@@ -39,7 +40,6 @@ class DoctrineStringifierTest extends TestCase
             ->willReturnArgument(0);
 
         $this->stringifier = new DoctrineStringifier($translator);
-
     }
 
     /**
@@ -51,10 +51,8 @@ class DoctrineStringifierTest extends TestCase
      */
     public function testStringify($expected, $value, $dataType)
     {
-
         $output = $this->stringifier->stringify($value, $dataType);
         self::assertEquals($expected,$output);
-
     }
 
     public function testStringifyObjectWithToString()
@@ -67,12 +65,10 @@ class DoctrineStringifierTest extends TestCase
 
         $output = $this->stringifier->stringify($obj, Type::OBJECT);
         self::assertEquals('string object',$output);
-
     }
 
     public function testStringifyObject()
     {
-
         $obj = $this->getMockBuilder('Stub')
             ->setMethods(['doSomething', 'doSomethingElse'])
             ->getMock();
@@ -82,7 +78,6 @@ class DoctrineStringifierTest extends TestCase
 
         $output = $this->stringifier->stringify($obj, Type::OBJECT);
         self::assertEquals(serialize($obj),$output);
-
     }
 
     /**
@@ -91,7 +86,6 @@ class DoctrineStringifierTest extends TestCase
      */
     public function dataProviderStringify()
     {
-
         return [
             ['',null, null],
             ['', '', ''],
@@ -102,7 +96,5 @@ class DoctrineStringifierTest extends TestCase
             ['', 'array', Type::JSON_ARRAY],
             [json_encode([1, 'two']), [1, 'two'], Type::JSON_ARRAY],
         ];
-
     }
-
 }
