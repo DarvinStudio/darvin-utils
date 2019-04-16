@@ -44,7 +44,7 @@ class StringsUtilTest extends TestCase
     /**
      * @dataProvider dataProviderHumanize
      *
-     * @param string\null $expected
+     * @param string|null $expected
      * @param mixed $input
      */
     public function testHumanize($expected, $input)
@@ -57,7 +57,7 @@ class StringsUtilTest extends TestCase
     /**
      * @dataProvider dataProviderLowercaseFirst
      *
-     * @param string\null $expected
+     * @param string|null $expected
      * @param mixed $input
      */
     public function testLowercaseFirst($expected, $input)
@@ -71,7 +71,7 @@ class StringsUtilTest extends TestCase
     /**
      * @dataProvider dataProviderToUnderscore
      *
-     * @param string\null $expected
+     * @param string|null $expected
      * @param mixed $input
      */
 
@@ -85,7 +85,7 @@ class StringsUtilTest extends TestCase
     /**
      * @dataProvider dataProviderToCamelCase
      *
-     * @param string\null $expected
+     * @param string|null $expected
      * @param mixed $input
      */
     public function testToCamelCase($expected, $input)
