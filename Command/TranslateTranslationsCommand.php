@@ -69,14 +69,15 @@ class TranslateTranslationsCommand extends Command
     {
         $from   = $input->getOption('source_language');
         $apiKey = $input->getArgument('yandex_translate_api_key');
+        $io     = new SymfonyStyle($input, $output);
 
         if (!empty($apiKey)) {
             $this->apiKey = $apiKey;
         }
         foreach (array_map('trim', explode(',', $input->getArgument('target_languages'))) as $to) {
-            $this->direction = implode('-', [$from, $to]);
+            $io->section($to);
 
-            $io = new SymfonyStyle($input, $output);
+            $this->direction = implode('-', [$from, $to]);
 
             /** @var \SplFileInfo $file */
             foreach ((new Finder())->in($input->getArgument('directory'))->files()->name(sprintf('*.%s.yaml', $from)) as $file) {
