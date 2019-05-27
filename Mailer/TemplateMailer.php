@@ -12,6 +12,7 @@ namespace Darvin\Utils\Mailer;
 
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Symfony\Component\Templating\EngineInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Template mailer
@@ -29,13 +30,20 @@ class TemplateMailer implements TemplateMailerInterface
     private $templatingProvider;
 
     /**
-     * @param \Darvin\Utils\Mailer\MailerInterface           $genericMailer      Generic mailer
-     * @param \Darvin\Utils\Service\ServiceProviderInterface $templatingProvider Templating service provider
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    public function __construct(MailerInterface $genericMailer, ServiceProviderInterface $templatingProvider)
+    private $translator;
+
+    /**
+     * @param \Darvin\Utils\Mailer\MailerInterface               $genericMailer      Generic mailer
+     * @param \Darvin\Utils\Service\ServiceProviderInterface     $templatingProvider Templating service provider
+     * @param \Symfony\Contracts\Translation\TranslatorInterface $translator         Translator
+     */
+    public function __construct(MailerInterface $genericMailer, ServiceProviderInterface $templatingProvider, TranslatorInterface $translator)
     {
         $this->genericMailer = $genericMailer;
         $this->templatingProvider = $templatingProvider;
+        $this->translator = $translator;
     }
 
     /**
@@ -56,6 +64,7 @@ class TemplateMailer implements TemplateMailerInterface
 
         $body = $this->getTemplating()->render($template, array_merge([
             'email_type' => TemplateMailerInterface::TYPE_PUBLIC,
+            'subject'    => $this->translateSubject($subject, $subjectParams),
         ], $templateParams));
 
         return $this->genericMailer->send($to, $subject, $body, $options, $subjectParams, $attachments);
@@ -79,9 +88,25 @@ class TemplateMailer implements TemplateMailerInterface
 
         $body = $this->getTemplating()->render($template, array_merge([
             'email_type' => TemplateMailerInterface::TYPE_SERVICE,
+            'subject'    => $this->translateSubject($subject, $subjectParams),
         ], $templateParams));
 
         return $this->genericMailer->send($to, $subject, $body, $options, $subjectParams, $attachments);
+    }
+
+    /**
+     * @param string $subject Subject
+     * @param array  $params  Subject translation parameters
+     *
+     * @return string
+     */
+    private function translateSubject(string $subject, array $params): string
+    {
+        foreach ($params as $key => $param) {
+            $params[$key] = $this->translator->trans($param);
+        }
+
+        return $this->translator->trans($subject, $params);
     }
 
     /**
