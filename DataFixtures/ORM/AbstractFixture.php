@@ -158,7 +158,13 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
         $ids = $this->entityIds[$entity];
 
         if (!empty($ids)) {
-            return $this->getEntityManager()->getReference($entity, $ids[array_rand($ids)]);
+            $id = $ids[array_rand($ids)];
+
+            if (preg_match('/^\d+$/', $id)) {
+                $id = (int)$id;
+            }
+
+            return $this->getEntityManager()->getReference($entity, $id);
         }
 
         return null;
