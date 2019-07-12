@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2018-2019, Darvin Studio
@@ -18,12 +18,12 @@ interface ImportableInterface
     public const IMPORT_ID_FIELD = 'importId';
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getImportId();
+    public function getImportId(): ?string;
 
     /**
-     * @param string $importId Import ID
+     * @param string|null $importId Import ID
      */
-    public function setImportId($importId);
+    public function setImportId(?string $importId): void;
 }
