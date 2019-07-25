@@ -47,4 +47,20 @@ interface TemplateMailerInterface
      * @throws \RuntimeException
      */
     public function sendServiceEmail($to, string $subject, string $template, array $templateParams = [], array $options = [], array $subjectParams = [], array $attachments = []): int;
+
+    /**
+     * @param string   $type           Email type
+     * @param mixed    $to             To
+     * @param string   $subject        Subject
+     * @param string   $template       Template
+     * @param array    $templateParams Template parameters
+     * @param array    $options        Message object property values, for example "['reply_to' => 'me@example.com']"
+     * @param array    $subjectParams  Subject translation parameters
+     * @param string[] $attachments    Attachment file pathnames
+     *
+     * @return int
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function sendEmail(string $type, $to, string $subject, string $template, array $templateParams = [], array $options = [], array $subjectParams = [], array $attachments = []): int;
 }

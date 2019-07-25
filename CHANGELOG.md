@@ -21,3 +21,5 @@
 - rename events;
 
 - object namer: remove "Interface" suffix.
+
+7.0.2: Add TemplateMailerInterface::sendEmail().

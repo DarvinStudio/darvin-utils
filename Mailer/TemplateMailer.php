@@ -19,6 +19,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TemplateMailer implements TemplateMailerInterface
 {
+    private const TYPES = [
+        TemplateMailerInterface::TYPE_PUBLIC,
+        TemplateMailerInterface::TYPE_SERVICE,
+    ];
+
     /**
      * @var \Darvin\Utils\Mailer\MailerInterface
      */
@@ -58,16 +63,16 @@ class TemplateMailer implements TemplateMailerInterface
         array $subjectParams = [],
         array $attachments = []
     ): int {
-        if (empty($to)) {
-            return 0;
-        }
-
-        $body = $this->getTemplating()->render($template, array_merge([
-            'email_type' => TemplateMailerInterface::TYPE_PUBLIC,
-            'subject'    => $this->translateSubject($subject, $subjectParams),
-        ], $templateParams));
-
-        return $this->genericMailer->send($to, $subject, $body, $options, $subjectParams, $attachments);
+        return $this->sendEmail(
+            TemplateMailerInterface::TYPE_PUBLIC,
+            $to,
+            $subject,
+            $template,
+            $templateParams,
+            $options,
+            $subjectParams,
+            $attachments
+        );
     }
 
     /**
@@ -82,12 +87,40 @@ class TemplateMailer implements TemplateMailerInterface
         array $subjectParams = [],
         array $attachments = []
     ): int {
+        return $this->sendEmail(
+            TemplateMailerInterface::TYPE_SERVICE,
+            $to,
+            $subject,
+            $template,
+            $templateParams,
+            $options,
+            $subjectParams,
+            $attachments
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function sendEmail(
+        string $type,
+        $to,
+        string $subject,
+        string $template,
+        array $templateParams = [],
+        array $options = [],
+        array $subjectParams = [],
+        array $attachments = []
+    ): int {
+        if (!in_array($type, self::TYPES)) {
+            throw new \InvalidArgumentException(sprintf('Email type "%s" does not exist.', $type));
+        }
         if (empty($to)) {
             return 0;
         }
 
         $body = $this->getTemplating()->render($template, array_merge([
-            'email_type' => TemplateMailerInterface::TYPE_SERVICE,
+            'email_type' => $type,
             'subject'    => $this->translateSubject($subject, $subjectParams),
         ], $templateParams));
 
