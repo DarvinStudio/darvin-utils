@@ -93,10 +93,14 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * @param mixed $value Value to stringify
      *
-     * @return string
+     * @return string|null
      */
     private function stringifyBoolean($value)
     {
+        if (null === $value) {
+            return null;
+        }
+
         return $this->translator->trans(sprintf('boolean.%d', $value));
     }
 
