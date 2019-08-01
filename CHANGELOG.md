@@ -25,3 +25,5 @@
 7.0.2: Add TemplateMailerInterface::sendEmail().
 
 7.0.3: Support nullable booleans in stringifier.
+
+7.0.4: Add StringsUtil::truncate().
