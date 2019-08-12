@@ -101,7 +101,7 @@ class DoctrineStringifier implements StringifierInterface
             return null;
         }
 
-        return $this->translator->trans(sprintf('boolean.%d', $value));
+        return $this->translator->trans(sprintf('boolean.%s', $value ? 'yes' : 'no'));
     }
 
     /**

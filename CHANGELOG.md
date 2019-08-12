@@ -28,4 +28,8 @@
 
 7.0.4: Add StringsUtil::truncate().
 
-7.0.5: Move triplebox form type from Admin bundle.
+7.0.5:
+ 
+- Move triplebox form type from Admin bundle.
+
+- Refactor stringifying booleans.

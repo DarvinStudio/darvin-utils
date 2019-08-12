@@ -89,7 +89,7 @@ class DoctrineStringifierTest extends TestCase
         return [
             ['',null, null],
             ['', '', ''],
-            ['boolean.1', true, Type::BOOLEAN],
+            ['boolean.yes', true, Type::BOOLEAN],
             [1.0E+19, 1.0E+19, Type::BIGINT],
             ['', '12.23.1200', Type::DATE],
             ['01.01.2000', new \DateTime('2000-01-01'), Type::DATE],
