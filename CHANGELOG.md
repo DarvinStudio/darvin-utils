@@ -27,3 +27,5 @@
 7.0.3: Support nullable booleans in stringifier.
 
 7.0.4: Add StringsUtil::truncate().
+
+7.0.5: Move triplebox form type from Admin bundle.
