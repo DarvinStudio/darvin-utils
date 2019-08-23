@@ -107,31 +107,35 @@ class Mailer implements MailerInterface
             $subject = implode(' ', [$request->getHost(), $subject]);
         }
 
-        $message = new \Swift_Message($subject, $body);
-        $message->setFrom($this->fromEmail, $this->fromName);
-        $message->setTo($to);
-
-        foreach ($attachments as $attachment) {
-            if (!is_readable($attachment)) {
-                throw new \RuntimeException(sprintf('Attachment file "%s" is not readable.', $attachment));
-            }
-
-            $message->attach(\Swift_Attachment::fromPath($attachment));
-        }
-        foreach ($options as $name => $value) {
-            $setter = sprintf('set%s', StringsUtil::toCamelCase($name));
-
-            if (!method_exists($message, $setter)) {
-                throw new \InvalidArgumentException(sprintf('Option "%s" does not exist.', $name));
-            }
-
-            $message->{$setter}($value);
-        }
-
         $failed = [];
+        $sent   = 0;
 
-        $sent = $this->swiftMailer->send($message, $failed);
+        try {
+            $message = new \Swift_Message($subject, $body);
+            $message->setFrom($this->fromEmail, $this->fromName);
+            $message->setTo($to);
 
+            foreach ($attachments as $attachment) {
+                if (!is_readable($attachment)) {
+                    throw new \RuntimeException(sprintf('Attachment file "%s" is not readable.', $attachment));
+                }
+
+                $message->attach(\Swift_Attachment::fromPath($attachment));
+            }
+            foreach ($options as $name => $value) {
+                $setter = sprintf('set%s', StringsUtil::toCamelCase($name));
+
+                if (!method_exists($message, $setter)) {
+                    throw new \InvalidArgumentException(sprintf('Option "%s" does not exist.', $name));
+                }
+
+                $message->{$setter}($value);
+            }
+
+            $sent = $this->swiftMailer->send($message, $failed);
+        } catch (\Swift_SwiftException $ex) {
+            $this->logger->error(sprintf('%s: %s', __METHOD__, $ex->getMessage()));
+        }
         if (!empty($failed)) {
             $this->logger->error(sprintf(
                 '%s: unable to send e-mail with subject "%s" to recipient(s) "%s".',

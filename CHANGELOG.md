@@ -33,3 +33,5 @@
 - Move triplebox form type from Admin bundle.
 
 - Refactor stringifying booleans.
+
+7.0.6: Catch Swift Mailer exceptions in mailer.
