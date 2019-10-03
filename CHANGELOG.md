@@ -35,3 +35,6 @@
 - Refactor stringifying booleans.
 
 7.0.6: Catch Swift Mailer exceptions in mailer.
+
+7.0.7: Add compress response event subscriber.
+
