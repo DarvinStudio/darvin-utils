@@ -38,3 +38,4 @@
 
 7.0.7: Add compress response event subscriber.
 
+7.1.0: Move mailer to Mailer bundle.
