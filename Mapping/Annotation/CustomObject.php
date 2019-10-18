@@ -19,17 +19,17 @@ namespace Darvin\Utils\Mapping\Annotation;
 final class CustomObject
 {
     /**
-     * @var string|null
+     * @var string
      */
     public $class;
 
     /**
-     * @var string|null
+     * @var string
      */
     public $classPropertyPath;
 
     /**
-     * @var string|null
+     * @var string
      */
     public $initProperty;
 
