@@ -12,6 +12,7 @@ namespace Darvin\Utils\CustomObject;
 
 use Darvin\Utils\Mapping\Annotation\CustomObject;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
@@ -153,15 +154,17 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 $initProperty = $targetPropertyMap['initProperty'];
                 $initPropertyValue = $targetPropertyMap['initPropertyValue'];
 
-                if (!isset($customEntities[$customEntityClass][$initProperty][$initPropertyValue])) {
+                if (!isset($customEntities[$customEntityClass][$initProperty][json_encode($initPropertyValue)])) {
                     continue;
                 }
 
-                $this->setPropertyValue(
-                    $entity,
-                    $targetProperty,
-                    $customEntities[$customEntityClass][$initProperty][$initPropertyValue]
-                );
+                $value = $customEntities[$customEntityClass][$initProperty][json_encode($initPropertyValue)];
+
+                if (is_array($value)) {
+                    $value = new ArrayCollection($value);
+                }
+
+                $this->setPropertyValue($entity, $targetProperty, $value);
             }
         }
     }
@@ -191,38 +194,53 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
 
                 if (1 === count($initPropertyValues)) {
                     $initPropertyValue = reset($initPropertyValues);
-                    $qb = $customEntityRepository->createQueryBuilder('o')
-                        ->andWhere(sprintf('o.%s = :%1$s', $initProperty))
-                        ->setParameter($initProperty, $initPropertyValue);
 
-                    if (!empty($queryBuilderCallback)) {
-                        $queryBuilderCallback($qb);
+                    if (!is_array($initPropertyValue)) {
+                        $qb = $customEntityRepository->createQueryBuilder('o')
+                            ->andWhere(sprintf('o.%s = :%1$s', $initProperty))
+                            ->setParameter($initProperty, $initPropertyValue);
+
+                        if (!empty($queryBuilderCallback)) {
+                            $queryBuilderCallback($qb);
+                        }
+                        try {
+                            $customEntity = $qb->getQuery()->getOneOrNullResult();
+                        } catch (NonUniqueResultException $ex) {
+                            throw new CustomObjectException(
+                                sprintf(
+                                    'Unable to fetch custom entity "%s" by %s "%s": entity is not unique.',
+                                    $customEntityRepository->getClassName(),
+                                    $initProperty,
+                                    $initPropertyValue
+                                )
+                            );
+                        }
+                        if (!empty($customEntity)) {
+                            $initPropertyValues[json_encode($initPropertyValue)] = $customEntity;
+
+                            continue;
+                        }
+
+                        unset($initPropertyValues[json_encode($initPropertyValue)]);
+
+                        continue;
                     }
-                    try {
-                        $customEntity = $qb->getQuery()->getOneOrNullResult();
-                    } catch (NonUniqueResultException $ex) {
-                        throw new CustomObjectException(
-                            sprintf(
-                                'Unable to fetch custom entity "%s" by %s "%s": entity is not unique.',
-                                $customEntityRepository->getClassName(),
-                                $initProperty,
-                                $initPropertyValue
-                            )
-                        );
-                    }
-                    if (!empty($customEntity)) {
-                        $initPropertyValues[$initPropertyValue] = $customEntity;
+                }
+
+                $flatValues = [];
+
+                foreach ($initPropertyValues as $initPropertyValue) {
+                    if (is_array($initPropertyValue)) {
+                        $flatValues = array_merge($flatValues, $initPropertyValue);
 
                         continue;
                     }
 
-                    unset($initPropertyValues[$initPropertyValue]);
-
-                    continue;
+                    $flatValues[] = $initPropertyValue;
                 }
 
                 $qb = $customEntityRepository->createQueryBuilder('o');
-                $qb->where($qb->expr()->in('o.'.$initProperty, $initPropertyValues));
+                $qb->where($qb->expr()->in('o.'.$initProperty, $flatValues));
 
                 if (!empty($queryBuilderCallback)) {
                     $queryBuilderCallback($qb);
@@ -238,13 +256,26 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 }, $customEntities), $customEntities);
 
                 foreach ($initPropertyValues as &$initPropertyValue) {
+                    if (is_array($initPropertyValue)) {
+                        foreach ($initPropertyValue as $key => $value) {
+                            if (isset($customEntities[$value])) {
+                                $initPropertyValue[$key] = $customEntities[$value];
+
+                                continue;
+                            }
+
+                            unset($initPropertyValue[$key]);
+                        }
+
+                        continue;
+                    }
                     if (isset($customEntities[$initPropertyValue])) {
                         $initPropertyValue = $customEntities[$initPropertyValue];
 
                         continue;
                     }
 
-                    unset($initPropertyValues[$initPropertyValue]);
+                    unset($initPropertyValues[json_encode($initPropertyValue)]);
                 }
 
                 unset($initPropertyValue);
@@ -281,7 +312,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                         $map[$customEntityClass][$initProperty] = [];
                     }
                     if (!in_array($initPropertyValue, $map[$customEntityClass][$initProperty])) {
-                        $map[$customEntityClass][$initProperty][$initPropertyValue] = $initPropertyValue;
+                        $map[$customEntityClass][$initProperty][json_encode($initPropertyValue)] = $initPropertyValue;
                     }
                 }
             }
