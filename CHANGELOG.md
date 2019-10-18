@@ -40,4 +40,4 @@
 
 7.1.0: Move mailer to Mailer bundle.
 
-7.1.1: Load collections in custom object loader.
+7.1.1: Load collections in custom entity loader.
