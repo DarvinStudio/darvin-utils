@@ -217,11 +217,9 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                         }
                         if (!empty($customEntity)) {
                             $initPropertyValues[json_encode($initPropertyValue)] = $customEntity;
-
-                            continue;
+                        } else {
+                            unset($initPropertyValues[json_encode($initPropertyValue)]);
                         }
-
-                        unset($initPropertyValues[json_encode($initPropertyValue)]);
 
                         continue;
                     }
@@ -232,11 +230,9 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 foreach ($initPropertyValues as $initPropertyValue) {
                     if (is_array($initPropertyValue)) {
                         $flatValues = array_merge($flatValues, $initPropertyValue);
-
-                        continue;
+                    } else {
+                        $flatValues[] = $initPropertyValue;
                     }
-
-                    $flatValues[] = $initPropertyValue;
                 }
 
                 $qb = $customEntityRepository->createQueryBuilder('o');
@@ -260,22 +256,15 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                         foreach ($initPropertyValue as $key => $value) {
                             if (isset($customEntities[$value])) {
                                 $initPropertyValue[$key] = $customEntities[$value];
-
-                                continue;
+                            } else {
+                                unset($initPropertyValue[$key]);
                             }
-
-                            unset($initPropertyValue[$key]);
                         }
-
-                        continue;
-                    }
-                    if (isset($customEntities[$initPropertyValue])) {
+                    } elseif (isset($customEntities[$initPropertyValue])) {
                         $initPropertyValue = $customEntities[$initPropertyValue];
-
-                        continue;
+                    } else {
+                        unset($initPropertyValues[json_encode($initPropertyValue)]);
                     }
-
-                    unset($initPropertyValues[json_encode($initPropertyValue)]);
                 }
 
                 unset($initPropertyValue);
