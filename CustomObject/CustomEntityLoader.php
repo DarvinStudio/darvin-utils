@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -66,12 +66,9 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     }
 
     /**
-     * @param mixed    $entityOrEntities     Entity or array of entities
-     * @param callable $queryBuilderCallback Callback to process query builder
-     *
-     * @throws \Darvin\Utils\CustomObject\CustomObjectException
+     * {@inheritDoc}
      */
-    public function loadCustomObjects($entityOrEntities, callable $queryBuilderCallback = null)
+    public function loadCustomObjects($entityOrEntities, ?callable $queryBuilderCallback = null): void
     {
         if ($entityOrEntities instanceof Collection) {
             $entityOrEntities = $entityOrEntities->toArray();
@@ -81,27 +78,25 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     }
 
     /**
-     * @param string $entityClass Entity class
-     *
-     * @return bool
+     * {@inheritDoc}
      */
-    public function customObjectsLoadable($entityClass)
+    public function customObjectsLoadable(string $entityClass): bool
     {
         return $this->hasCustomObjectMeta($entityClass);
     }
 
     /**
-     * @param array    $entities             Entities
-     * @param callable $queryBuilderCallback Callback to process query builder
+     * @param array         $entities             Entities
+     * @param callable|null $queryBuilderCallback Callback to process query builder
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function load(array $entities, callable $queryBuilderCallback = null)
+    private function load(array $entities, ?callable $queryBuilderCallback): void
     {
         foreach ($entities as $key => $entity) {
             $hash = spl_object_hash($entity);
 
-            if (!empty($queryBuilderCallback)) {
+            if (null !== $queryBuilderCallback) {
                 /** @var callable|object $queryBuilderCallback */
                 $hash .= spl_object_hash($queryBuilderCallback);
             }
@@ -140,7 +135,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      * @param array $customEntities    Custom entities
      * @param array $customEntitiesMap Custom entities map
      */
-    private function setCustomEntities(array $entities, array $customEntities, array $customEntitiesMap)
+    private function setCustomEntities(array $entities, array $customEntities, array $customEntitiesMap): void
     {
         foreach ($entities as $entity) {
             $entityClass = ClassUtils::getClass($entity);
@@ -170,13 +165,13 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     }
 
     /**
-     * @param array    $queriesMap           Queries map
-     * @param callable $queryBuilderCallback Callback to process query builder
+     * @param array         $queriesMap           Queries map
+     * @param callable|null $queryBuilderCallback Callback to process query builder
      *
      * @return array
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function fetchCustomEntities(array $queriesMap, callable $queryBuilderCallback = null)
+    private function fetchCustomEntities(array $queriesMap, ?callable $queryBuilderCallback): array
     {
         foreach ($queriesMap as $customEntityClass => &$initProperties) {
             $customEntityDoctrineMeta = $this->extendedMetadataFactory->getDoctrineMetadata($customEntityClass);
@@ -200,7 +195,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                             ->andWhere(sprintf('o.%s = :%1$s', $initProperty))
                             ->setParameter($initProperty, $initPropertyValue);
 
-                        if (!empty($queryBuilderCallback)) {
+                        if (null !== $queryBuilderCallback) {
                             $queryBuilderCallback($qb);
                         }
                         try {
@@ -215,7 +210,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                                 )
                             );
                         }
-                        if (!empty($customEntity)) {
+                        if (null !== $customEntity) {
                             $initPropertyValues[json_encode($initPropertyValue)] = $customEntity;
                         } else {
                             unset($initPropertyValues[json_encode($initPropertyValue)]);
@@ -238,7 +233,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 $qb = $customEntityRepository->createQueryBuilder('o');
                 $qb->where($qb->expr()->in('o.'.$initProperty, $flatValues));
 
-                if (!empty($queryBuilderCallback)) {
+                if (null !== $queryBuilderCallback) {
                     $queryBuilderCallback($qb);
                 }
 
@@ -283,7 +278,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @return array
      */
-    private function buildQueriesMap(array $customEntitiesMap)
+    private function buildQueriesMap(array $customEntitiesMap): array
     {
         $map = [];
 
@@ -315,7 +310,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @return array
      */
-    private function buildCustomEntitiesMap(array $entities)
+    private function buildCustomEntitiesMap(array $entities): array
     {
         $map = [];
 
@@ -326,8 +321,16 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
             foreach ($this->getCustomObjectMeta($entityClass) as $targetProperty => $params) {
                 $initPropertyValue = $this->getPropertyValue($entity, $params['initPropertyValuePath']);
 
-                if (empty($initPropertyValue)) {
-                    continue;
+                if (is_array($initPropertyValue)) {
+                    if (empty($initPropertyValue)) {
+                        continue;
+                    }
+                } else {
+                    $initPropertyValue = (string)$initPropertyValue;
+
+                    if ('' === $initPropertyValue) {
+                        continue;
+                    }
                 }
                 if (!isset($map[$entityClass])) {
                     $map[$entityClass] = [];
@@ -337,15 +340,15 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                 }
 
                 $map[$entityClass][$objectHash][$targetProperty] = [
-                    'class' => !empty($params['class'])
-                        ? $params['class']
-                        : $this->getPropertyValue($entity, $params['classPropertyPath'])
-                    ,
-                    'initProperty' => !empty($params['initProperty'])
+                    'initPropertyValue' => $initPropertyValue,
+                    'initProperty'      => null !== $params['initProperty']
                         ? $params['initProperty']
                         : $this->extendedMetadataFactory->getIdentifier($entityClass)
                     ,
-                    'initPropertyValue' => $initPropertyValue,
+                    'class' => null !== $params['class']
+                        ? $params['class']
+                        : $this->getPropertyValue($entity, $params['classPropertyPath'])
+                    ,
                 ];
             }
         }
@@ -358,19 +361,17 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @return bool
      */
-    private function hasCustomObjectMeta($entityClass)
+    private function hasCustomObjectMeta(string $entityClass): bool
     {
-        $customObjectMeta = $this->getCustomObjectMeta($entityClass);
-
-        return !empty($customObjectMeta);
+        return null !== $this->getCustomObjectMeta($entityClass);
     }
 
     /**
      * @param string $entityClass Entity class
      *
-     * @return array
+     * @return array|null
      */
-    private function getCustomObjectMeta($entityClass)
+    private function getCustomObjectMeta(string $entityClass): ?array
     {
         if (!array_key_exists($entityClass, $this->customObjectMeta)) {
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
@@ -390,7 +391,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function setPropertyValue($entity, $propertyPath, $value)
+    private function setPropertyValue($entity, string $propertyPath, $value): void
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
             throw new CustomObjectException(
@@ -408,7 +409,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      * @return mixed
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function getPropertyValue($entity, $propertyPath)
+    private function getPropertyValue($entity, string $propertyPath)
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
             throw new CustomObjectException(

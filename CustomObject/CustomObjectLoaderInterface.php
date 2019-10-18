@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -16,17 +16,17 @@ namespace Darvin\Utils\CustomObject;
 interface CustomObjectLoaderInterface
 {
     /**
-     * @param mixed    $objectOrObjects      Object or array of objects
-     * @param callable $queryBuilderCallback Callback to process query builder
+     * @param mixed         $objectOrObjects      Object or array of objects
+     * @param callable|null $queryBuilderCallback Callback to process query builder
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    public function loadCustomObjects($objectOrObjects, callable $queryBuilderCallback = null);
+    public function loadCustomObjects($objectOrObjects, ?callable $queryBuilderCallback = null): void;
 
     /**
      * @param string $objectClass Object class
      *
      * @return bool
      */
-    public function customObjectsLoadable($objectClass);
+    public function customObjectsLoadable(string $objectClass): bool;
 }

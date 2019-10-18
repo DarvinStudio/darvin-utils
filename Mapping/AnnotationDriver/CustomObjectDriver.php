@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -21,7 +21,7 @@ class CustomObjectDriver extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
+    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {
         if (!isset($meta['customObjects'])) {
             $meta['customObjects'] = [];
@@ -46,9 +46,9 @@ class CustomObjectDriver extends AbstractDriver
      *
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    private function validateAnnotation(CustomObject $annotation, $objectClass, $property)
+    private function validateAnnotation(CustomObject $annotation, string $objectClass, string $property): void
     {
-        if (empty($annotation->class) && empty($annotation->classPropertyPath)) {
+        if (null === $annotation->class && null === $annotation->classPropertyPath) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::class,
                 $objectClass,
@@ -56,7 +56,7 @@ class CustomObjectDriver extends AbstractDriver
                 'class or class property path must be provided'
             );
         }
-        if (!empty($annotation->class) && !empty($annotation->classPropertyPath)) {
+        if (null !== $annotation->class && null !== $annotation->classPropertyPath) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::class,
                 $objectClass,
@@ -64,7 +64,7 @@ class CustomObjectDriver extends AbstractDriver
                 'class or class property path must be provided but not both of them'
             );
         }
-        if (!empty($annotation->class) && !(class_exists($annotation->class) || interface_exists($annotation->class))) {
+        if (null !== $annotation->class && !(class_exists($annotation->class) || interface_exists($annotation->class))) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::class,
                 $objectClass,
@@ -72,7 +72,7 @@ class CustomObjectDriver extends AbstractDriver
                 sprintf('class or interface "%s" does not exist', $annotation->class)
             );
         }
-        if (empty($annotation->initPropertyValuePath)) {
+        if (null === $annotation->initPropertyValuePath) {
             throw $this->createPropertyAnnotationInvalidException(
                 CustomObject::class,
                 $objectClass,

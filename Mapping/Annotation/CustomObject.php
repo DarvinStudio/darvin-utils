@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -19,17 +19,17 @@ namespace Darvin\Utils\Mapping\Annotation;
 final class CustomObject
 {
     /**
-     * @var string
+     * @var string|null
      */
     public $class;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $classPropertyPath;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $initProperty;
 
