@@ -15,6 +15,8 @@ use Symfony\Component\Validator\Constraints\RegexValidator;
 
 /**
  * Phone validation constraint
+ *
+ * @Annotation
  */
 class Phone extends Regex
 {

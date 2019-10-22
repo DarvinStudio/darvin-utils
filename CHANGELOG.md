@@ -45,3 +45,5 @@
 - Load collections in custom entity loader.
 
 - Enable strict type in custom object functionality classes.
+
+7.1.3: Annotate phone validation constraint class with "@Annotation".
