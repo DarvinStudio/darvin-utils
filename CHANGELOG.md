@@ -47,3 +47,5 @@
 - Enable strict type in custom object functionality classes.
 
 7.1.3: Annotate phone validation constraint class with "@Annotation".
+
+7.1.4: Cloner: call "__clone()" method of object's copy.

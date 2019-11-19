@@ -133,6 +133,9 @@ class Cloner implements ClonerInterface
 
             $this->setValue($clone, $reflectionClass, $property, $valueCopy);
         }
+        if ($reflectionClass->hasMethod('__clone')) {
+            $reflectionClass->getMethod('__clone')->invoke($clone);
+        }
 
         $event = new CloneEvent($object, $clone);
         $this->eventDispatcher->dispatch(ClonableEvents::CLONED, $event);
