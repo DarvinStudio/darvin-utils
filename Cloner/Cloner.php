@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -80,7 +80,7 @@ class Cloner implements ClonerInterface
      * @return object
      * @throws \InvalidArgumentException
      */
-    private function cloneObject($object, $requireClonable)
+    private function cloneObject($object, bool $requireClonable)
     {
         $hash = spl_object_hash($object);
 
@@ -150,7 +150,7 @@ class Cloner implements ClonerInterface
      *
      * @return mixed
      */
-    private function getValue($object, \ReflectionClass $reflectionClass, $property)
+    private function getValue($object, \ReflectionClass $reflectionClass, string $property)
     {
         try {
             return $this->propertyAccessor->getValue($object, $property);
@@ -170,7 +170,7 @@ class Cloner implements ClonerInterface
      * @param string           $property        Property
      * @param mixed            $value           Value
      */
-    private function setValue($object, \ReflectionClass $reflectionClass, $property, $value)
+    private function setValue($object, \ReflectionClass $reflectionClass, string $property, $value): void
     {
         try {
             $this->propertyAccessor->setValue($object, $property, $value);
@@ -215,7 +215,7 @@ class Cloner implements ClonerInterface
      *
      * @return array
      */
-    private function copyArray(array $array, $addNullValues)
+    private function copyArray(array $array, bool $addNullValues): array
     {
         $copy = [];
 
