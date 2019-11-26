@@ -133,8 +133,22 @@ class Cloner implements ClonerInterface
 
             $this->setValue($clone, $reflectionClass, $property, $valueCopy);
         }
-        if ($reflectionClass->hasMethod('__clone')) {
-            $reflectionClass->getMethod('__clone')->invoke($clone);
+        foreach ($meta['clonable']['callAfter'] as $methodName) {
+            if (!$reflectionClass->hasMethod($methodName)) {
+                throw new \InvalidArgumentException(
+                    sprintf('Method "%s::%s()" does not exist.', $reflectionClass->getName(), $methodName)
+                );
+            }
+
+            $method = $reflectionClass->getMethod($methodName);
+
+            if (!$method->isPublic()) {
+                throw new \InvalidArgumentException(
+                    sprintf('Method "%s::%s()" is not public.', $reflectionClass->getName(), $methodName)
+                );
+            }
+
+            $method->invoke($clone);
         }
 
         $event = new CloneEvent($object, $clone);

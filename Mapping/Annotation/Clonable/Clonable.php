@@ -29,4 +29,9 @@ final class Clonable
      * @Enum({"ALL", "NONE"})
      */
     public $copyingPolicy = self::COPYING_POLICY_NONE;
+
+    /**
+     * @var array
+     */
+    public $callAfter = [];
 }

@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -23,7 +23,7 @@ class ClonableDriver extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
+    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {
         $reflectionClass = $doctrineMeta->getReflectionClass();
 
@@ -45,7 +45,10 @@ class ClonableDriver extends AbstractDriver
             $meta['clonable'] = [];
         }
 
-        $meta['clonable']['copyingPolicy'] = $copyingPolicy;
+        $meta['clonable'] = array_merge($meta['clonable'], [
+            'copyingPolicy' => $copyingPolicy,
+            'callAfter'     => $clonableAnnotation->callAfter,
+        ]);
 
         $properties = $this->getPropertiesToCopy($reflectionClass, $copyingPolicy, $doctrineMeta->getIdentifier());
 
@@ -62,7 +65,7 @@ class ClonableDriver extends AbstractDriver
      * @return array
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    private function getPropertiesToCopy(\ReflectionClass $reflectionClass, $copyingPolicy, array $idProperties)
+    private function getPropertiesToCopy(\ReflectionClass $reflectionClass, string $copyingPolicy, array $idProperties): array
     {
         $properties = [];
 
