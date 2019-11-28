@@ -152,7 +152,7 @@ class Cloner implements ClonerInterface
         }
 
         $event = new CloneEvent($object, $clone);
-        $this->eventDispatcher->dispatch(ClonableEvents::CLONED, $event);
+        $this->eventDispatcher->dispatch($event, ClonableEvents::CLONED);
 
         return $event->getClone();
     }

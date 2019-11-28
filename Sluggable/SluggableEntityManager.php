@@ -146,7 +146,7 @@ class SluggableEntityManager implements SluggableManagerInterface
             return false;
         }
         if ($dispatchUpdateEvent) {
-            $this->eventDispatcher->dispatch(SluggableEvents::SLUGS_UPDATED, new SlugsUpdateEvent($slugsChangeSet, $em));
+            $this->eventDispatcher->dispatch(new SlugsUpdateEvent($slugsChangeSet, $em), SluggableEvents::SLUGS_UPDATED);
         }
 
         return true;
