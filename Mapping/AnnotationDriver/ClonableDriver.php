@@ -38,17 +38,21 @@ class ClonableDriver extends AbstractDriver
         if ($clonableAnnotation instanceof Clonable) {
             $copyingPolicy = $clonableAnnotation->copyingPolicy;
         }
-        if (empty($copyingPolicy)) {
+        if (null === $copyingPolicy) {
             return;
         }
         if (!isset($meta['clonable'])) {
             $meta['clonable'] = [];
         }
 
-        $meta['clonable'] = array_merge($meta['clonable'], [
-            'copyingPolicy' => $copyingPolicy,
-            'callAfter'     => $clonableAnnotation->callAfter,
-        ]);
+        $meta['clonable']['copyingPolicy'] = $copyingPolicy;
+
+        if (!isset($meta['clonable']['callAfter'])) {
+            $meta['clonable']['callAfter'] = [];
+        }
+        if ($clonableAnnotation instanceof Clonable) {
+            $meta['clonable']['callAfter'] = array_merge($meta['clonable']['callAfter'], $clonableAnnotation->callAfter);
+        }
 
         $properties = $this->getPropertiesToCopy($reflectionClass, $copyingPolicy, $doctrineMeta->getIdentifier());
 
