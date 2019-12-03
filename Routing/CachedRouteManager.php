@@ -170,13 +170,13 @@ class CachedRouteManager implements RouteManagerInterface
 
                 if ($delocalizedName !== $name) {
                     $name        = $delocalizedName;
-                    $routeLocale = $locale;
+                    $routeLocale = (string)$locale;
 
                     break;
                 }
             }
             if (!isset($routes[$name])) {
-                if (!empty($routeLocale)) {
+                if ('' !== $routeLocale) {
                     $requirements[self::REQUIREMENT_LOCALE] = $localePattern;
                 }
 

@@ -42,7 +42,7 @@ class CompressResponseSubscriber implements EventSubscriberInterface
         if (is_array($contentType)) {
             $contentType = reset($contentType);
         }
-        if (Response::class === get_class($response) && (empty($contentType) || 0 === strpos($contentType, 'text/html'))) {
+        if (Response::class === get_class($response) && (null === $contentType || 0 === strpos($contentType, 'text/html'))) {
             $response->setContent(trim(preg_replace('/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/', PHP_EOL, preg_replace('/\h+/u', ' ', $response->getContent()))));
         }
     }

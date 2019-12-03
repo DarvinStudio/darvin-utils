@@ -49,7 +49,7 @@ class TranslateTranslationsCommand extends Command
         $this->setDefinition([
             new InputArgument('target_languages', InputArgument::REQUIRED, 'Target language(s), comma separated'),
             new InputArgument('directory', InputArgument::REQUIRED, 'Translation file directory'),
-            new InputArgument('yandex_translate_api_key', !empty($apiKey) ? InputArgument::OPTIONAL : InputArgument::REQUIRED, 'Yandex Translate API key'),
+            new InputArgument('yandex_translate_api_key', null !== $apiKey ? InputArgument::OPTIONAL : InputArgument::REQUIRED, 'Yandex Translate API key'),
             new InputOption('source_language', 's', InputOption::VALUE_OPTIONAL, 'Source language', 'en'),
         ]);
     }
@@ -71,7 +71,7 @@ class TranslateTranslationsCommand extends Command
         $apiKey = $input->getArgument('yandex_translate_api_key');
         $io     = new SymfonyStyle($input, $output);
 
-        if (!empty($apiKey)) {
+        if (null !== $apiKey) {
             $this->apiKey = $apiKey;
         }
         foreach (array_map('trim', explode(',', $input->getArgument('target_languages'))) as $to) {
@@ -116,7 +116,7 @@ class TranslateTranslationsCommand extends Command
      */
     private function translateText(?string $text): ?string
     {
-        if (empty($text) || preg_match('/^\s+$/', $text)) {
+        if (null === $text || preg_match('/^\s+$/', $text)) {
             return $text;
         }
         if (false !== strpos($text, '|')) {
@@ -137,7 +137,7 @@ class TranslateTranslationsCommand extends Command
             $parts = [];
 
             foreach ($words as $i => $word) {
-                $parts[] = !empty($word) && !preg_match('/^\s+$/', $word) ? $this->translateText($word) : $word;
+                $parts[] = '' !== $word && !preg_match('/^\s+$/', $word) ? $this->translateText($word) : $word;
 
                 if (isset($placeholders[$i])) {
                     $parts[] = $placeholders[$i];

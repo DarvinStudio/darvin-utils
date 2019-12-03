@@ -59,10 +59,10 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
         if (!$this->isFilterable($qb)) {
             throw new \InvalidArgumentException('Query builder is not filterable.');
         }
-        if (empty($user)) {
+        if (null === $user) {
             $user = $this->getUser();
 
-            if (empty($user)) {
+            if (null === $user) {
                 return;
             }
         }
@@ -70,7 +70,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
         $userIds = $this->extendedMetadataFactory->getDoctrineMetadata($user)->getIdentifierValues($user);
         $userId = reset($userIds);
 
-        if (empty($userId)) {
+        if (null === $userId) {
             throw new \InvalidArgumentException('User ID is empty.');
         }
         foreach (array_combine($qb->getRootAliases(), $qb->getRootEntities()) as $alias => $entity) {
@@ -130,7 +130,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     {
         $token = $this->authenticationTokenStorage->getToken();
 
-        if (empty($token)) {
+        if (null === $token) {
             return null;
         }
 

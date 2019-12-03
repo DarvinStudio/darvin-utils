@@ -43,7 +43,7 @@ class EntityToIDTransformer implements DataTransformerInterface
      */
     public function transform($value)
     {
-        if (empty($value)) {
+        if (null === $value) {
             return null;
         }
 
@@ -57,7 +57,7 @@ class EntityToIDTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
-        if (empty($value)) {
+        if (null === $value) {
             return null;
         }
 

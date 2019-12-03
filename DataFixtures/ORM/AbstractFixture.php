@@ -128,7 +128,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
         if (null !== $text) {
             $text = trim($text);
 
-            if (empty($text)) {
+            if ('' === $text) {
                 $text = null;
             }
         }

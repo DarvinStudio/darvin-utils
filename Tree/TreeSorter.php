@@ -70,7 +70,7 @@ class TreeSorter implements TreeSorterInterface
         foreach ($entities as $entity) {
             $parent = $this->propertyAccessor->getValue($entity, $config['parent']);
 
-            if (empty($parent)) {
+            if (null === $parent) {
                 continue;
             }
 

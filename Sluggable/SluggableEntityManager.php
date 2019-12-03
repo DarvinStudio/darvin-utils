@@ -153,10 +153,10 @@ class SluggableEntityManager implements SluggableManagerInterface
     }
 
     /**
-     * @param object $entity              Entity
-     * @param string $slugProperty        Slug property
-     * @param array  $sourcePropertyPaths Source property paths
-     * @param string $prefix              Slug prefix
+     * @param object      $entity              Entity
+     * @param string      $slugProperty        Slug property
+     * @param array       $sourcePropertyPaths Source property paths
+     * @param string|null $prefix              Slug prefix
      *
      * @return array
      * @throws \Darvin\Utils\Sluggable\SluggableException
@@ -164,8 +164,9 @@ class SluggableEntityManager implements SluggableManagerInterface
     private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths, $prefix = null)
     {
         $slugParts = [];
+        $prefix    = (string)$prefix;
 
-        if (!empty($prefix)) {
+        if ('' !== $prefix) {
             $slugParts[] = $prefix;
         }
         foreach ($sourcePropertyPaths as $propertyPath) {
@@ -177,9 +178,9 @@ class SluggableEntityManager implements SluggableManagerInterface
                 }
             }
 
-            $slugPart = $this->getPropertyValue($entity, $propertyPath);
+            $slugPart = (string)$this->getPropertyValue($entity, $propertyPath);
 
-            if (!empty($slugPart)) {
+            if ('' !== $slugPart) {
                 $slugParts[] = $slugPart;
             }
         }

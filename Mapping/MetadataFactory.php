@@ -167,7 +167,7 @@ class MetadataFactory implements MetadataFactoryInterface
      */
     private function getObjectManager()
     {
-        if (empty($this->om)) {
+        if (null === $this->om) {
             $this->om = $this->objectManagerProvider->getService();
         }
 
