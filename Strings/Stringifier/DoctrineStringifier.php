@@ -67,6 +67,7 @@ class DoctrineStringifier implements StringifierInterface
             case Types::TIME_MUTABLE:
                 return $this->stringifyDatetime($value, self::DATETIME_FORMATS[$dataType]);
 
+            case Types::JSON:
             case Types::JSON_ARRAY:
             case Types::SIMPLE_ARRAY:
             case Types::ARRAY:
