@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Clone event
@@ -23,7 +23,7 @@ class CloneEvent extends Event
     private $original;
 
     /**
-     * @var object
+     * @var object|null
      */
     private $clone;
 
@@ -31,7 +31,7 @@ class CloneEvent extends Event
      * @param object $original Original
      * @param object $clone    Clone
      */
-    public function __construct($original, $clone)
+    public function __construct(object $original, object $clone)
     {
         $this->original = $original;
         $this->clone = $clone;
@@ -40,25 +40,25 @@ class CloneEvent extends Event
     /**
      * @return object
      */
-    public function getOriginal()
+    public function getOriginal(): object
     {
         return $this->original;
     }
 
     /**
-     * @return object
+     * @return object|null
      */
-    public function getClone()
+    public function getClone(): ?object
     {
         return $this->clone;
     }
 
     /**
-     * @param object $clone clone
+     * @param object|null $clone clone
      *
      * @return CloneEvent
      */
-    public function setClone($clone)
+    public function setClone(?object $clone): CloneEvent
     {
         $this->clone = $clone;
 

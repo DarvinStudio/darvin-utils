@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,7 +11,7 @@
 namespace Darvin\Utils\Event;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Slugs update event
@@ -43,7 +43,7 @@ class SlugsUpdateEvent extends Event
      *
      * @return SlugsUpdateEvent
      */
-    public function setChangeSet(array $changeSet)
+    public function setChangeSet(array $changeSet): SlugsUpdateEvent
     {
         $this->changeSet = $changeSet;
 
@@ -53,7 +53,7 @@ class SlugsUpdateEvent extends Event
     /**
      * @return array
      */
-    public function getChangeSet()
+    public function getChangeSet(): array
     {
         return $this->changeSet;
     }
@@ -63,7 +63,7 @@ class SlugsUpdateEvent extends Event
      *
      * @return SlugsUpdateEvent
      */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(EntityManager $em): SlugsUpdateEvent
     {
         $this->em = $em;
 
@@ -73,7 +73,7 @@ class SlugsUpdateEvent extends Event
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManager
     {
         return $this->em;
     }
