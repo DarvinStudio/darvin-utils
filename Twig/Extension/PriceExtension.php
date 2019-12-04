@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @copyright Copyright (c) 2018-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -11,11 +11,13 @@
 namespace Darvin\Utils\Twig\Extension;
 
 use Darvin\Utils\Price\PriceFormatterInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 
 /**
  * Price Twig extension
  */
-class PriceExtension extends \Twig_Extension
+class PriceExtension extends AbstractExtension
 {
     /**
      * @var \Darvin\Utils\Price\PriceFormatterInterface
@@ -33,10 +35,10 @@ class PriceExtension extends \Twig_Extension
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
-            new \Twig_SimpleFilter('format_price', [$this->priceFormatter, 'format'], [
+            new TwigFilter('format_price', [$this->priceFormatter, 'format'], [
                 'is_safe' => ['html'],
             ]),
         ];

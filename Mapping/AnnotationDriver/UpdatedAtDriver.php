@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2016, Darvin Studio
+ * @copyright Copyright (c) 2016-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,7 +12,7 @@ namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\UpdatedAt;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 /**
  * Updated at annotation driver
@@ -22,7 +22,7 @@ class UpdatedAtDriver extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
+    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {
         if (!isset($meta['updated_at'])) {
             $meta['updatedAt'] = null;
@@ -48,12 +48,12 @@ class UpdatedAtDriver extends AbstractDriver
 
             $fieldType = $doctrineMeta->getTypeOfField($property->getName());
 
-            if (Type::DATETIME !== $fieldType) {
+            if (Types::DATETIME_MUTABLE !== $fieldType) {
                 throw $this->createPropertyAnnotationInvalidException(
                     UpdatedAt::class,
                     $doctrineMeta->getName(),
                     $property->getName(),
-                    sprintf('field must be of type "%s", "%s" provided', Type::DATETIME, $fieldType)
+                    sprintf('field must be of type "%s", "%s" provided', Types::DATETIME_MUTABLE, $fieldType)
                 );
             }
 
