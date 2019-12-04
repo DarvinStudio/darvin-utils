@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Strings\Stringifier;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -19,10 +19,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DoctrineStringifier implements StringifierInterface
 {
     private const DATETIME_FORMATS = [
-        Type::DATE       => 'd.m.Y',
-        Type::DATETIME   => 'd.m.Y H:i:s',
-        Type::DATETIMETZ => 'd.m.Y H:i:s',
-        Type::TIME       => 'H:i:s',
+        Types::DATE_MUTABLE       => 'd.m.Y',
+        Types::DATETIME_MUTABLE   => 'd.m.Y H:i:s',
+        Types::DATETIMETZ_MUTABLE => 'd.m.Y H:i:s',
+        Types::TIME_MUTABLE       => 'H:i:s',
     ];
 
     /**
@@ -41,38 +41,38 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * {@inheritdoc}
      */
-    public function stringify($value, $dataType)
+    public function stringify($value, string $dataType): string
     {
         if (is_object($value) && method_exists($value, '__toString')) {
-            return (string) $value;
+            return (string)$value;
         }
         switch ($dataType) {
-            case Type::BIGINT:
-            case Type::BLOB:
-            case Type::DECIMAL:
-            case Type::FLOAT:
-            case Type::GUID:
-            case Type::INTEGER:
-            case Type::SMALLINT:
-            case Type::STRING:
-            case Type::TEXT:
-                return $value;
+            case Types::BIGINT:
+            case Types::BLOB:
+            case Types::DECIMAL:
+            case Types::FLOAT:
+            case Types::GUID:
+            case Types::INTEGER:
+            case Types::SMALLINT:
+            case Types::STRING:
+            case Types::TEXT:
+                return (string)$value;
 
-            case Type::BOOLEAN:
+            case Types::BOOLEAN:
                 return $this->stringifyBoolean($value);
 
-            case Type::DATE:
-            case Type::DATETIME:
-            case Type::DATETIMETZ:
-            case Type::TIME:
+            case Types::DATE_MUTABLE:
+            case Types::DATETIME_MUTABLE:
+            case Types::DATETIMETZ_MUTABLE:
+            case Types::TIME_MUTABLE:
                 return $this->stringifyDatetime($value, self::DATETIME_FORMATS[$dataType]);
 
-            case Type::JSON_ARRAY:
-            case Type::SIMPLE_ARRAY:
-            case Type::TARRAY:
+            case Types::JSON_ARRAY:
+            case Types::SIMPLE_ARRAY:
+            case Types::ARRAY:
                 return $this->stringifyArray($value);
 
-            case Type::OBJECT:
+            case Types::OBJECT:
                 return $this->stringifyObject($value);
 
             default:
@@ -85,7 +85,7 @@ class DoctrineStringifier implements StringifierInterface
      *
      * @return string
      */
-    private function stringifyArray($value)
+    private function stringifyArray($value): string
     {
         return is_array($value) ? json_encode($value) : '';
     }
@@ -93,12 +93,12 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * @param mixed $value Value to stringify
      *
-     * @return string|null
+     * @return string
      */
-    private function stringifyBoolean($value)
+    private function stringifyBoolean($value): string
     {
         if (null === $value) {
-            return null;
+            return '';
         }
 
         return $this->translator->trans(sprintf('boolean.%s', $value ? 'yes' : 'no'));
@@ -110,7 +110,7 @@ class DoctrineStringifier implements StringifierInterface
      *
      * @return string
      */
-    private function stringifyDatetime($value, $format)
+    private function stringifyDatetime($value, string $format): string
     {
         return $value instanceof \DateTime ? $value->format($format) : '';
     }
@@ -120,7 +120,7 @@ class DoctrineStringifier implements StringifierInterface
      *
      * @return string
      */
-    private function stringifyObject($value)
+    private function stringifyObject($value): string
     {
         return is_object($value) ? serialize($value) : '';
     }

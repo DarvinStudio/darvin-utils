@@ -11,7 +11,7 @@
 namespace Darvin\Utils\Strings\Stringifier;
 
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -63,7 +63,7 @@ class DoctrineStringifierTest extends TestCase
 
         $obj->method('__toString')->willReturn('string object');
 
-        $output = $this->stringifier->stringify($obj, Type::OBJECT);
+        $output = $this->stringifier->stringify($obj, Types::OBJECT);
         self::assertEquals('string object',$output);
     }
 
@@ -76,7 +76,7 @@ class DoctrineStringifierTest extends TestCase
         $obj->arg1 = 1;
         $obj->arg2 = 'string';
 
-        $output = $this->stringifier->stringify($obj, Type::OBJECT);
+        $output = $this->stringifier->stringify($obj, Types::OBJECT);
         self::assertEquals(serialize($obj),$output);
     }
 
@@ -89,12 +89,12 @@ class DoctrineStringifierTest extends TestCase
         return [
             ['',null, null],
             ['', '', ''],
-            ['boolean.yes', true, Type::BOOLEAN],
-            [1.0E+19, 1.0E+19, Type::BIGINT],
-            ['', '12.23.1200', Type::DATE],
-            ['01.01.2000', new \DateTime('2000-01-01'), Type::DATE],
-            ['', 'array', Type::JSON_ARRAY],
-            [json_encode([1, 'two']), [1, 'two'], Type::JSON_ARRAY],
+            ['boolean.yes', true, Types::BOOLEAN],
+            [1.0E+19, 1.0E+19, Types::BIGINT],
+            ['', '12.23.1200', Types::DATE_MUTABLE],
+            ['01.01.2000', new \DateTime('2000-01-01'), Types::DATE_MUTABLE],
+            ['', 'array', Types::JSON_ARRAY],
+            [json_encode([1, 'two']), [1, 'two'], Types::JSON_ARRAY],
         ];
     }
 }
