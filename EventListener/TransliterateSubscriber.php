@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -57,7 +57,7 @@ class TransliterateSubscriber implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::onFlush,
@@ -67,7 +67,7 @@ class TransliterateSubscriber implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
@@ -83,7 +83,7 @@ class TransliterateSubscriber implements EventSubscriber
      *
      * @throws \RuntimeException
      */
-    private function transliterate(EntityManager $em, $entity)
+    private function transliterate(EntityManager $em, object $entity): void
     {
         $entityClass = ClassUtils::getClass($entity);
 

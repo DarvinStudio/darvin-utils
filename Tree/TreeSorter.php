@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2018-2019, Darvin Studio
@@ -51,7 +51,7 @@ class TreeSorter implements TreeSorterInterface
     /**
      * {@inheritdoc}
      */
-    public function sortTree(array $entities)
+    public function sortTree(array $entities): array
     {
         if (empty($entities)) {
             return $entities;
@@ -98,7 +98,7 @@ class TreeSorter implements TreeSorterInterface
      * @param object[] $children Child entities
      * @param array    $config   Tree configuration
      */
-    private function addEntity(array &$sorted, $entity, array $children, array $config)
+    private function addEntity(array &$sorted, object $entity, array $children, array $config): void
     {
         $path = $this->propertyAccessor->getValue($entity, $config['path_source']);
 

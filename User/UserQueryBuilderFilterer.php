@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2016-2018, Darvin Studio
+ * @copyright Copyright (c) 2016-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -54,7 +54,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     /**
      * {@inheritdoc}
      */
-    public function filter(QueryBuilder $qb, UserInterface $user = null)
+    public function filter(QueryBuilder $qb, ?UserInterface $user = null): void
     {
         if (!$this->isFilterable($qb)) {
             throw new \InvalidArgumentException('Query builder is not filterable.');
@@ -105,7 +105,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     /**
      * {@inheritdoc}
      */
-    public function isFilterable(QueryBuilder $qb)
+    public function isFilterable(QueryBuilder $qb): bool
     {
         $entities = $qb->getRootEntities();
 
@@ -124,9 +124,9 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     }
 
     /**
-     * @return \Symfony\Component\Security\Core\User\UserInterface
+     * @return \Symfony\Component\Security\Core\User\UserInterface|null
      */
-    private function getUser()
+    private function getUser(): ?UserInterface
     {
         $token = $this->authenticationTokenStorage->getToken();
 
