@@ -174,7 +174,7 @@ class SluggableEntityManager implements SluggableManagerInterface
             if (false !== strpos($propertyPath, '.')) {
                 $related = $this->getPropertyValue($entity, preg_replace('/\..*/', '', $propertyPath));
 
-                if (empty($related)) {
+                if (null === $related) {
                     continue;
                 }
             }

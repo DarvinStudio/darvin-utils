@@ -33,7 +33,7 @@ class UpdatedAtDriver extends AbstractDriver
             if (!$annotation instanceof UpdatedAt) {
                 continue;
             }
-            if (!empty($meta['updatedAt'])) {
+            if (null !== $meta['updatedAt']) {
                 if ($meta['updatedAt'] === $property->getName()) {
                     continue;
                 }
