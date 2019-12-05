@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2016, Darvin Studio
+ * @copyright Copyright (c) 2016-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -31,7 +31,7 @@ class LocaleProvider implements LocaleProviderInterface
      * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack  Request stack
      * @param string                                         $defaultLocale Default locale
      */
-    public function __construct(RequestStack $requestStack, $defaultLocale)
+    public function __construct(RequestStack $requestStack, string $defaultLocale)
     {
         $this->requestStack = $requestStack;
         $this->defaultLocale = $defaultLocale;
@@ -40,7 +40,7 @@ class LocaleProvider implements LocaleProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getCurrentLocale()
+    public function getCurrentLocale(): string
     {
         $request = $this->requestStack->getCurrentRequest();
 

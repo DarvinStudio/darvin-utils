@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Mapping;
 
-use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * Metadata factory
@@ -18,22 +18,17 @@ use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 interface MetadataFactoryInterface
 {
     /**
-     * @param \Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface $driver Annotation driver
-     */
-    public function addAnnotationDriver(AnnotationDriverInterface $driver);
-
-    /**
      * @param object|string $objectOrClass Object or class
      *
-     * @return mixed[]
+     * @return array
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    public function getExtendedMetadata($objectOrClass);
+    public function getExtendedMetadata($objectOrClass): array;
 
     /**
      * @param object|string $objectOrClass Object or class
      *
-     * @return string
+     * @return mixed
      * @throws \Darvin\Utils\Mapping\MappingException
      */
     public function getIdentifier($objectOrClass);
@@ -44,5 +39,5 @@ interface MetadataFactoryInterface
      * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    public function getDoctrineMetadata($objectOrClass);
+    public function getDoctrineMetadata($objectOrClass): ClassMetadata;
 }

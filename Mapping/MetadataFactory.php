@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -13,6 +13,7 @@ namespace Darvin\Utils\Mapping;
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Util\ClassUtils;
 
 /**
@@ -62,9 +63,9 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param \Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface $annotationDriver Annotation driver
      */
-    public function addAnnotationDriver(AnnotationDriverInterface $annotationDriver)
+    public function addAnnotationDriver(AnnotationDriverInterface $annotationDriver): void
     {
         $this->annotationDrivers[] = $annotationDriver;
     }
@@ -99,7 +100,7 @@ class MetadataFactory implements MetadataFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function getExtendedMetadata($objectOrClass)
+    public function getExtendedMetadata($objectOrClass): array
     {
         $doctrineMeta = $this->getDoctrineMetadata($objectOrClass);
 
@@ -124,7 +125,7 @@ class MetadataFactory implements MetadataFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function getDoctrineMetadata($objectOrClass)
+    public function getDoctrineMetadata($objectOrClass): ClassMetadata
     {
         $class = $this->getClass($objectOrClass);
 
@@ -143,9 +144,9 @@ class MetadataFactory implements MetadataFactoryInterface
 
     /**
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
-     * @param mixed[]                                            $extendedMeta Extended metadata
+     * @param array                                              $extendedMeta Extended metadata
      */
-    private function readExtendedMetadata(ClassMetadata $doctrineMeta, &$extendedMeta)
+    private function readExtendedMetadata(ClassMetadata $doctrineMeta, array &$extendedMeta): void
     {
         foreach ($this->annotationDrivers as $annotationDriver) {
             $annotationDriver->readMetadata($doctrineMeta, $extendedMeta);
@@ -157,7 +158,7 @@ class MetadataFactory implements MetadataFactoryInterface
      *
      * @return string
      */
-    private function getClass($objectOrClass)
+    private function getClass($objectOrClass): string
     {
         return is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass;
     }
@@ -165,7 +166,7 @@ class MetadataFactory implements MetadataFactoryInterface
     /**
      * @return \Doctrine\Common\Persistence\ObjectManager
      */
-    private function getObjectManager()
+    private function getObjectManager(): ObjectManager
     {
         if (null === $this->om) {
             $this->om = $this->objectManagerProvider->getService();
