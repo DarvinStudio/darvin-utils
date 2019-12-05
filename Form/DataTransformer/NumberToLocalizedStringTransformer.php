@@ -25,7 +25,7 @@ class NumberToLocalizedStringTransformer extends BaseNumberToLocalizedStringTran
     private $scale;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(int $scale = null, ?bool $grouping = false, ?int $roundingMode = self::ROUND_HALF_UP, string $locale = null)
     {
@@ -35,7 +35,7 @@ class NumberToLocalizedStringTransformer extends BaseNumberToLocalizedStringTran
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getScale(): ?int
     {

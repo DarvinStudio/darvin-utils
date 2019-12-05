@@ -64,7 +64,7 @@ class Cloner implements ClonerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createClone(object $object): object
     {

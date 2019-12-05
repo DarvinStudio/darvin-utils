@@ -20,7 +20,7 @@ class IntegerToLocalizedStringTransformer extends BaseIntegerToLocalizedStringTr
     use NumberToLocalizedStringTransformerTrait;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getScale(): int
     {

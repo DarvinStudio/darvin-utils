@@ -39,7 +39,7 @@ class EntityToIDTransformer implements DataTransformerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function transform($value)
     {
@@ -53,7 +53,7 @@ class EntityToIDTransformer implements DataTransformerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function reverseTransform($value): ?object
     {

@@ -44,7 +44,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSubscribedEvents(): array
     {
@@ -54,7 +54,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function onFlush(OnFlushEventArgs $args): void
     {

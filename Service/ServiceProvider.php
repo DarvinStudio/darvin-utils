@@ -33,7 +33,7 @@ class ServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getService(): object
     {

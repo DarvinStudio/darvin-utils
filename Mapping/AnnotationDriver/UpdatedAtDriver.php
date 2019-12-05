@@ -20,7 +20,7 @@ use Doctrine\DBAL\Types\Types;
 class UpdatedAtDriver extends AbstractDriver
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {

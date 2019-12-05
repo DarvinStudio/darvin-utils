@@ -71,7 +71,7 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getIdentifier($objectOrClass)
     {
@@ -98,7 +98,7 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getExtendedMetadata($objectOrClass): array
     {
@@ -123,7 +123,7 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDoctrineMetadata($objectOrClass): ClassMetadata
     {

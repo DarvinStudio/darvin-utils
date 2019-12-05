@@ -19,7 +19,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 class DefaultValueDriver extends AbstractDriver
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {

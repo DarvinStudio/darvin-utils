@@ -31,7 +31,7 @@ class RouteCacheWarmer implements CacheWarmerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isOptional(): bool
     {
@@ -39,7 +39,7 @@ class RouteCacheWarmer implements CacheWarmerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function warmUp($cacheDir): void
     {

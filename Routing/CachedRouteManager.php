@@ -73,7 +73,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exists(string $routeName): bool
     {
@@ -83,7 +83,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getNames(): array
     {
@@ -91,7 +91,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOption(string $routeName, string $option)
     {
@@ -103,7 +103,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function hasOption(string $routeName, string $option): bool
     {
@@ -113,7 +113,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getPath(string $routeName): string
     {
@@ -133,7 +133,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function hasRequirement(string $routeName, string $requirement): bool
     {
@@ -143,7 +143,7 @@ class CachedRouteManager implements RouteManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function requiresLocale(string $routeName): bool
     {

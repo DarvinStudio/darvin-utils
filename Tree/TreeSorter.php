@@ -49,7 +49,7 @@ class TreeSorter implements TreeSorterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function sortTree(array $entities): array
     {

@@ -46,7 +46,7 @@ class TitleCaseTranslationsCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -58,7 +58,7 @@ class TitleCaseTranslationsCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

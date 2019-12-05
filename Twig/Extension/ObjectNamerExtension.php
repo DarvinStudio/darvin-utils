@@ -33,7 +33,7 @@ class ObjectNamerExtension extends AbstractExtension
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getFilters(): array
     {

@@ -32,7 +32,7 @@ class ObjectNamer implements ObjectNamerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function name($objectOrClass): string
     {

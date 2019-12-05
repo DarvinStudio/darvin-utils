@@ -38,7 +38,7 @@ class EntityResolver implements EntityResolverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function resolve(string $entity): string
     {

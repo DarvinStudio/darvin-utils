@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints\Blank;
 class AntiSpamType extends AbstractType
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
@@ -37,7 +37,7 @@ class AntiSpamType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getParent(): string
     {

@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class DummyHomepageRouter implements HomepageRouterInterface
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function generate(int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH, array $params = []): ?string
     {
@@ -26,7 +26,7 @@ class DummyHomepageRouter implements HomepageRouterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isHomepage($object): bool
     {
@@ -34,7 +34,7 @@ class DummyHomepageRouter implements HomepageRouterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getHomepageRoute(): ?string
     {

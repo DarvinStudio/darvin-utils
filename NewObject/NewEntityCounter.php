@@ -58,7 +58,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function count(string $objectClass): int
     {
@@ -91,7 +91,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isCountable(string $objectClass): bool
     {

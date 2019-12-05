@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class NumberTypeExtension extends AbstractTypeExtension
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -35,7 +35,7 @@ class NumberTypeExtension extends AbstractTypeExtension
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public static function getExtendedTypes()
     {

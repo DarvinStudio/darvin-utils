@@ -16,7 +16,7 @@ namespace Darvin\Utils\Form\DataTransformer;
 trait NumberToLocalizedStringTransformerTrait
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getNumberFormatter(): \NumberFormatter
     {

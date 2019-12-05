@@ -31,7 +31,7 @@ class FlashNotifier implements FlashNotifierInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function formError(): void
     {
@@ -39,7 +39,7 @@ class FlashNotifier implements FlashNotifierInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function done(bool $success, string $message): void
     {
@@ -47,7 +47,7 @@ class FlashNotifier implements FlashNotifierInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function error(string $message): void
     {
@@ -55,7 +55,7 @@ class FlashNotifier implements FlashNotifierInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function success(string $message): void
     {

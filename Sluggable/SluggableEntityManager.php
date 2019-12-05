@@ -89,7 +89,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isSluggable($entityOrClass): bool
     {
@@ -109,7 +109,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function generateSlugs(object $entity, bool $dispatchUpdateEvent = false, ?string $prefix = null): bool
     {

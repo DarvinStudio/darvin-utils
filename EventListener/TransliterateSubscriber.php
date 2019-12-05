@@ -55,7 +55,7 @@ class TransliterateSubscriber implements EventSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSubscribedEvents(): array
     {
@@ -65,7 +65,7 @@ class TransliterateSubscriber implements EventSubscriber
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function onFlush(OnFlushEventArgs $args): void
     {

@@ -52,7 +52,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function filter(QueryBuilder $qb, ?UserInterface $user = null): void
     {
@@ -103,7 +103,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isFilterable(QueryBuilder $qb): bool
     {

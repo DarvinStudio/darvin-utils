@@ -48,7 +48,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     private $fakers = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setContainer(?ContainerInterface $container = null): void
     {

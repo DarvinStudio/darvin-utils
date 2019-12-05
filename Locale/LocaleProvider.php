@@ -38,7 +38,7 @@ class LocaleProvider implements LocaleProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCurrentLocale(): string
     {

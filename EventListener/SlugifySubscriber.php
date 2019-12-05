@@ -51,7 +51,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSubscribedEvents(): array
     {
@@ -71,7 +71,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function onFlush(OnFlushEventArgs $args): void
     {

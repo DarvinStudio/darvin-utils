@@ -23,7 +23,7 @@ class Transliterator implements TransliteratorInterface
     ];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function transliterate($text, bool $sanitize = true, array $allowedSymbols = [], string $separator = '-'): string
     {

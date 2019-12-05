@@ -39,7 +39,7 @@ class DoctrineStringifier implements StringifierInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function stringify($value, string $dataType): string
     {
