@@ -53,3 +53,5 @@
 7.1.5: Cloner: call methods specified in "callAfter" property of "Clonable" annotation instead of "__clone()".
 
 7.1.9: Add iterable utility.
+
+7.2.0: Enable strict types.
