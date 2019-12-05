@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -46,7 +46,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::onFlush,
@@ -56,7 +56,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
     /**
      * {@inheritdoc}
      */
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
@@ -72,7 +72,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
      *
      * @throws \RuntimeException
      */
-    private function setDefaultValues(EntityManager $em, $entity)
+    private function setDefaultValues(EntityManager $em, object $entity): void
     {
         $entityClass = ClassUtils::getClass($entity);
 
@@ -121,7 +121,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
      *
      * @throws \RuntimeException
      */
-    private function filterDefaultValuesMap(array &$defaultValuesMap, $entity, $entityClass)
+    private function filterDefaultValuesMap(array &$defaultValuesMap, object $entity, string $entityClass): void
     {
         foreach ($defaultValuesMap as $targetProperty => $sourcePropertyPath) {
             if (!$this->propertyAccessor->isReadable($entity, $targetProperty)) {
@@ -144,7 +144,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
      * @return array
      * @throws \RuntimeException
      */
-    private function getSourcePropertyValues(array $sourcePropertyPaths, $entity, $entityClass)
+    private function getSourcePropertyValues(array $sourcePropertyPaths, object $entity, string $entityClass): array
     {
         $sourcePropertyValues = [];
 
@@ -165,7 +165,7 @@ class SetDefaultValuesSubscriber implements EventSubscriber
      *
      * @return \RuntimeException
      */
-    private function createPropertyNotReadableException($entityClass, $property)
+    private function createPropertyNotReadableException(string $entityClass, string $property): \RuntimeException
     {
         return new \RuntimeException(sprintf('Property "%s::$%s" is not readable.', $entityClass, $property));
     }

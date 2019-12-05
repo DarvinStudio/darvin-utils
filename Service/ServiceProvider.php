@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2016, Darvin Studio
+ * @copyright Copyright (c) 2016-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -27,7 +27,7 @@ class ServiceProvider implements ServiceProviderInterface
     /**
      * @param string $id Service ID
      */
-    public function __construct($id)
+    public function __construct(string $id)
     {
         $this->id = $id;
     }
@@ -35,7 +35,7 @@ class ServiceProvider implements ServiceProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getService()
+    public function getService(): object
     {
         return $this->container->get($this->id);
     }

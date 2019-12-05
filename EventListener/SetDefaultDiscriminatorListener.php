@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2017, Darvin Studio
+ * @copyright Copyright (c) 2017-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -20,7 +20,7 @@ class SetDefaultDiscriminatorListener
     /**
      * @param \Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $args Event arguments
      */
-    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args)
+    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $args): void
     {
         $meta = $args->getClassMetadata();
 
