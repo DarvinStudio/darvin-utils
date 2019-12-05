@@ -391,7 +391,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      *
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function setPropertyValue($entity, string $propertyPath, $value): void
+    private function setPropertyValue(object $entity, string $propertyPath, $value): void
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
             throw new CustomObjectException(
@@ -409,7 +409,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
      * @return mixed
      * @throws \Darvin\Utils\CustomObject\CustomObjectException
      */
-    private function getPropertyValue($entity, string $propertyPath)
+    private function getPropertyValue(object $entity, string $propertyPath)
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
             throw new CustomObjectException(

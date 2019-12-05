@@ -55,3 +55,5 @@
 7.1.9: Add iterable utility.
 
 7.2.0: Enable strict types.
+
+7.2.1: Use "object" type hint.

@@ -30,7 +30,7 @@ interface HomepageRouterInterface
      *
      * @return bool
      */
-    public function isHomepage($object): bool;
+    public function isHomepage(?object $object): bool;
 
     /**
      * @return string|null

@@ -18,12 +18,12 @@ interface HomepageProviderInterface
     /**
      * @return object|null
      */
-    public function getHomepage();
+    public function getHomepage(): ?object;
 
     /**
      * @param object|null $object Object to check
      *
      * @return bool
      */
-    public function isHomepage($object): bool;
+    public function isHomepage(?object $object): bool;
 }

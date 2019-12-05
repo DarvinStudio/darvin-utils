@@ -23,5 +23,5 @@ interface SlugHandlerInterface
      * @param object                      $entity Entity
      * @param \Doctrine\ORM\EntityManager $em     Entity manager
      */
-    public function handle(string &$slug, string &$suffix, $entity, EntityManager $em): void;
+    public function handle(string &$slug, string &$suffix, object $entity, EntityManager $em): void;
 }

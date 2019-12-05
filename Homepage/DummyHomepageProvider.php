@@ -18,7 +18,7 @@ class DummyHomepageProvider implements HomepageProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function getHomepage()
+    public function getHomepage(): ?object
     {
         return null;
     }

@@ -144,7 +144,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      *
      * @return object|null
      */
-    final protected function getRandomEntity(string $entity, string $idProperty = 'id')
+    final protected function getRandomEntity(string $entity, string $idProperty = 'id'): ?object
     {
         $entity = $this->getEntityResolver()->resolve($entity);
 
@@ -236,7 +236,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      *
      * @return object
      */
-    final protected function instantiateEntity(string $entity)
+    final protected function instantiateEntity(string $entity): object
     {
         $class = $this->getEntityResolver()->resolve($entity);
 
@@ -248,7 +248,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
      *
      * @return object
      */
-    final protected function instantiateTranslation(string $entity)
+    final protected function instantiateTranslation(string $entity): object
     {
         $callback = [$this->getEntityResolver()->resolve($entity), 'getTranslationEntityClass'];
 
