@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -33,7 +33,7 @@ class FlashNotifier implements FlashNotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function formError()
+    public function formError(): void
     {
         $this->error(FlashNotifierInterface::MESSAGE_FORM_ERROR);
     }
@@ -41,7 +41,7 @@ class FlashNotifier implements FlashNotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function done($success, $message)
+    public function done(bool $success, string $message): void
     {
         $success ? $this->success($message) : $this->error($message);
     }
@@ -49,7 +49,7 @@ class FlashNotifier implements FlashNotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function error($message)
+    public function error(string $message): void
     {
         $this->flashBag->add(FlashNotifierInterface::TYPE_ERROR, $message);
     }
@@ -57,7 +57,7 @@ class FlashNotifier implements FlashNotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function success($message)
+    public function success(string $message): void
     {
         $this->flashBag->add(FlashNotifierInterface::TYPE_SUCCESS, $message);
     }

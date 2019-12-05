@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @copyright Copyright (c) 2018-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -32,7 +32,7 @@ class EntityToIDTransformer implements DataTransformerInterface
      * @param \Doctrine\ORM\EntityManager $em          Entity manager
      * @param string                      $entityClass Entity class
      */
-    public function __construct(EntityManager $em, $entityClass)
+    public function __construct(EntityManager $em, string $entityClass)
     {
         $this->em = $em;
         $this->entityClass = $entityClass;
@@ -55,7 +55,7 @@ class EntityToIDTransformer implements DataTransformerInterface
     /**
      * {@inheritdoc}
      */
-    public function reverseTransform($value)
+    public function reverseTransform($value): ?object
     {
         if (null === $value) {
             return null;

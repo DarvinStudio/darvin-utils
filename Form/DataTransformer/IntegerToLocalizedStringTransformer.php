@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2018-2019, Darvin Studio
@@ -22,7 +22,7 @@ class IntegerToLocalizedStringTransformer extends BaseIntegerToLocalizedStringTr
     /**
      * {@inheritdoc}
      */
-    protected function getScale()
+    protected function getScale(): int
     {
         return 0;
     }

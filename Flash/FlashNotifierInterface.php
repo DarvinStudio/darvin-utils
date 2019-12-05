@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -23,21 +23,21 @@ interface FlashNotifierInterface
     /**
      * Adds form error message.
      */
-    public function formError();
+    public function formError(): void;
 
     /**
      * @param bool   $success Is success
      * @param string $message Message
      */
-    public function done($success, $message);
+    public function done(bool $success, string $message): void;
 
     /**
      * @param string $message Message
      */
-    public function error($message);
+    public function error(string $message): void;
 
     /**
      * @param string $message Message
      */
-    public function success($message);
+    public function success(string $message): void;
 }
