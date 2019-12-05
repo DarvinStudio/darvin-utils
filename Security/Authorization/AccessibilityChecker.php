@@ -37,21 +37,18 @@ class AccessibilityChecker implements AccessibilityCheckerInterface
      */
     public function isAccessible(SecurableInterface $securable): bool
     {
-        $allowedRoles = $securable->getAllowedRoles();
-
-        if (empty($allowedRoles)) {
-            return true;
-        }
-
+        $accessible           = true;
         $authorizationChecker = $this->getAuthorizationChecker();
 
-        foreach ($allowedRoles as $allowedRole) {
+        foreach ($securable->getAllowedRoles() as $allowedRole) {
+            $accessible = false;
+
             if ($authorizationChecker->isGranted($allowedRole)) {
                 return true;
             }
         }
 
-        return false;
+        return $accessible;
     }
 
     /**

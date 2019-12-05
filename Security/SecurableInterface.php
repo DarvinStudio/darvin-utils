@@ -16,7 +16,7 @@ namespace Darvin\Utils\Security;
 interface SecurableInterface
 {
     /**
-     * @return array
+     * @return iterable
      */
-    public function getAllowedRoles();
+    public function getAllowedRoles(): iterable;
 }
