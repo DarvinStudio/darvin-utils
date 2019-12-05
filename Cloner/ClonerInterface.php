@@ -21,5 +21,5 @@ interface ClonerInterface
      * @return object
      * @throws \InvalidArgumentException
      */
-    public function createClone($object);
+    public function createClone(object $object): object;
 }

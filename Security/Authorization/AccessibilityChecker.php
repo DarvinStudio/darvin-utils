@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,11 +12,12 @@ namespace Darvin\Utils\Security\Authorization;
 
 use Darvin\Utils\Security\SecurableInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Accessibility checker
  */
-class AccessibilityChecker
+class AccessibilityChecker implements AccessibilityCheckerInterface
 {
     /**
      * @var \Darvin\Utils\Service\ServiceProviderInterface
@@ -32,11 +33,9 @@ class AccessibilityChecker
     }
 
     /**
-     * @param \Darvin\Utils\Security\SecurableInterface $securable Securable
-     *
-     * @return bool
+     * {@inheritDoc}
      */
-    public function isAccessible(SecurableInterface $securable)
+    public function isAccessible(SecurableInterface $securable): bool
     {
         $allowedRoles = $securable->getAllowedRoles();
 
@@ -58,7 +57,7 @@ class AccessibilityChecker
     /**
      * @return \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
      */
-    private function getAuthorizationChecker()
+    private function getAuthorizationChecker(): AuthorizationCheckerInterface
     {
         return $this->authorizationCheckerProvider->getService();
     }

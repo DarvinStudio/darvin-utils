@@ -66,7 +66,7 @@ class Cloner implements ClonerInterface
     /**
      * {@inheritdoc}
      */
-    public function createClone($object)
+    public function createClone(object $object): object
     {
         $this->cloned = [];
 
@@ -80,7 +80,7 @@ class Cloner implements ClonerInterface
      * @return object
      * @throws \InvalidArgumentException
      */
-    private function cloneObject($object, bool $requireClonable)
+    private function cloneObject(object $object, bool $requireClonable): object
     {
         $hash = spl_object_hash($object);
 
@@ -164,7 +164,7 @@ class Cloner implements ClonerInterface
      *
      * @return mixed
      */
-    private function getValue($object, \ReflectionClass $reflectionClass, string $property)
+    private function getValue(object $object, \ReflectionClass $reflectionClass, string $property)
     {
         try {
             return $this->propertyAccessor->getValue($object, $property);
@@ -184,7 +184,7 @@ class Cloner implements ClonerInterface
      * @param string           $property        Property
      * @param mixed            $value           Value
      */
-    private function setValue($object, \ReflectionClass $reflectionClass, string $property, $value): void
+    private function setValue(object $object, \ReflectionClass $reflectionClass, string $property, $value): void
     {
         try {
             $this->propertyAccessor->setValue($object, $property, $value);

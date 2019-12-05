@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -39,7 +39,7 @@ abstract class AbstractDriver implements AnnotationDriverInterface
      *
      * @return \Darvin\Utils\Mapping\MappingException
      */
-    protected function createPropertyAnnotationInvalidException($annotation, $objectClass, $property, $message)
+    protected function createPropertyAnnotationInvalidException(string $annotation, string $objectClass, string $property, string $message): MappingException
     {
         $message = sprintf(
             'Configuration of annotation "%s" on property "%s::$%s" is invalid: %s.',

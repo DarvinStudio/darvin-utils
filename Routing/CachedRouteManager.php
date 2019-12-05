@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2017-2019, Darvin Studio
@@ -61,7 +61,7 @@ class CachedRouteManager implements RouteManagerInterface
      * @param bool                                         $debug          Whether debug mode is enabled
      * @param string[]                                     $locales        Locales
      */
-    public function __construct(LocaleProviderInterface $localeProvider, RouterInterface $router, $cachePathname, $debug, array $locales)
+    public function __construct(LocaleProviderInterface $localeProvider, RouterInterface $router, string $cachePathname, bool $debug, array $locales)
     {
         $this->localeProvider = $localeProvider;
         $this->router = $router;
@@ -75,7 +75,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function exists($routeName)
+    public function exists(string $routeName): bool
     {
         $routes = $this->getRoutes();
 
@@ -85,7 +85,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getNames()
+    public function getNames(): array
     {
         return array_keys($this->getRoutes());
     }
@@ -93,7 +93,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getOption($routeName, $option)
+    public function getOption(string $routeName, string $option)
     {
         if (!$this->hasOption($routeName, $option)) {
             throw new RouteHasNoOptionException($routeName, $option);
@@ -105,7 +105,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function hasOption($routeName, $option)
+    public function hasOption(string $routeName, string $option): bool
     {
         $route = $this->getRoute($routeName);
 
@@ -115,7 +115,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getPath($routeName)
+    public function getPath(string $routeName): string
     {
         $paths = $this->getRoute($routeName)['paths'];
 
@@ -135,7 +135,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function hasRequirement($routeName, $requirement)
+    public function hasRequirement(string $routeName, string $requirement): bool
     {
         $requirements = $this->getRoute($routeName)['requirements'];
 
@@ -145,12 +145,12 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function requiresLocale($routeName)
+    public function requiresLocale(string $routeName): bool
     {
         return $this->hasRequirement($routeName, self::REQUIREMENT_LOCALE);
     }
 
-    public function cacheRoutes()
+    public function cacheRoutes(): void
     {
         $cache = new ConfigCache($this->cachePathname, $this->debug);
 
@@ -199,7 +199,7 @@ class CachedRouteManager implements RouteManagerInterface
      * @return array
      * @throws \Darvin\Utils\Routing\Exception\RouteNotExistException
      */
-    private function getRoute($routeName)
+    private function getRoute(string $routeName): array
     {
         if (!$this->exists($routeName)) {
             throw new RouteNotExistException($routeName);
@@ -211,7 +211,7 @@ class CachedRouteManager implements RouteManagerInterface
     /**
      * @return array
      */
-    private function getRoutes()
+    private function getRoutes(): array
     {
         if (null === $this->routes) {
             $this->cacheRoutes();
