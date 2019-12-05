@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2016, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -21,7 +21,7 @@ class SlugDriver extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta)
+    public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void
     {
         if (!isset($meta['slugs'])) {
             $meta['slugs'] = [];
@@ -48,7 +48,7 @@ class SlugDriver extends AbstractDriver
      *
      * @throws \Darvin\Utils\Mapping\MappingException
      */
-    private function validateAnnotation(Slug $annotation, $objectClass, $slugProperty)
+    private function validateAnnotation(Slug $annotation, string $objectClass, string $slugProperty): void
     {
         $sourcePropertyPaths = $annotation->sourcePropertyPaths;
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -53,7 +53,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::onFlush,
@@ -63,7 +63,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     /**
      * @param object $entity Entity
      */
-    public function blacklistEntity($entity)
+    public function blacklistEntity(object $entity): void
     {
         $hash = $this->hashEntity($this->getEntityManager(), $entity);
 
@@ -73,7 +73,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $em = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
@@ -91,7 +91,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
      * @param object                      $entity              Entity
      * @param bool                        $dispatchUpdateEvent Whether to dispatch update event
      */
-    private function slugify(EntityManager $em, $entity, $dispatchUpdateEvent = false)
+    private function slugify(EntityManager $em, object $entity, bool $dispatchUpdateEvent = false): void
     {
         if (isset($this->entityBlacklist[$this->hashEntity($em, $entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
@@ -107,7 +107,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
      *
      * @return string
      */
-    private function hashEntity(EntityManager $em, $entity)
+    private function hashEntity(EntityManager $em, object $entity): string
     {
         $class = ClassUtils::getClass($entity);
 
@@ -119,7 +119,7 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    private function getEntityManager()
+    private function getEntityManager(): EntityManager
     {
         return $this->entityManagerProvider->getService();
     }

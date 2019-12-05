@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -20,7 +20,7 @@ interface SluggableManagerInterface
      *
      * @return bool
      */
-    public function isSluggable($objectOrClass);
+    public function isSluggable($objectOrClass): bool;
 
     /**
      * @param object $object              Object
@@ -29,5 +29,5 @@ interface SluggableManagerInterface
      *
      * @return bool Is at least one slug updated
      */
-    public function generateSlugs($object, $dispatchUpdateEvent = false, $prefix = null);
+    public function generateSlugs(object $object, bool $dispatchUpdateEvent = false, ?string $prefix = null): bool;
 }

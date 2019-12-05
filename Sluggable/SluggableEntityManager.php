@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -16,6 +16,7 @@ use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -82,7 +83,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * @param \Darvin\Utils\Sluggable\SlugHandlerInterface $slugHandler Slug handler
      */
-    public function addSlugHandler(SlugHandlerInterface $slugHandler)
+    public function addSlugHandler(SlugHandlerInterface $slugHandler): void
     {
         $this->slugHandlers[] = $slugHandler;
     }
@@ -90,7 +91,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function isSluggable($entityOrClass)
+    public function isSluggable($entityOrClass): bool
     {
         $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
 
@@ -110,7 +111,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function generateSlugs($entity, $dispatchUpdateEvent = false, $prefix = null)
+    public function generateSlugs(object $entity, bool $dispatchUpdateEvent = false, ?string $prefix = null): bool
     {
         $em             = $this->getEntityManager();
         $entityClass    = ClassUtils::getClass($entity);
@@ -161,7 +162,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      * @return array
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function getSlugParts($entity, $slugProperty, array $sourcePropertyPaths, $prefix = null)
+    private function getSlugParts(object $entity, string $slugProperty, array $sourcePropertyPaths, ?string $prefix): array
     {
         $slugParts = [];
         $prefix    = (string)$prefix;
@@ -204,7 +205,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      * @return array
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function getSlugsMetadata($entityClass)
+    private function getSlugsMetadata(string $entityClass): array
     {
         if (!isset($this->slugsMetadata[$entityClass])) {
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
@@ -232,7 +233,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      *
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function setPropertyValue($entity, $propertyPath, $value)
+    private function setPropertyValue(object $entity, string $propertyPath, $value): void
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
             throw new SluggableException(
@@ -250,7 +251,7 @@ class SluggableEntityManager implements SluggableManagerInterface
      * @return mixed
      * @throws \Darvin\Utils\Sluggable\SluggableException
      */
-    private function getPropertyValue($entity, $propertyPath)
+    private function getPropertyValue(object $entity, string $propertyPath)
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
             throw new SluggableException(
@@ -264,7 +265,7 @@ class SluggableEntityManager implements SluggableManagerInterface
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    private function getEntityManager()
+    private function getEntityManager(): EntityManager
     {
         return $this->entityManagerProvider->getService();
     }
