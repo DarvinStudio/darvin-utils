@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
  * @copyright Copyright (c) 2015-2019, Darvin Studio
@@ -34,7 +34,7 @@ class ObjectNamer implements ObjectNamerInterface
     /**
      * {@inheritdoc}
      */
-    public function name($objectOrClass)
+    public function name($objectOrClass): string
     {
         $class = preg_replace('/(.*[^\\\]+)Interface$/', '$1', is_object($objectOrClass) ? ClassUtils::getClass($objectOrClass) : $objectOrClass);
 

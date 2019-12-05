@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\ORM;
 
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -24,7 +25,7 @@ class QueryBuilderUtil
      *
      * @return \Doctrine\ORM\Query\Expr\Join
      */
-    public static function findJoinByAlias(QueryBuilder $qb, $rootAlias, $joinAlias)
+    public static function findJoinByAlias(QueryBuilder $qb, string $rootAlias, string $joinAlias): ?Join
     {
         $dqlParts = $qb->getDQLParts();
 
