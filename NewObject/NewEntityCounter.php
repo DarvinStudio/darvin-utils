@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -60,7 +60,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     /**
      * {@inheritdoc}
      */
-    public function count($objectClass)
+    public function count(string $objectClass): int
     {
         if (!isset($this->counts[$objectClass])) {
             $meta = $this->getNewObjectFlagMeta($objectClass);
@@ -93,7 +93,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     /**
      * {@inheritdoc}
      */
-    public function isCountable($objectClass)
+    public function isCountable(string $objectClass): bool
     {
         if (isset($this->counts[$objectClass])) {
             return true;
@@ -109,7 +109,7 @@ class NewEntityCounter implements NewObjectCounterInterface
      *
      * @return array
      */
-    private function getNewObjectFlagMeta($entityClass)
+    private function getNewObjectFlagMeta(string $entityClass): array
     {
         $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 

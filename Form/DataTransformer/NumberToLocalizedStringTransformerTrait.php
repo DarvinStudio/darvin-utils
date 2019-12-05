@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @copyright Copyright (c) 2018-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -18,7 +18,7 @@ trait NumberToLocalizedStringTransformerTrait
     /**
      * {@inheritdoc}
      */
-    protected function getNumberFormatter()
+    protected function getNumberFormatter(): \NumberFormatter
     {
         $formatter = new \NumberFormatter('en', \NumberFormatter::DECIMAL);
 
@@ -37,5 +37,5 @@ trait NumberToLocalizedStringTransformerTrait
     /**
      * @return int|null
      */
-    abstract protected function getScale();
+    abstract protected function getScale(): ?int;
 }

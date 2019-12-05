@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2018, Darvin Studio
+ * @copyright Copyright (c) 2018-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -27,9 +27,9 @@ class NumberToLocalizedStringTransformer extends BaseNumberToLocalizedStringTran
     /**
      * {@inheritdoc}
      */
-    public function __construct($scale = null, $grouping = false, $roundingMode = self::ROUND_HALF_UP)
+    public function __construct(int $scale = null, ?bool $grouping = false, ?int $roundingMode = self::ROUND_HALF_UP, string $locale = null)
     {
-        parent::__construct($scale, $grouping, $roundingMode);
+        parent::__construct($scale, $grouping, $roundingMode, $locale);
 
         $this->scale = $scale;
     }
@@ -37,7 +37,7 @@ class NumberToLocalizedStringTransformer extends BaseNumberToLocalizedStringTran
     /**
      * {@inheritdoc}
      */
-    protected function getScale()
+    protected function getScale(): ?int
     {
         return $this->scale;
     }

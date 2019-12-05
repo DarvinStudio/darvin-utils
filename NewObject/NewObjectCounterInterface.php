@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2018, Darvin Studio
+ * @copyright Copyright (c) 2015-2019, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -21,12 +21,12 @@ interface NewObjectCounterInterface
      * @return int
      * @throws \InvalidArgumentException
      */
-    public function count($objectClass);
+    public function count(string $objectClass): int;
 
     /**
      * @param string $objectClass Object class
      *
      * @return bool
      */
-    public function isCountable($objectClass);
+    public function isCountable(string $objectClass): bool;
 }
