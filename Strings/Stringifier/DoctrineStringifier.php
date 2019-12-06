@@ -62,7 +62,7 @@ class DoctrineStringifier implements StringifierInterface
             case Types::SMALLINT:
             case Types::STRING:
             case Types::TEXT:
-                return is_scalar($value) ? (string)$value : '';
+                return is_scalar($value) ? $this->stringifyScalar($value) : '';
 
             case Types::BOOLEAN:
                 return is_bool($value) ? $this->stringifyBoolean($value) : '';
@@ -126,5 +126,15 @@ class DoctrineStringifier implements StringifierInterface
     private function stringifyObject(object $value): string
     {
         return serialize($value);
+    }
+
+    /**
+     * @param mixed $value Value to stringify
+     *
+     * @return string
+     */
+    private function stringifyScalar($value): string
+    {
+        return (string)$value;
     }
 }
