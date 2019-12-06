@@ -41,8 +41,14 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * {@inheritDoc}
      */
-    public function stringify($value, string $dataType): string
+    public function stringify($value, ?string $dataType = null): string
     {
+        if (null === $value) {
+            return '';
+        }
+        if (is_string($value)) {
+            return $value;
+        }
         if (is_object($value) && method_exists($value, '__toString')) {
             return (string)$value;
         }
@@ -59,22 +65,22 @@ class DoctrineStringifier implements StringifierInterface
                 return (string)$value;
 
             case Types::BOOLEAN:
-                return $this->stringifyBoolean($value);
+                return is_bool($value) ? $this->stringifyBoolean($value) : '';
 
             case Types::DATE_MUTABLE:
             case Types::DATETIME_MUTABLE:
             case Types::DATETIMETZ_MUTABLE:
             case Types::TIME_MUTABLE:
-                return $this->stringifyDatetime($value, self::DATETIME_FORMATS[$dataType]);
+                return $value instanceof \DateTime ? $this->stringifyDatetime($value, self::DATETIME_FORMATS[$dataType]) : '';
 
             case Types::JSON:
             case Types::JSON_ARRAY:
             case Types::SIMPLE_ARRAY:
             case Types::ARRAY:
-                return $this->stringifyArray($value);
+                return is_array($value) ? $this->stringifyArray($value) : '';
 
             case Types::OBJECT:
-                return $this->stringifyObject($value);
+                return is_object($value) ? $this->stringifyObject($value) : '';
 
             default:
                 return '';
@@ -82,47 +88,43 @@ class DoctrineStringifier implements StringifierInterface
     }
 
     /**
-     * @param mixed $value Value to stringify
+     * @param array $value Value to stringify
      *
      * @return string
      */
-    private function stringifyArray($value): string
+    private function stringifyArray(array $value): string
     {
-        return is_array($value) ? json_encode($value) : '';
+        return json_encode($value);
     }
 
     /**
-     * @param mixed $value Value to stringify
+     * @param bool $value Value to stringify
      *
      * @return string
      */
-    private function stringifyBoolean($value): string
+    private function stringifyBoolean(bool $value): string
     {
-        if (null === $value) {
-            return '';
-        }
-
         return $this->translator->trans(sprintf('boolean.%s', $value ? 'yes' : 'no'));
     }
 
     /**
-     * @param mixed  $value  Value to stringify
-     * @param string $format Datetime format
+     * @param \DateTime $value  Value to stringify
+     * @param string    $format Datetime format
      *
      * @return string
      */
-    private function stringifyDatetime($value, string $format): string
+    private function stringifyDatetime(\DateTime $value, string $format): string
     {
-        return $value instanceof \DateTime ? $value->format($format) : '';
+        return $value->format($format);
     }
 
     /**
-     * @param mixed $value Value to stringify
+     * @param object $value Value to stringify
      *
      * @return string
      */
-    private function stringifyObject($value): string
+    private function stringifyObject(object $value): string
     {
-        return is_object($value) ? serialize($value) : '';
+        return serialize($value);
     }
 }

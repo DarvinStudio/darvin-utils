@@ -16,10 +16,10 @@ namespace Darvin\Utils\Strings\Stringifier;
 interface StringifierInterface
 {
     /**
-     * @param mixed  $value    Value to stringify
-     * @param string $dataType Data type
+     * @param mixed       $value    Value to stringify
+     * @param string|null $dataType Data type
      *
      * @return string
      */
-    public function stringify($value, string $dataType): string;
+    public function stringify($value, ?string $dataType = null): string;
 }
