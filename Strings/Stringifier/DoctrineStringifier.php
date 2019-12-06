@@ -62,7 +62,7 @@ class DoctrineStringifier implements StringifierInterface
             case Types::SMALLINT:
             case Types::STRING:
             case Types::TEXT:
-                return (string)$value;
+                return is_scalar($value) ? (string)$value : '';
 
             case Types::BOOLEAN:
                 return is_bool($value) ? $this->stringifyBoolean($value) : '';
