@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Doctrine stringifier
  */
-class DoctrineStringifier implements StringifierInterface
+class DoctrineStringifier implements DoctrineStringifierInterface
 {
     private const DATETIME_FORMATS = [
         Types::DATE_MUTABLE       => 'd.m.Y',
@@ -41,7 +41,7 @@ class DoctrineStringifier implements StringifierInterface
     /**
      * {@inheritDoc}
      */
-    public function stringify($value, ?string $dataType = null): string
+    public function stringify($value, string $dataType): string
     {
         if (null === $value) {
             return '';

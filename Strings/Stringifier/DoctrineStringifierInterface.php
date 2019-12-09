@@ -11,15 +11,15 @@
 namespace Darvin\Utils\Strings\Stringifier;
 
 /**
- * Stringifier
+ * Doctrine stringifier
  */
-interface StringifierInterface
+interface DoctrineStringifierInterface
 {
     /**
-     * @param mixed       $value    Value to stringify
-     * @param string|null $dataType Data type
+     * @param mixed  $value    Value to stringify
+     * @param string $dataType Doctrine data type
      *
      * @return string
      */
-    public function stringify($value, ?string $dataType = null): string;
+    public function stringify($value, string $dataType): string;
 }

@@ -57,3 +57,5 @@
 7.2.0: Enable strict types.
 
 7.2.1: Use "object" type hint.
+
+7.2.2: Rename stringifier interface to Doctrine stringifier.
