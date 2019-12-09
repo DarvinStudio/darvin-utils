@@ -69,5 +69,8 @@ class StringifierTest extends TestCase
         $stub = $this->getMockBuilder('Stub')->getMock();
 
         yield [serialize($stub), $stub];
+
+        yield ['', null];
+        yield ['', fopen(__FILE__, 'r')];
     }
 }
