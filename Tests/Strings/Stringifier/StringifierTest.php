@@ -55,5 +55,19 @@ class StringifierTest extends TestCase
     {
         yield ['boolean.yes', true];
         yield ['boolean.no', false];
+        yield ['123', 123];
+        yield ['123.123', 123.123];
+        yield ['test', 'test'];
+        yield ['["foo","bar"]', ['foo', 'bar']];
+        yield ['07.07.2007 00:00:00', new \DateTime('2007-07-07')];
+
+        $stub = $this->getMockBuilder('Stub')->setMethods(['__toString'])->getMock();
+        $stub->method('__toString')->willReturn('test');
+
+        yield ['test', $stub];
+
+        $stub = $this->getMockBuilder('Stub')->getMock();
+
+        yield [serialize($stub), $stub];
     }
 }
