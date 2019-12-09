@@ -37,8 +37,23 @@ class StringifierTest extends TestCase
         $this->stringifier = new Stringifier($translator);
     }
 
-    public function testStringifyBoolean(): void
+    /**
+     * @dataProvider stringifyProvider
+     *
+     * @param mixed $expected Expected result
+     * @param mixed $value    Value to stringify
+     */
+    public function testStringify($expected, $value): void
     {
-        self::assertEquals('boolean.no', $this->stringifier->stringify(false));
+        self::assertEquals($expected, $this->stringifier->stringify($value));
+    }
+
+    /**
+     * @return iterable
+     */
+    public function stringifyProvider(): iterable
+    {
+        yield ['boolean.yes', true];
+        yield ['boolean.no', false];
     }
 }
