@@ -18,6 +18,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class DoctrineStringifier implements DoctrineStringifierInterface
 {
+    use StringifierTrait;
+
     private const DATETIME_FORMATS = [
         Types::DATE_MUTABLE       => 'd.m.Y',
         Types::DATETIME_MUTABLE   => 'd.m.Y H:i:s',
@@ -45,9 +47,6 @@ class DoctrineStringifier implements DoctrineStringifierInterface
     {
         if (null === $value) {
             return '';
-        }
-        if (is_string($value)) {
-            return $value;
         }
         if (is_object($value) && method_exists($value, '__toString')) {
             return (string)$value;
@@ -88,53 +87,10 @@ class DoctrineStringifier implements DoctrineStringifierInterface
     }
 
     /**
-     * @param array $value Value to stringify
-     *
-     * @return string
+     * {@inheritDoc}
      */
-    private function stringifyArray(array $value): string
+    protected function getTranslator(): TranslatorInterface
     {
-        return json_encode($value);
-    }
-
-    /**
-     * @param bool $value Value to stringify
-     *
-     * @return string
-     */
-    private function stringifyBoolean(bool $value): string
-    {
-        return $this->translator->trans(sprintf('boolean.%s', $value ? 'yes' : 'no'));
-    }
-
-    /**
-     * @param \DateTime $value  Value to stringify
-     * @param string    $format Datetime format
-     *
-     * @return string
-     */
-    private function stringifyDatetime(\DateTime $value, string $format): string
-    {
-        return $value->format($format);
-    }
-
-    /**
-     * @param object $value Value to stringify
-     *
-     * @return string
-     */
-    private function stringifyObject(object $value): string
-    {
-        return serialize($value);
-    }
-
-    /**
-     * @param mixed $value Value to stringify
-     *
-     * @return string
-     */
-    private function stringifyScalar($value): string
-    {
-        return (string)$value;
+        return $this->translator;
     }
 }

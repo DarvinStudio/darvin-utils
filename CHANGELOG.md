@@ -59,3 +59,5 @@
 7.2.1: Use "object" type hint.
 
 7.2.2: Rename stringifier interface to Doctrine stringifier.
+
+7.2.3: Add generic stringifier.
