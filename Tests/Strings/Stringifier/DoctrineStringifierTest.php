@@ -44,11 +44,11 @@ class DoctrineStringifierTest extends TestCase
     /**
      * @dataProvider dataProviderStringify
      *
-     * @param mixed  $expected Expected result
-     * @param mixed  $value    Value to stringify
-     * @param string $dataType Doctrine data type
+     * @param mixed $expected Expected result
+     * @param mixed $value    Value to stringify
+     * @param mixed $dataType Doctrine data type
      */
-    public function testStringify($expected, $value, string $dataType): void
+    public function testStringify($expected, $value, $dataType): void
     {
         $output = $this->stringifier->stringify($value, $dataType);
         self::assertEquals($expected,$output);
