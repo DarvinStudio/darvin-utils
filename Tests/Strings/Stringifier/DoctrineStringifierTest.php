@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author    Maxim Sukhanov <syhanov.m@yandex.ru>
  * @copyright Copyright (c) 2019, Darvin Studio
@@ -9,7 +9,6 @@
  */
 
 namespace Darvin\Utils\Strings\Stringifier;
-
 
 use Doctrine\DBAL\Types\Types;
 use PHPUnit\Framework\TestCase;
@@ -23,14 +22,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DoctrineStringifierTest extends TestCase
 {
     /**
-     * @var DoctrineStringifierInterface
+     * @var \Darvin\Utils\Strings\Stringifier\DoctrineStringifierInterface
      */
     private $stringifier;
 
     /**
      * {@inheritDoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $translator = $this->getMockBuilder(TranslatorInterface::class)
             ->setMethods(['trans'])
@@ -45,17 +44,17 @@ class DoctrineStringifierTest extends TestCase
     /**
      * @dataProvider dataProviderStringify
      *
-     * @param string $expected
-     * @param mixed  $value
-     * @param string $dataType
+     * @param mixed  $expected Expected result
+     * @param mixed  $value    Value to stringify
+     * @param string $dataType Doctrine data type
      */
-    public function testStringify($expected, $value, $dataType)
+    public function testStringify($expected, $value, string $dataType): void
     {
         $output = $this->stringifier->stringify($value, $dataType);
         self::assertEquals($expected,$output);
     }
 
-    public function testStringifyObjectWithToString()
+    public function testStringifyObjectWithToString(): void
     {
         $obj = $this->getMockBuilder('Stub')
             ->setMethods(['__toString'])
@@ -67,7 +66,7 @@ class DoctrineStringifierTest extends TestCase
         self::assertEquals('string object',$output);
     }
 
-    public function testStringifyObject()
+    public function testStringifyObject(): void
     {
         $obj = $this->getMockBuilder('Stub')
             ->setMethods(['doSomething', 'doSomethingElse'])
@@ -81,20 +80,17 @@ class DoctrineStringifierTest extends TestCase
     }
 
     /**
-     * @return array
-     * @throws \Exception
+     * @return iterable
      */
-    public function dataProviderStringify()
+    public function dataProviderStringify(): iterable
     {
-        return [
-            ['',null, null],
-            ['', '', ''],
-            ['boolean.yes', true, Types::BOOLEAN],
-            [1.0E+19, 1.0E+19, Types::BIGINT],
-            ['', '12.23.1200', Types::DATE_MUTABLE],
-            ['01.01.2000', new \DateTime('2000-01-01'), Types::DATE_MUTABLE],
-            ['', 'array', Types::JSON_ARRAY],
-            [json_encode([1, 'two']), [1, 'two'], Types::JSON_ARRAY],
-        ];
+        yield ['', null, ''];
+        yield ['', '', ''];
+        yield ['boolean.yes', true, Types::BOOLEAN];
+        yield [1.0E+19, 1.0E+19, Types::BIGINT];
+        yield ['', '12.23.1200', Types::DATE_MUTABLE];
+        yield ['01.01.2000', new \DateTime('2000-01-01'), Types::DATE_MUTABLE];
+        yield ['', 'array', Types::JSON];
+        yield ['[1,"two"]', [1, 'two'], Types::JSON];
     }
 }
