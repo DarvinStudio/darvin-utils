@@ -23,7 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DoctrineStringifierTest extends TestCase
 {
     /**
-     * @var StringifierInterface
+     * @var DoctrineStringifierInterface
      */
     private $stringifier;
 
