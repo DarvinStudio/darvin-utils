@@ -60,19 +60,21 @@ class TitleCaseTranslationsCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $pathname = $input->getArgument('pathname');
 
         if (!is_dir($pathname)) {
             $this->titleCaseFile($pathname);
 
-            return;
+            return 0;
         }
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ((new Finder())->in($pathname)->files() as $file) {
             $this->titleCaseFile($file->getPathname());
         }
+
+        return 0;
     }
 
     /**

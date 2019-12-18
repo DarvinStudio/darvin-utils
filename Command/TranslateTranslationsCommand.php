@@ -65,7 +65,7 @@ class TranslateTranslationsCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $from   = $input->getOption('source_language');
         $apiKey = $input->getArgument('yandex_translate_api_key');
@@ -89,6 +89,8 @@ class TranslateTranslationsCommand extends Command
                 );
             }
         }
+
+        return 0;
     }
 
     /**
