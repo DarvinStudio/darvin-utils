@@ -61,3 +61,5 @@
 7.2.2: Rename stringifier interface to Doctrine stringifier.
 
 7.2.3: Add generic stringifier.
+
+7.2.5: Make user query builder filterer optional in new entity counter.
