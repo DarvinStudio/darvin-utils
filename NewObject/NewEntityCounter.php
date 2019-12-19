@@ -31,7 +31,7 @@ class NewEntityCounter implements NewObjectCounterInterface
     private $extendedMetadataFactory;
 
     /**
-     * @var \Darvin\Utils\User\UserQueryBuilderFiltererInterface
+     * @var \Darvin\Utils\User\UserQueryBuilderFiltererInterface|null
      */
     private $userQueryBuilderFilterer;
 
@@ -41,14 +41,14 @@ class NewEntityCounter implements NewObjectCounterInterface
     private $counts;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                          $em                       Entity manager
-     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface       $extendedMetadataFactory  Extended metadata factory
-     * @param \Darvin\Utils\User\UserQueryBuilderFiltererInterface $userQueryBuilderFilterer User query builder filterer
+     * @param \Doctrine\ORM\EntityManager                               $em                       Entity manager
+     * @param \Darvin\Utils\Mapping\MetadataFactoryInterface            $extendedMetadataFactory  Extended metadata factory
+     * @param \Darvin\Utils\User\UserQueryBuilderFiltererInterface|null $userQueryBuilderFilterer User query builder filterer
      */
     public function __construct(
         EntityManager $em,
         MetadataFactoryInterface $extendedMetadataFactory,
-        UserQueryBuilderFiltererInterface $userQueryBuilderFilterer
+        ?UserQueryBuilderFiltererInterface $userQueryBuilderFilterer = null
     ) {
         $this->em = $em;
         $this->extendedMetadataFactory = $extendedMetadataFactory;
@@ -80,7 +80,7 @@ class NewEntityCounter implements NewObjectCounterInterface
                 ->where(sprintf($meta['inverse'] ? 'o.%s != :%1$s' : 'o.%s = :%1$s', $meta['property']))
                 ->setParameter($meta['property'], true);
 
-            if ($this->userQueryBuilderFilterer->isFilterable($qb)) {
+            if (null !== $this->userQueryBuilderFilterer && $this->userQueryBuilderFilterer->isFilterable($qb)) {
                 $this->userQueryBuilderFilterer->filter($qb);
             }
 
