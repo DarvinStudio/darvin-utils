@@ -22,8 +22,10 @@ class ConfigLoader
 {
     public const PARAM_BUNDLE    = 'bundle';
     public const PARAM_CALLBACK  = 'callback';
+    public const PARAM_CLASS     = 'class';
     public const PARAM_ENV       = 'env';
     public const PARAM_EXTENSION = 'extension';
+    public const PARAM_INTERFACE = 'interface';
 
     private const DEFAULT_FILE_EXTENSION = '.yaml';
 
@@ -125,6 +127,17 @@ class ConfigLoader
                     }
 
                     break;
+                case self::PARAM_CLASS:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $class) {
+                        if (!class_exists($class)) {
+                            return false;
+                        }
+                    }
+
+                    break;
                 case self::PARAM_ENV:
                     if (!is_array($value)) {
                         $value = [$value];
@@ -140,6 +153,17 @@ class ConfigLoader
                     }
                     foreach ($value as $extension) {
                         if (!extension_loaded($extension)) {
+                            return false;
+                        }
+                    }
+
+                    break;
+                case self::PARAM_INTERFACE:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $interface) {
+                        if (!interface_exists($interface)) {
                             return false;
                         }
                     }

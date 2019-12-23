@@ -63,3 +63,5 @@
 7.2.3: Add generic stringifier.
 
 7.2.5: Make user query builder filterer optional in new entity counter.
+
+7.2.6: Add "class" and "interface" params to config loader.
