@@ -65,3 +65,5 @@
 7.2.5: Make user query builder filterer optional in new entity counter.
 
 7.2.6: Add "class" and "interface" params to config loader.
+
+7.2.7: Add callback runner.
