@@ -67,3 +67,5 @@
 7.2.6: Add "class" and "interface" params to config loader.
 
 7.2.7: Add callback runner.
+
+7.2.8: Implement multiple mode in entity to ID form data transformer.

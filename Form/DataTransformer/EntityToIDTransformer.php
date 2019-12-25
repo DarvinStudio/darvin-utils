@@ -10,7 +10,8 @@
 
 namespace Darvin\Utils\Form\DataTransformer;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 
 /**
@@ -19,7 +20,7 @@ use Symfony\Component\Form\DataTransformerInterface;
 class EntityToIDTransformer implements DataTransformerInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -29,13 +30,20 @@ class EntityToIDTransformer implements DataTransformerInterface
     private $entityClass;
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em          Entity manager
-     * @param string                      $entityClass Entity class
+     * @var bool
      */
-    public function __construct(EntityManager $em, string $entityClass)
+    private $multiple;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em          Entity manager
+     * @param string                               $entityClass Entity class
+     * @param bool                                 $multiple    Is multiple mode enabled
+     */
+    public function __construct(EntityManagerInterface $em, string $entityClass, bool $multiple)
     {
         $this->em = $em;
         $this->entityClass = $entityClass;
+        $this->multiple = $multiple;
     }
 
     /**
@@ -43,13 +51,29 @@ class EntityToIDTransformer implements DataTransformerInterface
      */
     public function transform($value)
     {
-        if (null === $value) {
-            return null;
+        if (!$this->multiple) {
+            if (null === $value) {
+                return null;
+            }
+
+            $ids = $this->em->getClassMetadata($this->entityClass)->getIdentifierValues($value);
+
+            return reset($ids);
         }
 
-        $ids = $this->em->getClassMetadata($this->entityClass)->getIdentifierValues($value);
+        $transformed = [];
 
-        return reset($ids);
+        if (null !== $value) {
+            $meta = $this->em->getClassMetadata($this->entityClass);
+
+            foreach ($value as $entity) {
+                $ids = $meta->getIdentifierValues($entity);
+
+                $transformed[] = reset($ids);
+            }
+        }
+
+        return $transformed;
     }
 
     /**
@@ -57,10 +81,19 @@ class EntityToIDTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value): ?object
     {
+        if (!$this->multiple) {
+            if (null === $value) {
+                return null;
+            }
+
+            return $this->em->find($this->entityClass, $value);
+        }
         if (null === $value) {
-            return null;
+            return new ArrayCollection();
         }
 
-        return $this->em->find($this->entityClass, $value);
+        $identifier = $this->em->getClassMetadata($this->entityClass)->getIdentifier();
+
+        return new ArrayCollection($this->em->getRepository($this->entityClass)->findBy([reset($identifier) => $value]));
     }
 }
