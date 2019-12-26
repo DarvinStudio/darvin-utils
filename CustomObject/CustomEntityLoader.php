@@ -15,7 +15,7 @@ use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -25,7 +25,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class CustomEntityLoader implements CustomObjectLoaderInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -50,12 +50,12 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
     private $processedHashes;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                                 $em                      Entity manager
+     * @param \Doctrine\ORM\EntityManagerInterface                        $em                      Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface              $extendedMetadataFactory Extended metadata factory
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor        Property accessor
      */
     public function __construct(
-        EntityManager $em,
+        EntityManagerInterface $em,
         MetadataFactoryInterface $extendedMetadataFactory,
         PropertyAccessorInterface $propertyAccessor
     ) {
@@ -191,7 +191,9 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     $initPropertyValue = reset($initPropertyValues);
 
                     if (!is_array($initPropertyValue)) {
-                        $qb = $customEntityRepository->createQueryBuilder('o')
+                        /** @var \Doctrine\ORM\QueryBuilder $qb */
+                        $qb = $customEntityRepository->createQueryBuilder('o');
+                        $qb
                             ->andWhere(sprintf('o.%s = :%1$s', $initProperty))
                             ->setParameter($initProperty, $initPropertyValue);
 

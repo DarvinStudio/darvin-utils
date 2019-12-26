@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Event;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -24,15 +24,15 @@ class SlugsUpdateEvent extends Event
     private $changeSet;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
     /**
-     * @param array                       $changeSet Slugs change set: keys - old slugs, values - new slugs
-     * @param \Doctrine\ORM\EntityManager $em        Entity manager
+     * @param array                                $changeSet Slugs change set: keys - old slugs, values - new slugs
+     * @param \Doctrine\ORM\EntityManagerInterface $em        Entity manager
      */
-    public function __construct(array $changeSet, EntityManager $em)
+    public function __construct(array $changeSet, EntityManagerInterface $em)
     {
         $this->changeSet = $changeSet;
         $this->em = $em;
@@ -59,11 +59,11 @@ class SlugsUpdateEvent extends Event
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em Entity manager
+     * @param \Doctrine\ORM\EntityManagerInterface $em Entity manager
      *
      * @return SlugsUpdateEvent
      */
-    public function setEntityManager(EntityManager $em): SlugsUpdateEvent
+    public function setEntityManager(EntityManagerInterface $em): SlugsUpdateEvent
     {
         $this->em = $em;
 
@@ -71,9 +71,9 @@ class SlugsUpdateEvent extends Event
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
-    public function getEntityManager(): EntityManager
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
     }

@@ -12,7 +12,7 @@ namespace Darvin\Utils\DataFixtures\ORM;
 
 use Darvin\Utils\ORM\EntityResolverInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -149,8 +149,11 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
         $entity = $this->getEntityResolver()->resolve($entity);
 
         if (!isset($this->entityIds[$entity])) {
+            /** @var \Doctrine\ORM\QueryBuilder $qb */
+            $qb = $this->getEntityManager()->getRepository($entity)->createQueryBuilder('o');
+
             $this->entityIds[$entity] = array_column(
-                $this->getEntityManager()->getRepository($entity)->createQueryBuilder('o')->select('o.'.$idProperty)->getQuery()->getScalarResult(),
+                $qb->select('o.'.$idProperty)->getQuery()->getScalarResult(),
                 $idProperty
             );
         }
@@ -262,9 +265,9 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
-    final protected function getEntityManager(): EntityManager
+    final protected function getEntityManager(): EntityManagerInterface
     {
         return $this->container->get('doctrine.orm.entity_manager');
     }

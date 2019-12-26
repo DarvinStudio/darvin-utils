@@ -16,7 +16,7 @@ use Darvin\Utils\Mapping\Annotation\Slug;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -263,9 +263,9 @@ class SluggableEntityManager implements SluggableManagerInterface
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
-    private function getEntityManager(): EntityManager
+    private function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManagerProvider->getService();
     }

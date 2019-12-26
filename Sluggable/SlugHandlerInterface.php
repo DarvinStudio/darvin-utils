@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Sluggable;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Slug handler
@@ -18,10 +18,10 @@ use Doctrine\ORM\EntityManager;
 interface SlugHandlerInterface
 {
     /**
-     * @param string                      $slug   Slug
-     * @param string                      $suffix Slug suffix
-     * @param object                      $entity Entity
-     * @param \Doctrine\ORM\EntityManager $em     Entity manager
+     * @param string                               $slug   Slug
+     * @param string                               $suffix Slug suffix
+     * @param object                               $entity Entity
+     * @param \Doctrine\ORM\EntityManagerInterface $em     Entity manager
      */
-    public function handle(string &$slug, string &$suffix, object $entity, EntityManager $em): void;
+    public function handle(string &$slug, string &$suffix, object $entity, EntityManagerInterface $em): void;
 }

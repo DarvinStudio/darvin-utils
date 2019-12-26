@@ -13,7 +13,7 @@ namespace Darvin\Utils\EventListener;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -67,12 +67,12 @@ class SetDefaultValuesSubscriber implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em     Entity manager
-     * @param object                      $entity Entity
+     * @param \Doctrine\ORM\EntityManagerInterface $em     Entity manager
+     * @param object                               $entity Entity
      *
      * @throws \RuntimeException
      */
-    private function setDefaultValues(EntityManager $em, object $entity): void
+    private function setDefaultValues(EntityManagerInterface $em, object $entity): void
     {
         $entityClass = ClassUtils::getClass($entity);
 

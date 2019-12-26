@@ -14,7 +14,7 @@ use Darvin\Utils\Service\ServiceProviderInterface;
 use Darvin\Utils\Sluggable\SluggableManagerInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 
@@ -87,11 +87,11 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em                  Entity manager
-     * @param object                      $entity              Entity
-     * @param bool                        $dispatchUpdateEvent Whether to dispatch update event
+     * @param \Doctrine\ORM\EntityManagerInterface $em                  Entity manager
+     * @param object                               $entity              Entity
+     * @param bool                                 $dispatchUpdateEvent Whether to dispatch update event
      */
-    private function slugify(EntityManager $em, object $entity, bool $dispatchUpdateEvent = false): void
+    private function slugify(EntityManagerInterface $em, object $entity, bool $dispatchUpdateEvent = false): void
     {
         if (isset($this->entityBlacklist[$this->hashEntity($em, $entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
@@ -102,12 +102,12 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em     Entity manager
-     * @param object                      $entity Entity
+     * @param \Doctrine\ORM\EntityManagerInterface $em     Entity manager
+     * @param object                               $entity Entity
      *
      * @return string
      */
-    private function hashEntity(EntityManager $em, object $entity): string
+    private function hashEntity(EntityManagerInterface $em, object $entity): string
     {
         $class = ClassUtils::getClass($entity);
 
@@ -117,9 +117,9 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
-    private function getEntityManager(): EntityManager
+    private function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManagerProvider->getService();
     }

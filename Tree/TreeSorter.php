@@ -12,7 +12,7 @@ namespace Darvin\Utils\Tree;
 
 use Darvin\Utils\Tree\Exception\ClassIsNotTreeException;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Gedmo\Tree\TreeListener;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -22,7 +22,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 class TreeSorter implements TreeSorterInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -37,11 +37,11 @@ class TreeSorter implements TreeSorterInterface
     private $treeListener;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                                 $em               Entity manager
+     * @param \Doctrine\ORM\EntityManagerInterface                        $em               Entity manager
      * @param \Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor Property accessor
      * @param \Gedmo\Tree\TreeListener                                    $treeListener     Tree event listener
      */
-    public function __construct(EntityManager $em, PropertyAccessorInterface $propertyAccessor, TreeListener $treeListener)
+    public function __construct(EntityManagerInterface $em, PropertyAccessorInterface $propertyAccessor, TreeListener $treeListener)
     {
         $this->em = $em;
         $this->propertyAccessor = $propertyAccessor;

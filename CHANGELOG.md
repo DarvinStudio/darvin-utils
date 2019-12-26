@@ -69,3 +69,5 @@
 7.2.7: Add callback runner.
 
 7.2.8: Implement multiple mode in entity to ID form data transformer.
+
+7.2.9: EntityManager => EntityManagerInterface.

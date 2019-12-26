@@ -14,7 +14,7 @@ use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\Transliteratable\TransliteratorInterface;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -78,12 +78,12 @@ class TransliterateSubscriber implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em     Entity manager
-     * @param object                      $entity Entity
+     * @param \Doctrine\ORM\EntityManagerInterface $em     Entity manager
+     * @param object                               $entity Entity
      *
      * @throws \RuntimeException
      */
-    private function transliterate(EntityManager $em, object $entity): void
+    private function transliterate(EntityManagerInterface $em, object $entity): void
     {
         $entityClass = ClassUtils::getClass($entity);
 

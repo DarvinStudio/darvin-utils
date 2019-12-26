@@ -13,7 +13,7 @@ namespace Darvin\Utils\NewObject;
 use Darvin\Utils\Mapping\Annotation\NewObjectFlag;
 use Darvin\Utils\Mapping\MetadataFactoryInterface;
 use Darvin\Utils\User\UserQueryBuilderFiltererInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * New entity counter
@@ -21,7 +21,7 @@ use Doctrine\ORM\EntityManager;
 class NewEntityCounter implements NewObjectCounterInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -41,12 +41,12 @@ class NewEntityCounter implements NewObjectCounterInterface
     private $counts;
 
     /**
-     * @param \Doctrine\ORM\EntityManager                               $em                       Entity manager
+     * @param \Doctrine\ORM\EntityManagerInterface                      $em                       Entity manager
      * @param \Darvin\Utils\Mapping\MetadataFactoryInterface            $extendedMetadataFactory  Extended metadata factory
      * @param \Darvin\Utils\User\UserQueryBuilderFiltererInterface|null $userQueryBuilderFilterer User query builder filterer
      */
     public function __construct(
-        EntityManager $em,
+        EntityManagerInterface $em,
         MetadataFactoryInterface $extendedMetadataFactory,
         ?UserQueryBuilderFiltererInterface $userQueryBuilderFilterer = null
     ) {
@@ -75,7 +75,9 @@ class NewEntityCounter implements NewObjectCounterInterface
                 throw new \InvalidArgumentException($message);
             }
 
-            $qb = $this->em->getRepository($objectClass)->createQueryBuilder('o')
+            /** @var \Doctrine\ORM\QueryBuilder $qb */
+            $qb = $this->em->getRepository($objectClass)->createQueryBuilder('o');
+            $qb
                 ->select('COUNT(o)')
                 ->where(sprintf($meta['inverse'] ? 'o.%s != :%1$s' : 'o.%s = :%1$s', $meta['property']))
                 ->setParameter($meta['property'], true);
