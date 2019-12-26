@@ -39,7 +39,7 @@ class EntityToIDTransformer implements DataTransformerInterface
      * @param string                               $entityClass Entity class
      * @param bool                                 $multiple    Is multiple mode enabled
      */
-    public function __construct(EntityManagerInterface $em, string $entityClass, bool $multiple)
+    public function __construct(EntityManagerInterface $em, string $entityClass, bool $multiple = false)
     {
         $this->em = $em;
         $this->entityClass = $entityClass;
