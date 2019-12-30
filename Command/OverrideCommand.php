@@ -10,7 +10,9 @@
 
 namespace Darvin\Utils\Command;
 
+use Darvin\Utils\Override\OverriderInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,11 +22,31 @@ use Symfony\Component\Console\Output\OutputInterface;
 class OverrideCommand extends Command
 {
     /**
-     * @param string $name Command name
+     * @var \Darvin\Utils\Override\OverriderInterface
      */
-    public function __construct(string $name)
+    private $overrider;
+
+    /**
+     * @param string                                    $name      Command name
+     * @param \Darvin\Utils\Override\OverriderInterface $overrider Overrider
+     */
+    public function __construct(string $name, OverriderInterface $overrider)
     {
         parent::__construct($name);
+
+        $this->overrider = $overrider;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function configure(): void
+    {
+        $this
+            ->setDescription('Overrides files related to passed subject (entity classes, templates, admin configs etc.).')
+            ->setDefinition([
+                new InputArgument('subject', InputArgument::REQUIRED, 'Subject to override'),
+            ]);
     }
 
     /**
@@ -32,6 +54,8 @@ class OverrideCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->overrider->override($input->getArgument('subject'));
+
         return 0;
     }
 }
