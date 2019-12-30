@@ -46,7 +46,7 @@ class OverrideConfig implements OverrideConfigInterface
      */
     private function createSubject(string $subjectName, array $config): Subject
     {
-        return new Subject($subjectName);
+        return new Subject($subjectName, $config['entities'], $config['templates']);
     }
 
     /**
