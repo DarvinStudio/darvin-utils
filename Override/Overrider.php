@@ -61,19 +61,19 @@ class Overrider implements OverriderInterface
             return $this->config[$bundleName][$subjectName];
         }
 
-        $foundSubject = null;
+        $suitableSubject = null;
 
         foreach ($this->config as $subjects) {
             if (!isset($subjects[$subjectName])) {
                 continue;
             }
-            if (null !== $foundSubject) {
+            if (null !== $suitableSubject) {
                 throw new \InvalidArgumentException(sprintf('Subject name "%s" is ambiguous. Please provide bundle name.', $subjectName));
             }
 
-            $foundSubject = $subjects[$subjectName];
+            $suitableSubject = $subjects[$subjectName];
         }
-        if (null === $foundSubject) {
+        if (null === $suitableSubject) {
             $existingSubjectNames = [];
 
             foreach ($this->config as $subjects) {
@@ -87,6 +87,6 @@ class Overrider implements OverriderInterface
             );
         }
 
-        return $foundSubject;
+        return $suitableSubject;
     }
 }
