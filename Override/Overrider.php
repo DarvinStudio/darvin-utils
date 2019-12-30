@@ -16,6 +16,19 @@ namespace Darvin\Utils\Override;
 class Overrider implements OverriderInterface
 {
     /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @param array $config Configuration
+     */
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function override(string $subject): void
