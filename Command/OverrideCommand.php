@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Command;
 
-use Darvin\Utils\Override\OverriderInterface;
+use Darvin\Utils\Override\OverriderPoolInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,15 +22,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class OverrideCommand extends Command
 {
     /**
-     * @var \Darvin\Utils\Override\OverriderInterface
+     * @var \Darvin\Utils\Override\OverriderPoolInterface
      */
     private $overrider;
 
     /**
-     * @param string                                    $name      Command name
-     * @param \Darvin\Utils\Override\OverriderInterface $overrider Overrider
+     * @param string                                        $name      Command name
+     * @param \Darvin\Utils\Override\OverriderPoolInterface $overrider Overrider
      */
-    public function __construct(string $name, OverriderInterface $overrider)
+    public function __construct(string $name, OverriderPoolInterface $overrider)
     {
         parent::__construct($name);
 

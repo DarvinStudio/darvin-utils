@@ -13,9 +13,9 @@ namespace Darvin\Utils\Override;
 use Darvin\Utils\Override\Config\OverrideConfigInterface;
 
 /**
- * Overrider
+ * Overrider pool
  */
-class Overrider implements OverriderInterface
+class OverriderPool implements OverriderPoolInterface
 {
     /**
      * @var \Darvin\Utils\Override\Config\OverrideConfigInterface

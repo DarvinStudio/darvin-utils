@@ -11,9 +11,9 @@
 namespace Darvin\Utils\Override;
 
 /**
- * Overrider
+ * Overrider pool
  */
-interface OverriderInterface
+interface OverriderPoolInterface
 {
     /**
      * @param string      $subjectName Subject name
