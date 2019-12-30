@@ -10,6 +10,8 @@
 
 namespace Darvin\Utils\Override\Config;
 
+use Darvin\Utils\Override\Config\Model\Subject;
+
 /**
  * Override config
  */
@@ -31,7 +33,30 @@ class OverrideConfig implements OverrideConfigInterface
     /**
      * {@inheritDoc}
      */
-    public function getSubject(string $subjectName, ?string $bundleName): array
+    public function getSubject(string $subjectName, ?string $bundleName): Subject
+    {
+        return $this->createSubject($subjectName, $this->getSubjectConfig($subjectName, $bundleName));
+    }
+
+    /**
+     * @param string $subjectName Subject name
+     * @param array  $config      Subject config
+     *
+     * @return \Darvin\Utils\Override\Config\Model\Subject
+     */
+    private function createSubject(string $subjectName, array $config): Subject
+    {
+        return new Subject($subjectName);
+    }
+
+    /**
+     * @param string      $subjectName Subject name
+     * @param string|null $bundleName  Bundle name
+     *
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    private function getSubjectConfig(string $subjectName, ?string $bundleName): array
     {
         if (null !== $bundleName) {
             if (!isset($this->config[$bundleName])) {

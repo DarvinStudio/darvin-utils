@@ -10,17 +10,19 @@
 
 namespace Darvin\Utils\Override\Config;
 
+use Darvin\Utils\Override\Config\Model\Subject;
+
 /**
  * Override config
  */
 interface OverrideConfigInterface
 {
     /**
-     * @param string      $subjectName Subject to override name
+     * @param string      $subjectName Subject name
      * @param string|null $bundleName  Bundle name
      *
-     * @return array
+     * @return \Darvin\Utils\Override\Config\Model\Subject
      * @throws \InvalidArgumentException
      */
-    public function getSubject(string $subjectName, ?string $bundleName): array;
+    public function getSubject(string $subjectName, ?string $bundleName): Subject;
 }

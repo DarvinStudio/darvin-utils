@@ -16,8 +16,10 @@ namespace Darvin\Utils\Override;
 interface OverriderInterface
 {
     /**
-     * @param string      $subjectName Subject to override name
+     * @param string      $subjectName Subject name
      * @param string|null $bundleName  Bundle name
+     *
+     * @throws \InvalidArgumentException
      */
     public function override(string $subjectName, ?string $bundleName = null): void;
 }
