@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Override;
 
 use Darvin\Utils\Override\Config\OverrideConfigInterface;
+use Darvin\Utils\Override\Overrider\OverriderInterface;
 
 /**
  * Overrider pool
@@ -23,11 +24,26 @@ class OverriderPool implements OverriderPoolInterface
     private $config;
 
     /**
+     * @var \Darvin\Utils\Override\Overrider\OverriderInterface[]
+     */
+    private $overriders;
+
+    /**
      * @param \Darvin\Utils\Override\Config\OverrideConfigInterface $config Override configuration
      */
     public function __construct(OverrideConfigInterface $config)
     {
         $this->config = $config;
+
+        $this->overriders = [];
+    }
+
+    /**
+     * @param \Darvin\Utils\Override\Overrider\OverriderInterface $overrider Overrider
+     */
+    public function addOverrider(OverriderInterface $overrider): void
+    {
+        $this->overriders[] = $overrider;
     }
 
     /**
@@ -35,6 +51,10 @@ class OverriderPool implements OverriderPoolInterface
      */
     public function override(string $subjectName, ?string $bundleName = null): void
     {
-        dump($this->config->getSubject($subjectName, $bundleName));
+        $subject = $this->config->getSubject($subjectName, $bundleName);
+
+        foreach ($this->overriders as $overrider) {
+            $overrider->override($subject);
+        }
     }
 }
