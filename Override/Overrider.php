@@ -37,10 +37,11 @@ class Overrider implements OverriderInterface
     }
 
     /**
-     * @param string      $subjectName Subject name
+     * @param string      $subjectName Subject to override name
      * @param string|null $bundleName  Bundle name
      *
      * @return array
+     * @throws \InvalidArgumentException
      */
     private function getSubject(string $subjectName, ?string $bundleName): array
     {
