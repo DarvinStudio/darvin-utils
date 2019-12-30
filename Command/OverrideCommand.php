@@ -43,7 +43,7 @@ class OverrideCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Overrides files related to passed subject (entity classes, templates, admin configs etc.).')
+            ->setDescription('Overrides files related to passed subject (entity classes, repository classes, templates, admin configs etc.).')
             ->setDefinition([
                 new InputArgument('subject', InputArgument::REQUIRED, 'Subject to override'),
             ]);
