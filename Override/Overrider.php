@@ -77,7 +77,7 @@ class Overrider implements OverriderInterface
             $existingSubjectNames = [];
 
             foreach ($this->config as $subjects) {
-                $existingSubjectNames = array_combine($existingSubjectNames, array_keys($subjects));
+                $existingSubjectNames = array_merge($existingSubjectNames, array_keys($subjects));
             }
 
             $existingSubjectNames = array_unique($existingSubjectNames);
