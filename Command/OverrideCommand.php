@@ -45,7 +45,8 @@ class OverrideCommand extends Command
         $this
             ->setDescription('Overrides files related to passed subject (entity classes, repository classes, templates, admin configs etc.).')
             ->setDefinition([
-                new InputArgument('subject', InputArgument::REQUIRED, 'Subject to override'),
+                new InputArgument('subject', InputArgument::REQUIRED, 'Subject to override name'),
+                new InputArgument('bundle', InputArgument::OPTIONAL, 'Bundle name'),
             ]);
     }
 
@@ -54,7 +55,7 @@ class OverrideCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->overrider->override($input->getArgument('subject'));
+        $this->overrider->override($input->getArgument('subject'), $input->getArgument('bundle'));
 
         return 0;
     }
