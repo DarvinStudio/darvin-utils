@@ -83,8 +83,10 @@ class Overrider implements OverriderInterface
             $existingSubjectNames = array_unique($existingSubjectNames);
 
             throw new \InvalidArgumentException(
-                sprintf('Subject "%s" does not exist. Existing subjects: "%s".', implode('", "', $existingSubjectNames))
+                sprintf('Subject "%s" does not exist. Existing subjects: "%s".', $subjectName, implode('", "', $existingSubjectNames))
             );
         }
+
+        return $foundSubject;
     }
 }
