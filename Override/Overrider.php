@@ -31,8 +31,59 @@ class Overrider implements OverriderInterface
     /**
      * {@inheritDoc}
      */
-    public function override(string $subject): void
+    public function override(string $subjectName, ?string $bundleName = null): void
     {
-        // TODO: Implement override() method.
+        dump($this->getSubject($subjectName, $bundleName));
+    }
+
+    /**
+     * @param string      $subjectName Subject name
+     * @param string|null $bundleName  Bundle name
+     *
+     * @return array
+     */
+    private function getSubject(string $subjectName, ?string $bundleName): array
+    {
+        if (null !== $bundleName) {
+            if (!isset($this->config[$bundleName])) {
+                throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist or has nothing to override.', $bundleName));
+            }
+            if (!isset($this->config[$bundleName][$subjectName])) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Subject "%s" does not exist in bundle "%s". Existing subjects: "%s".',
+                    $subjectName,
+                    $bundleName,
+                    implode('", "', array_keys($this->config[$bundleName]))
+                ));
+            }
+
+            return $this->config[$bundleName][$subjectName];
+        }
+
+        $foundSubject = null;
+
+        foreach ($this->config as $subjects) {
+            if (!isset($subjects[$subjectName])) {
+                continue;
+            }
+            if (null !== $foundSubject) {
+                throw new \InvalidArgumentException(sprintf('Subject name "%s" is ambiguous. Please provide bundle name.', $subjectName));
+            }
+
+            $foundSubject = $subjects[$subjectName];
+        }
+        if (null === $foundSubject) {
+            $existingSubjectNames = [];
+
+            foreach ($this->config as $subjects) {
+                $existingSubjectNames = array_combine($existingSubjectNames, array_keys($subjects));
+            }
+
+            $existingSubjectNames = array_unique($existingSubjectNames);
+
+            throw new \InvalidArgumentException(
+                sprintf('Subject "%s" does not exist. Existing subjects: "%s".', implode('", "', $existingSubjectNames))
+            );
+        }
     }
 }
