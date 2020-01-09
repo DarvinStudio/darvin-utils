@@ -13,6 +13,7 @@ namespace Darvin\Utils\Override\Overrider;
 use Darvin\ContentBundle\Translatable\TranslatableManagerInterface;
 use Darvin\Utils\Override\Config\Model\Subject;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 
 /**
@@ -24,6 +25,11 @@ class EntityOverrider implements OverriderInterface
      * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
+
+    /**
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    private $filesystem;
 
     /**
      * @var \Darvin\ContentBundle\Translatable\TranslatableManagerInterface
@@ -41,21 +47,32 @@ class EntityOverrider implements OverriderInterface
     private $bundlesMeta;
 
     /**
+     * @var string
+     */
+    private $projectDir;
+
+    /**
      * @param \Doctrine\ORM\EntityManagerInterface                            $em                  Entity manager
+     * @param \Symfony\Component\Filesystem\Filesystem                        $filesystem          Filesystem
      * @param \Darvin\ContentBundle\Translatable\TranslatableManagerInterface $translatableManager Translatable manager
      * @param \Twig\Environment                                               $twig                Twig
      * @param array                                                           $bundlesMeta         Bundles metadata
+     * @param string                                                          $projectDir          Project directory
      */
     public function __construct(
         EntityManagerInterface $em,
+        Filesystem $filesystem,
         TranslatableManagerInterface $translatableManager,
         Environment $twig,
-        array $bundlesMeta
+        array $bundlesMeta,
+        string $projectDir
     ) {
         $this->em = $em;
+        $this->filesystem = $filesystem;
         $this->translatableManager = $translatableManager;
         $this->twig = $twig;
         $this->bundlesMeta = $bundlesMeta;
+        $this->projectDir = $projectDir;
     }
 
     /**
@@ -105,7 +122,19 @@ class EntityOverrider implements OverriderInterface
             'translation'       => $translation,
         ]);
 
-        dump($content);
+        $filenameParts = [$this->projectDir, 'src', 'Entity', $packageNamespace];
+
+        if ('' !== $entityNamespace) {
+            $filenameParts[] = $entityNamespace;
+        }
+
+        $filenameParts[] = sprintf('App%s', $class);
+
+        $filename = sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $filenameParts)));
+
+        $this->filesystem->mkdir(dirname($filename), 0755);
+
+        $this->filesystem->dumpFile($filename, $content);
 
         if ($this->translatableManager->isTranslatable($fqcn)) {
             $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
