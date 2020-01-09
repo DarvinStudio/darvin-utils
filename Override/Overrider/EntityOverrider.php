@@ -11,6 +11,7 @@
 namespace Darvin\Utils\Override\Overrider;
 
 use Darvin\Utils\Override\Config\Model\Subject;
+use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
 
 /**
@@ -18,6 +19,11 @@ use Twig\Environment;
  */
 class EntityOverrider implements OverriderInterface
 {
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    private $em;
+
     /**
      * @var \Twig\Environment
      */
@@ -29,11 +35,13 @@ class EntityOverrider implements OverriderInterface
     private $bundlesMeta;
 
     /**
-     * @param \Twig\Environment $twig        Twig
-     * @param array             $bundlesMeta Bundles metadata
+     * @param \Doctrine\ORM\EntityManagerInterface $em          Entity manager
+     * @param \Twig\Environment                    $twig        Twig
+     * @param array                                $bundlesMeta Bundles metadata
      */
-    public function __construct(Environment $twig, array $bundlesMeta)
+    public function __construct(EntityManagerInterface $em, Environment $twig, array $bundlesMeta)
     {
+        $this->em = $em;
         $this->twig = $twig;
         $this->bundlesMeta = $bundlesMeta;
     }
@@ -58,17 +66,24 @@ class EntityOverrider implements OverriderInterface
      */
     private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace): void
     {
-        $parts = explode('\\', $entity);
-
-        $class            = array_pop($parts);
-        $entityNamespace  = implode('\\', $parts);
+        $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
+        $repositoryClass = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
+
+        $entityParts = explode('\\', $entity);
+
+        $class = array_pop($entityParts);
+
+        $entityNamespace = implode('\\', $entityParts);
+
         $content = $this->twig->render('@DarvinUtils/override/entity.php.twig', [
+            'class'             => $class,
+            'fqcn'              => $fqcn,
             'bundle_namespace'  => $bundleNamespace,
             'entity_namespace'  => $entityNamespace,
             'package_namespace' => $packageNamespace,
-            'class'             => $class,
+            'repository_class'  => $repositoryClass,
         ]);
 
         dump($content);
