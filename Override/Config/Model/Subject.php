@@ -21,6 +21,11 @@ class Subject
     private $name;
 
     /**
+     * @var string
+     */
+    private $bundle;
+
+    /**
      * @var string[]
      */
     private $entities;
@@ -32,12 +37,14 @@ class Subject
 
     /**
      * @param string   $name      Subject name
+     * @param string   $bundle    Bundle name
      * @param string[] $entities  Entity classes
      * @param string[] $templates Templates
      */
-    public function __construct(string $name, array $entities = [], array $templates = [])
+    public function __construct(string $name, string $bundle, array $entities = [], array $templates = [])
     {
         $this->name = $name;
+        $this->bundle = $bundle;
         $this->entities = $entities;
         $this->templates = $templates;
     }
@@ -48,6 +55,14 @@ class Subject
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBundle(): string
+    {
+        return $this->bundle;
     }
 
     /**

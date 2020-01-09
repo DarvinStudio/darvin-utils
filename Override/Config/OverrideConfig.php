@@ -27,6 +27,14 @@ class OverrideConfig implements OverrideConfigInterface
      */
     public function __construct(array $config)
     {
+        foreach ($config as $bundle => $subjects) {
+            foreach ($subjects as $key => $subject) {
+                $subject['bundle'] = $bundle;
+
+                $config[$bundle][$key] = $subject;
+            }
+        }
+
         $this->config = $config;
     }
 
@@ -46,7 +54,7 @@ class OverrideConfig implements OverrideConfigInterface
      */
     private function createSubject(string $subjectName, array $config): Subject
     {
-        return new Subject($subjectName, $config['entities'], $config['templates']);
+        return new Subject($subjectName, $config['bundle'], $config['entities'], $config['templates']);
     }
 
     /**
