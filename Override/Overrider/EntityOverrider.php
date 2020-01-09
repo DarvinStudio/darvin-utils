@@ -122,18 +122,9 @@ class EntityOverrider implements OverriderInterface
             'translation'       => $translation,
         ]);
 
-        $filenameParts = [$this->projectDir, 'src', 'Entity', $packageNamespace];
-
-        if ('' !== $entityNamespace) {
-            $filenameParts[] = $entityNamespace;
-        }
-
-        $filenameParts[] = sprintf('App%s', $class);
-
-        $filename = sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $filenameParts)));
+        $filename = $this->nameFile($class, $entityNamespace, $packageNamespace);
 
         $this->filesystem->mkdir(dirname($filename), 0755);
-
         $this->filesystem->dumpFile($filename, $content);
 
         if ($this->translatableManager->isTranslatable($fqcn)) {
@@ -141,6 +132,26 @@ class EntityOverrider implements OverriderInterface
 
             $this->overrideEntity($translationEntity, $bundleName, $bundleNamespace);
         }
+    }
+
+    /**
+     * @param string $class            Class
+     * @param string $entityNamespace  Entity namespace
+     * @param string $packageNamespace Package namespace
+     *
+     * @return string
+     */
+    private function nameFile(string $class, string $entityNamespace, string $packageNamespace): string
+    {
+        $parts = [$this->projectDir, 'src', 'Entity', $packageNamespace];
+
+        if ('' !== $entityNamespace) {
+            $parts[] = $entityNamespace;
+        }
+
+        $parts[] = sprintf('App%s', $class);
+
+        return sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $parts)));
     }
 
     /**
