@@ -22,6 +22,6 @@ class TemplateOverrider implements OverriderInterface
      */
     public function override(Subject $subject): void
     {
-        dump($subject);
+
     }
 }
