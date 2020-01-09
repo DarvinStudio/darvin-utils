@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\Override\Overrider;
 
+use Darvin\ContentBundle\Translatable\TranslatableManagerInterface;
 use Darvin\Utils\Override\Config\Model\Subject;
 use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
@@ -25,6 +26,11 @@ class EntityOverrider implements OverriderInterface
     private $em;
 
     /**
+     * @var \Darvin\ContentBundle\Translatable\TranslatableManagerInterface
+     */
+    private $translatableManager;
+
+    /**
      * @var \Twig\Environment
      */
     private $twig;
@@ -35,13 +41,19 @@ class EntityOverrider implements OverriderInterface
     private $bundlesMeta;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em          Entity manager
-     * @param \Twig\Environment                    $twig        Twig
-     * @param array                                $bundlesMeta Bundles metadata
+     * @param \Doctrine\ORM\EntityManagerInterface                            $em                  Entity manager
+     * @param \Darvin\ContentBundle\Translatable\TranslatableManagerInterface $translatableManager Translatable manager
+     * @param \Twig\Environment                                               $twig                Twig
+     * @param array                                                           $bundlesMeta         Bundles metadata
      */
-    public function __construct(EntityManagerInterface $em, Environment $twig, array $bundlesMeta)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        TranslatableManagerInterface $translatableManager,
+        Environment $twig,
+        array $bundlesMeta
+    ) {
         $this->em = $em;
+        $this->translatableManager = $translatableManager;
         $this->twig = $twig;
         $this->bundlesMeta = $bundlesMeta;
     }
@@ -69,7 +81,10 @@ class EntityOverrider implements OverriderInterface
         $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
-        $repositoryClass = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
+        $repositoryClass  = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
+        $translationClass = $this->translatableManager->isTranslatable($fqcn)
+            ? preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn))
+            : null;
 
         $entityParts = explode('\\', $entity);
 
@@ -84,6 +99,7 @@ class EntityOverrider implements OverriderInterface
             'entity_namespace'  => $entityNamespace,
             'package_namespace' => $packageNamespace,
             'repository_class'  => $repositoryClass,
+            'translation_class' => $translationClass,
         ]);
 
         dump($content);
