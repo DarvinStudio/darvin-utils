@@ -72,36 +72,63 @@ class EntityOverrider implements OverriderInterface
     }
 
     /**
-     * @param string $entity          Entity class
+     * @param string $entity          Entity
      * @param string $bundleName      Bundle name
      * @param string $bundleNamespace Bundle namespace
      */
     private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace): void
     {
+        list($class, $entityNamespace) = $this->parseEntity($entity);
+
         $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
-        $repositoryClass  = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
-        $translationClass = $this->translatableManager->isTranslatable($fqcn)
-            ? preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn))
-            : null;
+        $repository   = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
+        $translatable = null;
+        $translation  = null;
 
-        $entityParts = explode('\\', $entity);
-
-        $class = array_pop($entityParts);
-
-        $entityNamespace = implode('\\', $entityParts);
+        if ($this->translatableManager->isTranslation($fqcn)) {
+            $translatable = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslatableClass($fqcn));
+        }
+        if ($this->translatableManager->isTranslatable($fqcn)) {
+            $translation = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn));
+        }
 
         $content = $this->twig->render('@DarvinUtils/override/entity.php.twig', [
-            'class'             => $class,
-            'fqcn'              => $fqcn,
             'bundle_namespace'  => $bundleNamespace,
             'entity_namespace'  => $entityNamespace,
             'package_namespace' => $packageNamespace,
-            'repository_class'  => $repositoryClass,
-            'translation_class' => $translationClass,
+            'class'             => $class,
+            'fqcn'              => $fqcn,
+            'repository'        => $repository,
+            'translatable'      => $translatable,
+            'translation'       => $translation,
         ]);
 
         dump($content);
+
+        if ($this->translatableManager->isTranslatable($fqcn)) {
+            $this->overrideEntity(
+                preg_replace('/.*\\\\Entity\\\\/', '', $this->translatableManager->getTranslationClass($fqcn)),
+                $bundleName,
+                $bundleNamespace
+            );
+        }
+    }
+
+    /**
+     * @param string $entity Entity
+     *
+     * @return array
+     */
+    private function parseEntity(string $entity): array
+    {
+        $parts = explode('\\', $entity);
+
+        $class = array_pop($parts);
+
+        $namespace = implode('\\', $parts);
+
+        return [$class, $namespace];
     }
 }
