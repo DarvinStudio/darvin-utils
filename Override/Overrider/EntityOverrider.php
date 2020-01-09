@@ -108,11 +108,9 @@ class EntityOverrider implements OverriderInterface
         dump($content);
 
         if ($this->translatableManager->isTranslatable($fqcn)) {
-            $this->overrideEntity(
-                preg_replace('/.*\\\\Entity\\\\/', '', $this->translatableManager->getTranslationClass($fqcn)),
-                $bundleName,
-                $bundleNamespace
-            );
+            $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
+
+            $this->overrideEntity($translationEntity, $bundleName, $bundleNamespace);
         }
     }
 
