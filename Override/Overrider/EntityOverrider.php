@@ -43,16 +43,34 @@ class EntityOverrider implements OverriderInterface
      */
     public function override(Subject $subject): void
     {
+        if (!isset($this->bundlesMeta[$subject->getBundle()])) {
+            throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist.', $subject->getBundle()));
+        }
         foreach ($subject->getEntities() as $entity) {
-            $this->overrideEntity($entity);
+            $this->overrideEntity($entity, $subject->getBundle(), $this->bundlesMeta[$subject->getBundle()]['namespace']);
         }
     }
 
     /**
-     * @param string $entity Entity class
+     * @param string $entity          Entity class
+     * @param string $bundleName      Bundle name
+     * @param string $bundleNamespace Bundle namespace
      */
-    private function overrideEntity(string $entity): void
+    private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace): void
     {
-        $content = $this->twig->render('@DarvinUtils/override/entity.php.twig');
+        $parts = explode('\\', $entity);
+
+        $class            = array_pop($parts);
+        $entityNamespace  = implode('\\', $parts);
+        $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
+
+        $content = $this->twig->render('@DarvinUtils/override/entity.php.twig', [
+            'bundle_namespace'  => $bundleNamespace,
+            'entity_namespace'  => $entityNamespace,
+            'package_namespace' => $packageNamespace,
+            'class'             => $class,
+        ]);
+
+        dump($content);
     }
 }

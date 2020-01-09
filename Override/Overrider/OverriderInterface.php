@@ -19,6 +19,8 @@ interface OverriderInterface
 {
     /**
      * @param \Darvin\Utils\Override\Config\Model\Subject $subject Subject
+     *
+     * @throws \InvalidArgumentException
      */
     public function override(Subject $subject): void;
 }
