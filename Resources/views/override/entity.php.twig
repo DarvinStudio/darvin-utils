@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * {{ class|humanize }}
  *
- * @ORM\Entity{% if repository %}(repositoryClass="{{ repository }}"){% endif %}
+ * @ORM\Entity{% if has_repository %}(repositoryClass="App\Repository\{{ package_namespace }}{% if entity_namespace %}\{{ entity_namespace }}{% endif %}\{{ class }}Repository"){% endif %}
 
  */
 class App{{ class }} extends {{ class }}
