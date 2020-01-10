@@ -100,9 +100,9 @@ class EntityOverrider implements OverriderInterface
         $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
-        $hasRepository = null !== $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
-        $translatable  = null;
-        $translation   = null;
+        $repository   = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
+        $translatable = null;
+        $translation  = null;
 
         if ($this->translatableManager->isTranslation($fqcn)) {
             $translatable = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslatableClass($fqcn));
@@ -111,22 +111,31 @@ class EntityOverrider implements OverriderInterface
             $translation = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn));
         }
 
-        $content = $this->twig->render('@DarvinUtils/override/entity.php.twig', [
+        $filename = $this->nameEntityFile($class, $entityNamespace, $packageNamespace);
+
+        $this->filesystem->mkdir(dirname($filename), 0755);
+        $this->filesystem->dumpFile($filename, $this->twig->render('@DarvinUtils/override/entity.php.twig', [
             'bundle_namespace'  => $bundleNamespace,
             'entity_namespace'  => $entityNamespace,
             'package_namespace' => $packageNamespace,
             'class'             => $class,
             'fqcn'              => $fqcn,
-            'has_repository'    => $hasRepository,
+            'has_repository'    => null !== $repository,
             'translatable'      => $translatable,
             'translation'       => $translation,
-        ]);
+        ]));
 
-        $filename = $this->nameFile($class, $entityNamespace, $packageNamespace);
+        if (null !== $repository) {
+            $filename = $this->nameRepositoryFile($class, $entityNamespace, $packageNamespace);
 
-        $this->filesystem->mkdir(dirname($filename), 0755);
-        $this->filesystem->dumpFile($filename, $content);
-
+            $this->filesystem->mkdir(dirname($filename), 0755);
+            $this->filesystem->dumpFile($filename, $this->twig->render('@DarvinUtils/override/repository.php.twig', [
+                'base_class'        => $repository,
+                'class'             => $class,
+                'entity_namespace'  => $entityNamespace,
+                'package_namespace' => $packageNamespace,
+            ]));
+        }
         if ($this->translatableManager->isTranslatable($fqcn)) {
             $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
 
@@ -141,7 +150,7 @@ class EntityOverrider implements OverriderInterface
      *
      * @return string
      */
-    private function nameFile(string $class, string $entityNamespace, string $packageNamespace): string
+    private function nameEntityFile(string $class, string $entityNamespace, string $packageNamespace): string
     {
         $parts = [$this->projectDir, 'src', 'Entity', $packageNamespace];
 
@@ -150,6 +159,26 @@ class EntityOverrider implements OverriderInterface
         }
 
         $parts[] = sprintf('App%s', $class);
+
+        return sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $parts)));
+    }
+
+    /**
+     * @param string $class            Class
+     * @param string $entityNamespace  Entity namespace
+     * @param string $packageNamespace Package namespace
+     *
+     * @return string
+     */
+    private function nameRepositoryFile(string $class, string $entityNamespace, string $packageNamespace): string
+    {
+        $parts = [$this->projectDir, 'src', 'Repository', $packageNamespace];
+
+        if ('' !== $entityNamespace) {
+            $parts[] = $entityNamespace;
+        }
+
+        $parts[] = sprintf('%sRepository', $class);
 
         return sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $parts)));
     }
