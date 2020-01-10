@@ -111,30 +111,32 @@ class EntityOverrider implements OverriderInterface
             $translation = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn));
         }
 
-        $filename = $this->nameEntityFile($class, $entityNamespace, $packageNamespace);
-
-        $this->filesystem->mkdir(dirname($filename), 0755);
-        $this->filesystem->dumpFile($filename, $this->twig->render('@DarvinUtils/override/entity.php.twig', [
-            'bundle_namespace'  => $bundleNamespace,
-            'entity_namespace'  => $entityNamespace,
-            'package_namespace' => $packageNamespace,
-            'class'             => $class,
-            'fqcn'              => $fqcn,
-            'has_repository'    => null !== $repository,
-            'translatable'      => $translatable,
-            'translation'       => $translation,
-        ]));
-
-        if (null !== $repository) {
-            $filename = $this->nameRepositoryFile($class, $entityNamespace, $packageNamespace);
-
-            $this->filesystem->mkdir(dirname($filename), 0755);
-            $this->filesystem->dumpFile($filename, $this->twig->render('@DarvinUtils/override/repository.php.twig', [
-                'base_class'        => $repository,
-                'class'             => $class,
+        $this->renderFile(
+            $this->nameFile('Entity', $class, $entityNamespace, $packageNamespace, 'App'),
+            '@DarvinUtils/override/entity.php.twig',
+            [
+                'bundle_namespace'  => $bundleNamespace,
                 'entity_namespace'  => $entityNamespace,
                 'package_namespace' => $packageNamespace,
-            ]));
+                'class'             => $class,
+                'fqcn'              => $fqcn,
+                'has_repository'    => null !== $repository,
+                'translatable'      => $translatable,
+                'translation'       => $translation,
+            ]
+        );
+
+        if (null !== $repository) {
+            $this->renderFile(
+                $this->nameFile('Repository', $class, $entityNamespace, $packageNamespace, '', 'Repository'),
+                '@DarvinUtils/override/repository.php.twig',
+                [
+                    'base_class'        => $repository,
+                    'class'             => $class,
+                    'entity_namespace'  => $entityNamespace,
+                    'package_namespace' => $packageNamespace,
+                ]
+            );
         }
         if ($this->translatableManager->isTranslatable($fqcn)) {
             $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
@@ -144,43 +146,37 @@ class EntityOverrider implements OverriderInterface
     }
 
     /**
+     * @param string $dir              Directory
      * @param string $class            Class
      * @param string $entityNamespace  Entity namespace
      * @param string $packageNamespace Package namespace
+     * @param string $prefix           Filename prefix
+     * @param string $suffix           Filename suffix
      *
      * @return string
      */
-    private function nameEntityFile(string $class, string $entityNamespace, string $packageNamespace): string
+    private function nameFile(string $dir, string $class, string $entityNamespace, string $packageNamespace, string $prefix = '', string $suffix = ''): string
     {
-        $parts = [$this->projectDir, 'src', 'Entity', $packageNamespace];
+        $parts = [$this->projectDir, 'src', $dir, $packageNamespace];
 
         if ('' !== $entityNamespace) {
             $parts[] = $entityNamespace;
         }
 
-        $parts[] = sprintf('App%s', $class);
+        $parts[] = implode('', [$prefix, $class, $suffix]);
 
         return sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $parts)));
     }
 
     /**
-     * @param string $class            Class
-     * @param string $entityNamespace  Entity namespace
-     * @param string $packageNamespace Package namespace
-     *
-     * @return string
+     * @param string $filename Filename
+     * @param string $template Template name
+     * @param array  $params   Template parameters
      */
-    private function nameRepositoryFile(string $class, string $entityNamespace, string $packageNamespace): string
+    private function renderFile(string $filename, string $template, array $params = []): void
     {
-        $parts = [$this->projectDir, 'src', 'Repository', $packageNamespace];
-
-        if ('' !== $entityNamespace) {
-            $parts[] = $entityNamespace;
-        }
-
-        $parts[] = sprintf('%sRepository', $class);
-
-        return sprintf('%s.php', str_replace('\\', DIRECTORY_SEPARATOR, implode(DIRECTORY_SEPARATOR, $parts)));
+        $this->filesystem->mkdir(dirname($filename), 0755);
+        $this->filesystem->dumpFile($filename, $this->twig->render($template, $params));
     }
 
     /**
