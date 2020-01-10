@@ -100,9 +100,13 @@ class EntityOverrider implements OverriderInterface
         $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
-        $repository   = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
         $translatable = null;
         $translation  = null;
+        $repository   = str_replace(
+            sprintf('%s\\Repository\\', $bundleNamespace),
+            sprintf('App\\Repository\\%s\\', $packageNamespace),
+            (string)$this->em->getClassMetadata($fqcn)->customRepositoryClassName
+        );
 
         if ($this->translatableManager->isTranslation($fqcn)) {
             $translatable = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslatableClass($fqcn));
