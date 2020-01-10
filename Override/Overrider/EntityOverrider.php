@@ -131,10 +131,10 @@ class EntityOverrider implements OverriderInterface
                 $this->nameFile('Repository', $class, $entityNamespace, $packageNamespace, '', 'Repository'),
                 '@DarvinUtils/override/repository.php.twig',
                 [
-                    'base_class'        => $repository,
                     'class'             => $class,
                     'entity_namespace'  => $entityNamespace,
                     'package_namespace' => $packageNamespace,
+                    'repository'        => $repository,
                 ]
             );
         }

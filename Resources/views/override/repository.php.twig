@@ -9,7 +9,7 @@
 
 namespace App\Repository\{{ package_namespace }}{% if entity_namespace %}\{{ entity_namespace }}{% endif %};
 
-use {{ base_class }} as Base{{ class }}Repository;
+use {{ repository }} as Base{{ class }}Repository;
 
 /**
  * {{ class|humanize }} entity repository
