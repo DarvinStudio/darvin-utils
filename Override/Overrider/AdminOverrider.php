@@ -10,6 +10,7 @@
 
 namespace Darvin\Utils\Override\Overrider;
 
+use Darvin\AdminBundle\Configuration\SectionConfiguration;
 use Darvin\Utils\Override\Config\Model\Subject;
 
 /**
@@ -18,10 +19,33 @@ use Darvin\Utils\Override\Config\Model\Subject;
 class AdminOverrider implements OverriderInterface
 {
     /**
+     * @var \Darvin\AdminBundle\Configuration\SectionConfiguration
+     */
+    private $adminSectionConfig;
+
+    /**
+     * @param \Darvin\AdminBundle\Configuration\SectionConfiguration $adminSectionConfig Admin section configuration
+     */
+    public function __construct(SectionConfiguration $adminSectionConfig)
+    {
+        $this->adminSectionConfig = $adminSectionConfig;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function override(Subject $subject, ?callable $output = null): void
     {
-        dump($subject);
+        foreach ($subject->getEntities() as $entity) {
+            $this->overrideAdmin($entity);
+        }
+    }
+
+    /**
+     * @param string $entity Entity
+     */
+    private function overrideAdmin(string $entity): void
+    {
+        dump($entity);
     }
 }
