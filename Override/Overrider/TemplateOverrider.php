@@ -22,6 +22,17 @@ class TemplateOverrider implements OverriderInterface
      */
     public function override(Subject $subject, ?callable $output = null): void
     {
+        foreach ($subject->getTemplates() as $template) {
+            $this->overrideTemplate($template, $output);
+        }
+    }
 
+    /**
+     * @param string        $template Template
+     * @param callable|null $output   Output callback
+     */
+    private function overrideTemplate(string $template, ?callable $output): void
+    {
+        dump($template);
     }
 }
