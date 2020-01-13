@@ -16,10 +16,11 @@ namespace Darvin\Utils\Override;
 interface OverriderPoolInterface
 {
     /**
-     * @param string      $subjectName Subject name
-     * @param string|null $bundleName  Bundle name
+     * @param string        $subjectName Subject name
+     * @param string|null   $bundleName  Bundle name
+     * @param callable|null $output      Output callback
      *
      * @throws \InvalidArgumentException
      */
-    public function override(string $subjectName, ?string $bundleName = null): void;
+    public function override(string $subjectName, ?string $bundleName = null, ?callable $output = null): void;
 }

@@ -49,12 +49,12 @@ class OverriderPool implements OverriderPoolInterface
     /**
      * {@inheritDoc}
      */
-    public function override(string $subjectName, ?string $bundleName = null): void
+    public function override(string $subjectName, ?string $bundleName = null, ?callable $output = null): void
     {
         $subject = $this->config->getSubject($subjectName, $bundleName);
 
         foreach ($this->overriders as $overrider) {
-            $overrider->override($subject);
+            $overrider->override($subject, $output);
         }
     }
 }

@@ -20,7 +20,7 @@ class TemplateOverrider implements OverriderInterface
     /**
      * {@inheritDoc}
      */
-    public function override(Subject $subject): void
+    public function override(Subject $subject, ?callable $output = null): void
     {
 
     }

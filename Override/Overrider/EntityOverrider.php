@@ -78,22 +78,23 @@ class EntityOverrider implements OverriderInterface
     /**
      * {@inheritDoc}
      */
-    public function override(Subject $subject): void
+    public function override(Subject $subject, ?callable $output = null): void
     {
         if (!isset($this->bundlesMeta[$subject->getBundle()])) {
             throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist.', $subject->getBundle()));
         }
         foreach ($subject->getEntities() as $entity) {
-            $this->overrideEntity($entity, $subject->getBundle(), $this->bundlesMeta[$subject->getBundle()]['namespace']);
+            $this->overrideEntity($entity, $subject->getBundle(), $this->bundlesMeta[$subject->getBundle()]['namespace'], $output);
         }
     }
 
     /**
-     * @param string $entity          Entity
-     * @param string $bundleName      Bundle name
-     * @param string $bundleNamespace Bundle namespace
+     * @param string        $entity          Entity
+     * @param string        $bundleName      Bundle name
+     * @param string        $bundleNamespace Bundle namespace
+     * @param callable|null $output          Output callback
      */
-    private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace): void
+    private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace, ?callable $output = null): void
     {
         list($class, $entityNamespace) = $this->parseEntity($entity);
 
@@ -123,7 +124,8 @@ class EntityOverrider implements OverriderInterface
                 'has_repository'    => null !== $repository,
                 'translatable'      => $translatable,
                 'translation'       => $translation,
-            ]
+            ],
+            $output
         );
 
         if (null !== $repository) {
@@ -135,13 +137,14 @@ class EntityOverrider implements OverriderInterface
                     'entity_namespace'  => $entityNamespace,
                     'package_namespace' => $packageNamespace,
                     'repository'        => $repository,
-                ]
+                ],
+                $output
             );
         }
         if ($this->translatableManager->isTranslatable($fqcn)) {
             $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
 
-            $this->overrideEntity($translationEntity, $bundleName, $bundleNamespace);
+            $this->overrideEntity($translationEntity, $bundleName, $bundleNamespace, $output);
         }
     }
 
@@ -169,14 +172,19 @@ class EntityOverrider implements OverriderInterface
     }
 
     /**
-     * @param string $filename Filename
-     * @param string $template Template name
-     * @param array  $params   Template parameters
+     * @param string        $filename Filename
+     * @param string        $template Template name
+     * @param array         $params   Template parameters
+     * @param callable|null $output   Output callback
      */
-    private function renderFile(string $filename, string $template, array $params = []): void
+    private function renderFile(string $filename, string $template, array $params = [], ?callable $output = null): void
     {
         $this->filesystem->mkdir(dirname($filename), 0755);
         $this->filesystem->dumpFile($filename, $this->twig->render($template, $params));
+
+        if (null !== $output) {
+            $output($filename);
+        }
     }
 
     /**

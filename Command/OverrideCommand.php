@@ -55,7 +55,9 @@ class OverrideCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->overrider->override($input->getArgument('subject'), $input->getArgument('bundle'));
+        $this->overrider->override($input->getArgument('subject'), $input->getArgument('bundle'), function ($messages) use ($output): void {
+            $output->writeln($messages);
+        });
 
         return 0;
     }
