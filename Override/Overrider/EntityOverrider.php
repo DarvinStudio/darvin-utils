@@ -94,7 +94,7 @@ class EntityOverrider implements OverriderInterface
      * @param string        $bundleNamespace Bundle namespace
      * @param callable|null $output          Output callback
      */
-    private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace, ?callable $output = null): void
+    private function overrideEntity(string $entity, string $bundleName, string $bundleNamespace, ?callable $output): void
     {
         list($class, $entityNamespace) = $this->parseEntity($entity);
 
@@ -158,7 +158,7 @@ class EntityOverrider implements OverriderInterface
      *
      * @return string
      */
-    private function nameFile(string $dir, string $class, string $entityNamespace, string $packageNamespace, string $prefix = '', string $suffix = ''): string
+    private function nameFile(string $dir, string $class, string $entityNamespace, string $packageNamespace, string $prefix, string $suffix = ''): string
     {
         $parts = [$this->projectDir, 'src', $dir, $packageNamespace];
 
@@ -177,7 +177,7 @@ class EntityOverrider implements OverriderInterface
      * @param array         $params   Template parameters
      * @param callable|null $output   Output callback
      */
-    private function renderFile(string $filename, string $template, array $params = [], ?callable $output = null): void
+    private function renderFile(string $filename, string $template, array $params, ?callable $output): void
     {
         $this->filesystem->mkdir(dirname($filename), 0755);
         $this->filesystem->dumpFile($filename, $this->twig->render($template, $params));
