@@ -98,7 +98,7 @@ class EntityOverrider implements OverriderInterface
     {
         list($class, $entityNamespace) = $this->parseEntity($entity);
 
-        $fqcn             = sprintf('%s\Entity\%s', $bundleNamespace, $entity);
+        $fqcn             = implode('\\', [$bundleNamespace, 'Entity', $entity]);
         $packageNamespace = preg_replace('/^Darvin|Bundle$/', '', $bundleName);
 
         $repository   = $this->em->getClassMetadata($fqcn)->customRepositoryClassName;
