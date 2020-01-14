@@ -1,0 +1,11 @@
+boolean:
+    indeterminate: Indeterminate
+    no:            No
+    yes:           Yes
+
+flash:
+    error:
+        form: Form Errors Detected. Fix Them and Resubmit Form
+
+price:
+    default: $%price%

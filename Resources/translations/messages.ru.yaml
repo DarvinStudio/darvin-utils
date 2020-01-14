@@ -1,0 +1,11 @@
+boolean:
+    indeterminate: Не определено
+    no:            Нет
+    yes:           Да
+
+flash:
+    error:
+        form: При обработке формы были обнаружены ошибки. Исправьте их и повторите отправку
+
+price:
+    default: '%price%&nbsp;руб.'

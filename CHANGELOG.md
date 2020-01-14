@@ -79,3 +79,5 @@
 - Move price formatter from utils bundle.
 
 - Move macros template from utils bundle.
+
+- Move translations from utils bundle.

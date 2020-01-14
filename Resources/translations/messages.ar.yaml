@@ -1,0 +1,9 @@
+boolean:
+    indeterminate: 'غير محدد'
+    'no': لا
+    'yes': نعم
+flash:
+    error:
+        form: 'شكل الأخطاء المكتشفة. اصلاحها وإعادة تشكيل'
+price:
+    default: AED&nbsp;%price%
