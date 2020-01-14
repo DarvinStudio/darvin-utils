@@ -80,8 +80,12 @@ class OverriderPool implements OverriderPoolInterface
     private function getOverrider(string $name): OverriderInterface
     {
         if (!isset($this->overriders[$name])) {
+            $existingNames = array_keys($this->overriders);
+
+            sort($existingNames, SORT_STRING);
+
             throw new \InvalidArgumentException(
-                sprintf('Overrider "%s" does not exist. Existing overriders: "%s".', $name, implode('", "', array_keys($this->overriders)))
+                sprintf('Overrider "%s" does not exist. Existing overriders: "%s".', $name, implode('", "', $existingNames))
             );
         }
 

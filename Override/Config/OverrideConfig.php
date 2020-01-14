@@ -71,11 +71,15 @@ class OverrideConfig implements OverrideConfigInterface
                 throw new \InvalidArgumentException(sprintf('Bundle "%s" does not exist or has nothing to override.', $bundleName));
             }
             if (!isset($this->config[$bundleName][$subjectName])) {
+                $existingSubjectNames = array_keys($this->config[$bundleName]);
+
+                sort($existingSubjectNames, SORT_STRING);
+
                 throw new \InvalidArgumentException(sprintf(
                     'Subject "%s" does not exist in bundle "%s". Existing subjects: "%s".',
                     $subjectName,
                     $bundleName,
-                    implode('", "', array_keys($this->config[$bundleName]))
+                    implode('", "', $existingSubjectNames)
                 ));
             }
 
@@ -102,6 +106,8 @@ class OverrideConfig implements OverrideConfigInterface
             }
 
             $existingSubjectNames = array_unique($existingSubjectNames);
+
+            sort($existingSubjectNames, SORT_STRING);
 
             throw new \InvalidArgumentException(
                 sprintf('Subject "%s" does not exist. Existing subjects: "%s".', $subjectName, implode('", "', $existingSubjectNames))
