@@ -114,16 +114,12 @@ class AdminOverrider implements OverriderInterface
             return;
         }
 
-        $targetContent  = sprintf('extends: \'%s\'', $section->getConfig());
         $targetPathname = implode(
             DIRECTORY_SEPARATOR,
-            array_merge(
-                [$this->projectDir, 'config', array_shift($parts), StringsUtil::toUnderscore(preg_replace('/Bundle$/', '', $configBundle))],
-                $parts
-            )
+            array_merge([$this->projectDir, 'config', array_shift($parts), StringsUtil::toUnderscore(preg_replace('/Bundle$/', '', $configBundle))], $parts)
         );
 
-        $this->filesystem->dumpFile($targetPathname, $targetContent);
+        $this->filesystem->dumpFile($targetPathname, sprintf('extends: \'%s\'%s', $section->getConfig(), PHP_EOL));
 
         if (null !== $output) {
             $output($targetPathname);
