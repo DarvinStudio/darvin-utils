@@ -14,6 +14,7 @@ use Darvin\Utils\Override\OverriderPoolInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -46,7 +47,8 @@ class OverrideCommand extends Command
             ->setDescription('Overrides files related to passed subject (entity classes, repository classes, templates, admin configs etc.).')
             ->setDefinition([
                 new InputArgument('subject', InputArgument::REQUIRED, 'Subject to override name'),
-                new InputArgument('bundle', InputArgument::OPTIONAL, 'Bundle name'),
+                new InputArgument('overrider', InputArgument::OPTIONAL, 'Overrider name'),
+                new InputOption('bundle', 'b', InputOption::VALUE_REQUIRED, 'Bundle name'),
             ]);
     }
 
@@ -55,9 +57,14 @@ class OverrideCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->overrider->override($input->getArgument('subject'), $input->getArgument('bundle'), function ($messages) use ($output): void {
-            $output->writeln($messages);
-        });
+        $this->overrider->override(
+            $input->getArgument('subject'),
+            $input->getOption('bundle'),
+            $input->getArgument('overrider'),
+            function ($messages) use ($output): void {
+                $output->writeln($messages);
+            }
+        );
 
         return 0;
     }

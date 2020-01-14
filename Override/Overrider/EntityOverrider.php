@@ -21,6 +21,8 @@ use Twig\Environment;
  */
 class EntityOverrider implements OverriderInterface
 {
+    use NameTrait;
+
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */

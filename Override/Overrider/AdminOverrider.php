@@ -20,6 +20,8 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class AdminOverrider implements OverriderInterface
 {
+    use NameTrait;
+
     /**
      * @var \Symfony\Component\Filesystem\Filesystem
      */

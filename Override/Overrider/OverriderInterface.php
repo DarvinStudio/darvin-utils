@@ -24,4 +24,9 @@ interface OverriderInterface
      * @throws \InvalidArgumentException
      */
     public function override(Subject $subject, ?callable $output = null): void;
+
+    /**
+     * @return string
+     */
+    public function getName(): string;
 }

@@ -18,6 +18,8 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class TemplateOverrider implements OverriderInterface
 {
+    use NameTrait;
+
     /**
      * @var \Symfony\Component\Filesystem\Filesystem
      */

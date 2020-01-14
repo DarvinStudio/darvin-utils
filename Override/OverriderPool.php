@@ -40,21 +40,51 @@ class OverriderPool implements OverriderPoolInterface
 
     /**
      * @param \Darvin\Utils\Override\Overrider\OverriderInterface $overrider Overrider
+     *
+     * @throws \InvalidArgumentException
      */
     public function addOverrider(OverriderInterface $overrider): void
     {
-        $this->overriders[] = $overrider;
+        $name = $overrider->getName();
+
+        if (isset($this->overriders[$name])) {
+            throw new \InvalidArgumentException(sprintf('Overrider "%s" already exists.', $name));
+        }
+
+        $this->overriders[$name] = $overrider;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function override(string $subjectName, ?string $bundleName = null, ?callable $output = null): void
+    public function override(string $subjectName, ?string $bundleName = null, ?string $overriderName = null, ?callable $output = null): void
     {
         $subject = $this->config->getSubject($subjectName, $bundleName);
 
+        if (null !== $overriderName) {
+            $this->getOverrider($overriderName)->override($subject, $output);
+
+            return;
+        }
         foreach ($this->overriders as $overrider) {
             $overrider->override($subject, $output);
         }
+    }
+
+    /**
+     * @param string $name Overrider name
+     *
+     * @return \Darvin\Utils\Override\Overrider\OverriderInterface
+     * @throws \InvalidArgumentException
+     */
+    private function getOverrider(string $name): OverriderInterface
+    {
+        if (!isset($this->overriders[$name])) {
+            throw new \InvalidArgumentException(
+                sprintf('Overrider "%s" does not exist. Existing overriders: "%s".', $name, implode('", "', array_keys($this->overriders)))
+            );
+        }
+
+        return $this->overriders[$name];
     }
 }
