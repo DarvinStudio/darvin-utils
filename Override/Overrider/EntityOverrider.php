@@ -172,18 +172,18 @@ class EntityOverrider implements OverriderInterface
     }
 
     /**
-     * @param string        $filename Filename
+     * @param string        $pathname File pathname
      * @param string        $template Template name
      * @param array         $params   Template parameters
      * @param callable|null $output   Output callback
      */
-    private function renderFile(string $filename, string $template, array $params, ?callable $output): void
+    private function renderFile(string $pathname, string $template, array $params, ?callable $output): void
     {
-        $this->filesystem->mkdir(dirname($filename), 0755);
-        $this->filesystem->dumpFile($filename, $this->twig->render($template, $params));
+        $this->filesystem->mkdir(dirname($pathname), 0755);
+        $this->filesystem->dumpFile($pathname, $this->twig->render($template, $params));
 
         if (null !== $output) {
-            $output($filename);
+            $output($pathname);
         }
     }
 
