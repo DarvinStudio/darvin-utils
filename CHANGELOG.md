@@ -71,3 +71,11 @@
 7.2.8: Implement multiple mode in entity to ID form data transformer.
 
 7.2.9: EntityManager => EntityManagerInterface.
+
+7.3.0:
+
+- Add override command.
+
+- Move price formatter from utils bundle.
+
+- Move macros template from utils bundle.
