@@ -1,0 +1,19 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright Copyright (c) {{ 'now'|date('Y') }}, Darvin Studio
+ * @link      https://www.darvin-studio.ru
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace App\Repository\{{ package_namespace }}{% if entity_namespace %}\{{ entity_namespace }}{% endif %};
+
+use {{ repository }} as Base{{ class }}Repository;
+
+/**
+ * {{ class|humanize }} entity repository
+ */
+class {{ class }}Repository extends Base{{ class }}Repository
+{
+}

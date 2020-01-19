@@ -1,0 +1,41 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright Copyright (c) {{ 'now'|date('Y') }}, Darvin Studio
+ * @link      https://www.darvin-studio.ru
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace App\Entity\{{ package_namespace }}{% if entity_namespace %}\{{ entity_namespace }}{% endif %};
+
+use {{ fqcn }};
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * {{ class|humanize }}
+ *
+ * @ORM\Entity{% if has_repository %}(repositoryClass="App\Repository\{{ package_namespace }}{% if entity_namespace %}\{{ entity_namespace }}{% endif %}\{{ class }}Repository"){% endif %}
+
+ */
+class App{{ class }} extends {{ class }}
+{
+{% if translatable %}
+    /**
+     * {@inheritDoc}
+     */
+    public static function getTranslatableEntityClass(): string
+    {
+        return App{{ translatable }}::class;
+    }
+{% endif %}
+{% if translation %}
+    /**
+     * {@inheritDoc}
+     */
+    public static function getTranslationEntityClass(): string
+    {
+        return App{{ translation }}::class;
+    }
+{% endif %}
+}
