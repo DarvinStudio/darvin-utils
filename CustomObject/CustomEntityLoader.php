@@ -201,7 +201,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                             $queryBuilderCallback($qb);
                         }
                         try {
-                            $customEntity = $qb->getQuery()->getOneOrNullResult();
+                            $customEntity = $qb->getQuery()->enableResultCache()->getOneOrNullResult();
                         } catch (NonUniqueResultException $ex) {
                             throw new CustomObjectException(
                                 sprintf(
@@ -239,7 +239,7 @@ class CustomEntityLoader implements CustomObjectLoaderInterface
                     $queryBuilderCallback($qb);
                 }
 
-                $customEntities = $qb->getQuery()->getResult();
+                $customEntities = $qb->getQuery()->enableResultCache()->getResult();
 
                 /** @var callable $getPropertyValueCallback */
                 $getPropertyValueCallback = [$this, 'getPropertyValue'];
