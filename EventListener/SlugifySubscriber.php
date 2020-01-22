@@ -87,16 +87,16 @@ class SlugifySubscriber implements EventSubscriber, SlugifySubscriberInterface
     }
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em                  Entity manager
-     * @param object                               $entity              Entity
-     * @param bool                                 $dispatchUpdateEvent Whether to dispatch update event
+     * @param \Doctrine\ORM\EntityManagerInterface $em                 Entity manager
+     * @param object                               $entity             Entity
+     * @param bool                                 $triggerUpdateEvent Whether to trigger update event
      */
-    private function slugify(EntityManagerInterface $em, object $entity, bool $dispatchUpdateEvent = false): void
+    private function slugify(EntityManagerInterface $em, object $entity, bool $triggerUpdateEvent = false): void
     {
         if (isset($this->entityBlacklist[$this->hashEntity($em, $entity)]) || !$this->sluggableManager->isSluggable($entity)) {
             return;
         }
-        if ($this->sluggableManager->generateSlugs($entity, $dispatchUpdateEvent)) {
+        if ($this->sluggableManager->generateSlugs($entity, $triggerUpdateEvent)) {
             $em->getUnitOfWork()->recomputeSingleEntityChangeSet($em->getClassMetadata(ClassUtils::getClass($entity)), $entity);
         }
     }

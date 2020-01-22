@@ -111,7 +111,7 @@ class SluggableManager implements SluggableManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function generateSlugs(object $entity, bool $dispatchUpdateEvent = false, ?string $prefix = null): bool
+    public function generateSlugs(object $entity, bool $triggerUpdateEvent = false, ?string $prefix = null): bool
     {
         $em             = $this->getEntityManager();
         $entityClass    = ClassUtils::getClass($entity);
@@ -120,7 +120,7 @@ class SluggableManager implements SluggableManagerInterface
         foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $params) {
             $sourcePropertyPaths = $params['sourcePropertyPaths'];
 
-            $oldSlug = $this->getPropertyValue($entity, $slugProperty);
+            $oldSlug = $this->propertyAccessor->getValue($entity, $slugProperty);
 
             $slugParts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths, $prefix);
 
@@ -138,15 +138,15 @@ class SluggableManager implements SluggableManagerInterface
 
             if ($newSlug !== $originalNewSlug) {
                 $suffixPropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
-                $this->setPropertyValue($entity, $suffixPropertyPath, $slugSuffix);
+                $this->propertyAccessor->setValue($entity, $suffixPropertyPath, $slugSuffix);
             }
 
-            $this->setPropertyValue($entity, $slugProperty, $newSlug);
+            $this->propertyAccessor->setValue($entity, $slugProperty, $newSlug);
         }
         if (empty($slugsChangeSet)) {
             return false;
         }
-        if ($dispatchUpdateEvent) {
+        if ($triggerUpdateEvent) {
             $this->eventDispatcher->dispatch(new SlugsUpdateEvent($slugsChangeSet, $em), SluggableEvents::SLUGS_UPDATED);
         }
 
@@ -172,14 +172,14 @@ class SluggableManager implements SluggableManagerInterface
         }
         foreach ($sourcePropertyPaths as $propertyPath) {
             if (false !== strpos($propertyPath, '.')) {
-                $related = $this->getPropertyValue($entity, preg_replace('/\..*/', '', $propertyPath));
+                $related = $this->propertyAccessor->getValue($entity, preg_replace('/\..*/', '', $propertyPath));
 
                 if (null === $related) {
                     continue;
                 }
             }
 
-            $slugPart = (string)$this->getPropertyValue($entity, $propertyPath);
+            $slugPart = (string)$this->propertyAccessor->getValue($entity, $propertyPath);
 
             if ('' !== $slugPart) {
                 $slugParts[] = $slugPart;
@@ -224,42 +224,6 @@ class SluggableManager implements SluggableManagerInterface
         }
 
         return $this->slugsMetadata[$entityClass];
-    }
-
-    /**
-     * @param object $entity       Entity
-     * @param string $propertyPath Property path
-     * @param mixed  $value        Value
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function setPropertyValue(object $entity, string $propertyPath, $value): void
-    {
-        if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
-            throw new \InvalidArgumentException(
-                sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
-            );
-        }
-
-        $this->propertyAccessor->setValue($entity, $propertyPath, $value);
-    }
-
-    /**
-     * @param object $entity       Entity
-     * @param string $propertyPath Property path
-     *
-     * @return mixed
-     * @throws \InvalidArgumentException
-     */
-    private function getPropertyValue(object $entity, string $propertyPath)
-    {
-        if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
-            throw new \InvalidArgumentException(
-                sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
-            );
-        }
-
-        return $this->propertyAccessor->getValue($entity, $propertyPath);
     }
 
     /**

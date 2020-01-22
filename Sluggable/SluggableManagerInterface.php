@@ -23,11 +23,11 @@ interface SluggableManagerInterface
     public function isSluggable($objectOrClass): bool;
 
     /**
-     * @param object $object              Object
-     * @param bool   $dispatchUpdateEvent Whether to dispatch update event
-     * @param string $prefix              Slug prefix
+     * @param object $object             Object
+     * @param bool   $triggerUpdateEvent Whether to trigger update event
+     * @param string $prefix             Slug prefix
      *
      * @return bool Is at least one slug updated
      */
-    public function generateSlugs(object $object, bool $dispatchUpdateEvent = false, ?string $prefix = null): bool;
+    public function generateSlugs(object $object, bool $triggerUpdateEvent = false, ?string $prefix = null): bool;
 }
