@@ -167,11 +167,11 @@ class SluggableManager implements SluggableManagerInterface
      */
     private function getSlugParts(object $entity, string $slugProperty, array $sourcePropertyPaths, ?string $prefix): array
     {
-        $slugParts = [];
-        $prefix    = (string)$prefix;
+        $parts  = [];
+        $prefix = (string)$prefix;
 
         if ('' !== $prefix) {
-            $slugParts[] = $prefix;
+            $parts[] = $prefix;
         }
         foreach ($sourcePropertyPaths as $propertyPath) {
             if (false !== strpos($propertyPath, '.')) {
@@ -182,24 +182,22 @@ class SluggableManager implements SluggableManagerInterface
                 }
             }
 
-            $slugPart = (string)$this->propertyAccessor->getValue($entity, $propertyPath);
+            $part = (string)$this->propertyAccessor->getValue($entity, $propertyPath);
 
-            if ('' !== $slugPart) {
-                $slugParts[] = $slugPart;
+            if ('' !== $part) {
+                $parts[] = $part;
             }
         }
-        if (empty($slugParts)) {
-            $message = sprintf(
+        if (empty($parts)) {
+            throw new \InvalidArgumentException(sprintf(
                 'Unable to generate slug "%s::$%s": unable to get any non empty slug parts using property paths "%s".',
                 ClassUtils::getClass($entity),
                 $slugProperty,
                 implode('", "', $sourcePropertyPaths)
-            );
-
-            throw new \InvalidArgumentException($message);
+            ));
         }
 
-        return $slugParts;
+        return $parts;
     }
 
     /**
@@ -214,13 +212,11 @@ class SluggableManager implements SluggableManagerInterface
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
             if (!isset($meta['slugs']) || empty($meta['slugs'])) {
-                $message = sprintf(
+                throw new \InvalidArgumentException(sprintf(
                     'At least one property of class "%s" must be annotated with "%s" annotation in order to generate slug.',
                     $entityClass,
                     Slug::class
-                );
-
-                throw new \InvalidArgumentException($message);
+                ));
             }
 
             $this->slugsMetadataCache[$entityClass] = $meta['slugs'];

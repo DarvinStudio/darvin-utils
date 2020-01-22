@@ -28,6 +28,7 @@ interface SluggableManagerInterface
      * @param string $prefix             Slug prefix
      *
      * @return bool Is at least one slug updated
+     * @throws \InvalidArgumentException
      */
     public function generateSlugs(object $object, bool $triggerUpdateEvent = false, ?string $prefix = null): bool;
 }
