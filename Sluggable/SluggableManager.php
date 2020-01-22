@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * @author    Igor Nikolaev <igor.sv.n@gmail.com>
- * @copyright Copyright (c) 2015-2019, Darvin Studio
+ * @copyright Copyright (c) 2015-2020, Darvin Studio
  * @link      https://www.darvin-studio.ru
  *
  * For the full copyright and license information, please view the LICENSE
@@ -21,9 +21,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Sluggable entity manager
+ * Sluggable manager
  */
-class SluggableEntityManager implements SluggableManagerInterface
+class SluggableManager implements SluggableManagerInterface
 {
     /**
      * @var \Darvin\Utils\Service\ServiceProviderInterface

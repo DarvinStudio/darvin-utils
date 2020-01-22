@@ -81,3 +81,7 @@
 - Move macros template from utils bundle.
 
 - Move translations from utils bundle.
+
+7.3.2:
+
+- Rename "Sluggable entity manager" => "Sluggable manager".
