@@ -85,3 +85,5 @@
 7.3.2:
 
 - Rename "Sluggable entity manager" => "Sluggable manager".
+
+- Replace custom sluggable exception with generic invalid argument exception.

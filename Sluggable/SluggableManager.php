@@ -100,7 +100,7 @@ class SluggableManager implements SluggableManagerInterface
 
             try {
                 $this->getSlugsMetadata($class);
-            } catch (SluggableException $ex) {
+            } catch (\InvalidArgumentException $ex) {
                 $this->checkedIfSluggableClasses[$class] = false;
             }
         }
@@ -160,7 +160,7 @@ class SluggableManager implements SluggableManagerInterface
      * @param string|null $prefix              Slug prefix
      *
      * @return array
-     * @throws \Darvin\Utils\Sluggable\SluggableException
+     * @throws \InvalidArgumentException
      */
     private function getSlugParts(object $entity, string $slugProperty, array $sourcePropertyPaths, ?string $prefix): array
     {
@@ -193,7 +193,7 @@ class SluggableManager implements SluggableManagerInterface
                 implode('", "', $sourcePropertyPaths)
             );
 
-            throw new SluggableException($message);
+            throw new \InvalidArgumentException($message);
         }
 
         return $slugParts;
@@ -203,7 +203,7 @@ class SluggableManager implements SluggableManagerInterface
      * @param string $entityClass Entity class
      *
      * @return array
-     * @throws \Darvin\Utils\Sluggable\SluggableException
+     * @throws \InvalidArgumentException
      */
     private function getSlugsMetadata(string $entityClass): array
     {
@@ -217,7 +217,7 @@ class SluggableManager implements SluggableManagerInterface
                     Slug::class
                 );
 
-                throw new SluggableException($message);
+                throw new \InvalidArgumentException($message);
             }
 
             $this->slugsMetadata[$entityClass] = $meta['slugs'];
@@ -231,12 +231,12 @@ class SluggableManager implements SluggableManagerInterface
      * @param string $propertyPath Property path
      * @param mixed  $value        Value
      *
-     * @throws \Darvin\Utils\Sluggable\SluggableException
+     * @throws \InvalidArgumentException
      */
     private function setPropertyValue(object $entity, string $propertyPath, $value): void
     {
         if (!$this->propertyAccessor->isWritable($entity, $propertyPath)) {
-            throw new SluggableException(
+            throw new \InvalidArgumentException(
                 sprintf('Property "%s::$%s" is not writable.', ClassUtils::getClass($entity), $propertyPath)
             );
         }
@@ -249,12 +249,12 @@ class SluggableManager implements SluggableManagerInterface
      * @param string $propertyPath Property path
      *
      * @return mixed
-     * @throws \Darvin\Utils\Sluggable\SluggableException
+     * @throws \InvalidArgumentException
      */
     private function getPropertyValue(object $entity, string $propertyPath)
     {
         if (!$this->propertyAccessor->isReadable($entity, $propertyPath)) {
-            throw new SluggableException(
+            throw new \InvalidArgumentException(
                 sprintf('Property "%s::$%s" is not readable.', ClassUtils::getClass($entity), $propertyPath)
             );
         }
