@@ -16,7 +16,7 @@ namespace Darvin\Utils\Sluggable;
 interface SluggableManagerInterface
 {
     /**
-     * @param mixed $objectOrClass Object or class
+     * @param object|string $objectOrClass Object or class
      *
      * @return bool
      */
