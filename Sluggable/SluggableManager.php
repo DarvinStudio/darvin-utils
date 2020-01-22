@@ -46,11 +46,6 @@ class SluggableManager implements SluggableManagerInterface
     private $propertyAccessor;
 
     /**
-     * @var array
-     */
-    private $checkedIfSluggableClasses;
-
-    /**
      * @var \Darvin\Utils\Sluggable\SlugHandlerInterface[]
      */
     private $slugHandlers;
@@ -58,7 +53,12 @@ class SluggableManager implements SluggableManagerInterface
     /**
      * @var array
      */
-    private $slugsMetadata;
+    private $isSluggableCache;
+
+    /**
+     * @var array
+     */
+    private $slugsMetadataCache;
 
     /**
      * @param \Darvin\Utils\Service\ServiceProviderInterface              $entityManagerProvider   Entity manager provider
@@ -77,7 +77,10 @@ class SluggableManager implements SluggableManagerInterface
         $this->extendedMetadataFactory = $extendedMetadataFactory;
         $this->propertyAccessor = $propertyAccessor;
 
-        $this->checkedIfSluggableClasses = $this->slugHandlers = $this->slugsMetadata = [];
+        $this->slugHandlers = [];
+
+        $this->isSluggableCache = [];
+        $this->slugsMetadataCache = [];
     }
 
     /**
@@ -95,17 +98,17 @@ class SluggableManager implements SluggableManagerInterface
     {
         $class = is_object($entityOrClass) ? ClassUtils::getClass($entityOrClass) : $entityOrClass;
 
-        if (!isset($this->checkedIfSluggableClasses[$class])) {
-            $this->checkedIfSluggableClasses[$class] = true;
+        if (!isset($this->isSluggableCache[$class])) {
+            $this->isSluggableCache[$class] = true;
 
             try {
                 $this->getSlugsMetadata($class);
             } catch (\InvalidArgumentException $ex) {
-                $this->checkedIfSluggableClasses[$class] = false;
+                $this->isSluggableCache[$class] = false;
             }
         }
 
-        return $this->checkedIfSluggableClasses[$class];
+        return $this->isSluggableCache[$class];
     }
 
     /**
@@ -113,41 +116,41 @@ class SluggableManager implements SluggableManagerInterface
      */
     public function generateSlugs(object $entity, bool $triggerUpdateEvent = false, ?string $prefix = null): bool
     {
-        $em             = $this->getEntityManager();
-        $entityClass    = ClassUtils::getClass($entity);
-        $slugsChangeSet = [];
+        $changes     = [];
+        $em          = $this->getEntityManager();
+        $entityClass = ClassUtils::getClass($entity);
 
-        foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $params) {
-            $sourcePropertyPaths = $params['sourcePropertyPaths'];
+        foreach ($this->getSlugsMetadata($entityClass) as $slugProperty => $meta) {
+            $sourcePropertyPaths = $meta['sourcePropertyPaths'];
+
+            $parts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths, $prefix);
 
             $oldSlug = $this->propertyAccessor->getValue($entity, $slugProperty);
-
-            $slugParts = $this->getSlugParts($entity, $slugProperty, $sourcePropertyPaths, $prefix);
-
-            $newSlug = $originalNewSlug = implode($params['separator'], $slugParts);
-            $slugSuffix = $slugParts[count($slugParts) - 1];
+            $newSlug = $originalNewSlug = implode($meta['separator'], $parts);
 
             if ($newSlug === $oldSlug) {
                 continue;
             }
+
+            $suffix = $parts[count($parts) - 1];
+
             foreach ($this->slugHandlers as $slugHandler) {
-                $slugHandler->handle($newSlug, $slugSuffix, $entity, $em);
+                $slugHandler->handle($newSlug, $suffix, $entity, $em);
             }
 
-            $slugsChangeSet[$oldSlug] = $newSlug;
+            $changes[$oldSlug] = $newSlug;
 
             if ($newSlug !== $originalNewSlug) {
-                $suffixPropertyPath = $sourcePropertyPaths[count($sourcePropertyPaths) - 1];
-                $this->propertyAccessor->setValue($entity, $suffixPropertyPath, $slugSuffix);
+                $this->propertyAccessor->setValue($entity, $sourcePropertyPaths[count($sourcePropertyPaths) - 1], $suffix);
             }
 
             $this->propertyAccessor->setValue($entity, $slugProperty, $newSlug);
         }
-        if (empty($slugsChangeSet)) {
+        if (empty($changes)) {
             return false;
         }
         if ($triggerUpdateEvent) {
-            $this->eventDispatcher->dispatch(new SlugsUpdateEvent($slugsChangeSet, $em), SluggableEvents::SLUGS_UPDATED);
+            $this->eventDispatcher->dispatch(new SlugsUpdateEvent($changes, $em), SluggableEvents::SLUGS_UPDATED);
         }
 
         return true;
@@ -207,7 +210,7 @@ class SluggableManager implements SluggableManagerInterface
      */
     private function getSlugsMetadata(string $entityClass): array
     {
-        if (!isset($this->slugsMetadata[$entityClass])) {
+        if (!isset($this->slugsMetadataCache[$entityClass])) {
             $meta = $this->extendedMetadataFactory->getExtendedMetadata($entityClass);
 
             if (!isset($meta['slugs']) || empty($meta['slugs'])) {
@@ -220,10 +223,10 @@ class SluggableManager implements SluggableManagerInterface
                 throw new \InvalidArgumentException($message);
             }
 
-            $this->slugsMetadata[$entityClass] = $meta['slugs'];
+            $this->slugsMetadataCache[$entityClass] = $meta['slugs'];
         }
 
-        return $this->slugsMetadata[$entityClass];
+        return $this->slugsMetadataCache[$entityClass];
     }
 
     /**
