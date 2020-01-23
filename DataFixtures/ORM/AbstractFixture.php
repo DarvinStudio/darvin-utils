@@ -135,7 +135,7 @@ abstract class AbstractFixture implements FixtureInterface, ContainerAwareInterf
 
         $pathname = $this->getFaker()->imageFile(null, $width, $height, $format, true, $text, $textColor, $backgroundColor, $fontPath);
 
-        return new UploadedFile($pathname, $pathname, null, null, null, true);
+        return new UploadedFile($pathname, $pathname, null, null, true);
     }
 
     /**
