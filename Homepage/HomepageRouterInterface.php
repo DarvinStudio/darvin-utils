@@ -31,9 +31,4 @@ interface HomepageRouterInterface
      * @return bool
      */
     public function isHomepage(?object $object): bool;
-
-    /**
-     * @return string|null
-     */
-    public function getHomepageRoute(): ?string;
 }

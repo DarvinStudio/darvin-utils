@@ -32,12 +32,4 @@ class DummyHomepageRouter implements HomepageRouterInterface
     {
         return false;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHomepageRoute(): ?string
-    {
-        return null;
-    }
 }

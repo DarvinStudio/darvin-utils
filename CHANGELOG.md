@@ -87,3 +87,5 @@
 - Rename "Sluggable entity manager" => "Sluggable manager".
 
 - Replace custom sluggable exception with generic invalid argument exception.
+
+7.3.4: Remove redundant HomepageRouterInterface::getHomepageRoute().
