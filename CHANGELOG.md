@@ -89,3 +89,5 @@
 - Replace custom sluggable exception with generic invalid argument exception.
 
 7.3.4: Remove redundant HomepageRouterInterface::getHomepageRoute().
+
+7.3.5: Add antispam form theme.
