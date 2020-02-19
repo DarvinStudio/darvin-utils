@@ -118,7 +118,7 @@ class TranslateTranslationsCommand extends Command
      */
     private function translateText(?string $text): ?string
     {
-        if (null === $text || preg_match('/^\s+$/', $text)) {
+        if (null === $text || '' === $text || preg_match('/^\s+$/', $text)) {
             return $text;
         }
         if (false !== strpos($text, '|')) {
