@@ -6,7 +6,7 @@ flash:
     error:
         form: 'Des Erreurs Détectées. Les corriger et de soumettre à nouveau le Formulaire'
 price:
-    format:
+    value:
         default: '%price%&nbsp;€'
     empty:
         default: 'Prix sur demande'

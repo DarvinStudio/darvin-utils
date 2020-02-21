@@ -9,6 +9,6 @@ flash:
 
 price:
     value:
-        default: '%price%&nbsp;руб.'
+        default: '%price%&nbsp;₽'
     empty:
         default: 'По запросу'

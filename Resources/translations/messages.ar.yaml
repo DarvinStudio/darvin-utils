@@ -6,7 +6,7 @@ flash:
     error:
         form: 'شكل الأخطاء المكتشفة. اصلاحها وإعادة تشكيل'
 price:
-    format:
+    value:
         default: AED&nbsp;%price%
     empty:
         default: 'السعر عند الطلب'
