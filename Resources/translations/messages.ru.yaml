@@ -8,4 +8,7 @@ flash:
         form: При обработке формы были обнаружены ошибки. Исправьте их и повторите отправку
 
 price:
-    default: '%price%&nbsp;руб.'
+    format:
+        default: '%price%&nbsp;руб.'
+    empty:
+        default: 'По запросу'
