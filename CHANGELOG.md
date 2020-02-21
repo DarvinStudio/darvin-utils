@@ -91,3 +91,5 @@
 7.3.4: Remove redundant HomepageRouterInterface::getHomepageRoute().
 
 7.3.5: Add antispam form theme.
+
+7.3.7: Added template for price on request
