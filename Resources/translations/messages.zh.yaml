@@ -6,4 +6,7 @@ flash:
     error:
         form: '形成的错误检测。 解决这些问题，并重新提交形式'
 price:
-    default: ¥%price%
+    format:
+        default: ¥%price%
+    empty:
+        default: '价格要求'

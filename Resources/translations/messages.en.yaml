@@ -8,4 +8,7 @@ flash:
         form: Form Errors Detected. Fix Them and Resubmit Form
 
 price:
-    default: $%price%
+    format:
+        default: $%price%
+    empty:
+        default: 'Price on request'
