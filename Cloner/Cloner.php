@@ -66,7 +66,7 @@ class Cloner implements ClonerInterface
     /**
      * {@inheritDoc}
      */
-    public function createClone(object $object): object
+    public function createClone(object $object): ?object
     {
         $this->cloned = [];
 
@@ -77,10 +77,10 @@ class Cloner implements ClonerInterface
      * @param object $object          Object to clone
      * @param bool   $requireClonable Whether to require object to be clonable
      *
-     * @return object
+     * @return object|null
      * @throws \InvalidArgumentException
      */
-    private function cloneObject(object $object, bool $requireClonable): object
+    private function cloneObject(object $object, bool $requireClonable): ?object
     {
         $hash = spl_object_hash($object);
 

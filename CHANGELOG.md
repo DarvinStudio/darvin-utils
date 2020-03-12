@@ -95,3 +95,5 @@
 7.3.7: Added template for price on request
 
 7.3.8: Catch exception in Cloner::setValue().
+
+7.3.9: Add copy cloned uploadables event subscriber.

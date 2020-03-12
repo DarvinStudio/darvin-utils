@@ -18,8 +18,8 @@ interface ClonerInterface
     /**
      * @param object $object Object to clone
      *
-     * @return object
+     * @return object|null
      * @throws \InvalidArgumentException
      */
-    public function createClone(object $object): object;
+    public function createClone(object $object): ?object;
 }
