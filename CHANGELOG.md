@@ -93,3 +93,5 @@
 7.3.5: Add antispam form theme.
 
 7.3.7: Added template for price on request
+
+7.3.8: Catch exception in Cloner::setValue().

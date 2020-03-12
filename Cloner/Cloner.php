@@ -192,8 +192,11 @@ class Cloner implements ClonerInterface
             return;
         } catch (\Exception $ex) {
         }
-
-        $reflectionProperty = $reflectionClass->getProperty($property);
+        try {
+            $reflectionProperty = $reflectionClass->getProperty($property);
+        } catch (\Exception $ex) {
+            return;
+        }
 
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($object, $value);
