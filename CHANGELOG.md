@@ -97,3 +97,5 @@
 7.3.8: Catch exception in Cloner::setValue().
 
 7.3.9: Add copy cloned uploadables event subscriber.
+
+7.3.10: Add "thousands_separator" option to price formatter.

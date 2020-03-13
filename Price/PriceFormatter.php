@@ -42,6 +42,9 @@ class PriceFormatter implements PriceFormatterInterface
         if (!isset($options['empty_format'])) {
             $options['empty_format'] = 'default';
         }
+        if (!isset($options['thousands_separator'])) {
+            $options['thousands_separator'] = ' ';
+        }
 
         return $this->getTwig()->render(isset($options['template']) ? $options['template'] : '@DarvinUtils/price.html.twig', [
             'price'   => $price,
