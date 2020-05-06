@@ -68,7 +68,7 @@ class UserQueryBuilderFilterer implements UserQueryBuilderFiltererInterface
         }
 
         $userIds = $this->extendedMetadataFactory->getDoctrineMetadata($user)->getIdentifierValues($user);
-        $userId = reset($userIds);
+        $userId = !empty($userIds) ? reset($userIds) : null;
 
         if (null === $userId) {
             throw new \InvalidArgumentException('User ID is empty.');

@@ -58,7 +58,7 @@ class EntityToIDTransformer implements DataTransformerInterface
 
             $ids = $this->em->getClassMetadata($this->entityClass)->getIdentifierValues($value);
 
-            return reset($ids);
+            return !empty($ids) ? reset($ids) : null;
         }
 
         $transformed = [];
@@ -69,7 +69,7 @@ class EntityToIDTransformer implements DataTransformerInterface
             foreach ($value as $entity) {
                 $ids = $meta->getIdentifierValues($entity);
 
-                $transformed[] = reset($ids);
+                $transformed[] = !empty($ids) ? reset($ids) : null;
             }
         }
 
