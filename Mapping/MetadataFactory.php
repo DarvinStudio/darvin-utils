@@ -109,10 +109,14 @@ class MetadataFactory implements MetadataFactoryInterface
             $om = $this->getObjectManager();
 
             foreach (array_reverse(class_parents($doctrineMeta->getName())) as $parent) {
-                if ($om->getMetadataFactory()->hasMetadataFor($parent)) {
-                    $this->readExtendedMetadata($om->getClassMetadata($parent), $meta);
-                    $this->extendedMeta[$parent] = $meta;
+                try {
+                    $this->getDoctrineMetadata($parent);
+                } catch (MappingException $ex) {
+                    continue;
                 }
+
+                $this->readExtendedMetadata($om->getClassMetadata($parent), $meta);
+                $this->extendedMeta[$parent] = $meta;
             }
 
             $this->readExtendedMetadata($doctrineMeta, $meta);

@@ -101,3 +101,5 @@
 7.3.10: Add "thousands_separator" option to price formatter.
 
 7.3.11: Add JSON encoder.
+
+7.3.14: Fix checking parent Doctrine metadata existence in extended metadata factory.
