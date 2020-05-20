@@ -37,6 +37,24 @@ class Stringifier implements StringifierInterface
      */
     public function stringify($value): string
     {
+        return trim($this->doStringify($value));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getTranslator(): TranslatorInterface
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param mixed $value Value to stringify
+     *
+     * @return string
+     */
+    private function doStringify($value): string
+    {
         $type = gettype($value);
 
         switch ($type) {
@@ -59,13 +77,5 @@ class Stringifier implements StringifierInterface
             default:
                 return '';
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getTranslator(): TranslatorInterface
-    {
-        return $this->translator;
     }
 }

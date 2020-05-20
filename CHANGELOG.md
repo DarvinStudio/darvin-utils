@@ -103,3 +103,5 @@
 7.3.11: Add JSON encoder.
 
 7.3.14: Fix checking parent Doctrine metadata existence in extended metadata factory.
+
+7.3.15: Trim stringifier result.

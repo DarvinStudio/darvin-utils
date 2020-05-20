@@ -45,6 +45,25 @@ class DoctrineStringifier implements DoctrineStringifierInterface
      */
     public function stringify($value, string $dataType): string
     {
+        return trim($this->doStringify($value, $dataType));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getTranslator(): TranslatorInterface
+    {
+        return $this->translator;
+    }
+
+    /**
+     * @param mixed  $value    Value to stringify
+     * @param string $dataType Doctrine data type
+     *
+     * @return string
+     */
+    private function doStringify($value, string $dataType): string
+    {
         if (null === $value) {
             return '';
         }
@@ -84,13 +103,5 @@ class DoctrineStringifier implements DoctrineStringifierInterface
             default:
                 return '';
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getTranslator(): TranslatorInterface
-    {
-        return $this->translator;
     }
 }
