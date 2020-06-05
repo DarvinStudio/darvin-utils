@@ -37,7 +37,7 @@ class NumberTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      */
-    public static function getExtendedTypes()
+    public static function getExtendedTypes(): iterable
     {
         yield NumberType::class;
     }
