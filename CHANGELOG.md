@@ -105,3 +105,5 @@
 7.3.14: Fix checking parent Doctrine metadata existence in extended metadata factory.
 
 7.3.15: Trim stringifier result.
+
+7.3.17: Add HTTP cache clear command.
