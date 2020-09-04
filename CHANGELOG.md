@@ -107,3 +107,5 @@
 7.3.15: Trim stringifier result.
 
 7.3.17: Add HTTP cache clear command.
+
+7.3.18: Remove integration with yandex translate API.

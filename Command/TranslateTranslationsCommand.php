@@ -25,7 +25,7 @@ use Symfony\Component\Yaml\Yaml;
 class TranslateTranslationsCommand extends Command
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $apiKey;
 
@@ -35,21 +35,19 @@ class TranslateTranslationsCommand extends Command
     private $direction;
 
     /**
-     * @param string      $name   Command name
-     * @param string|null $apiKey Yandex Translate API key
+     * @param string $name Command name
      */
-    public function __construct(string $name, ?string $apiKey = null)
+    public function __construct(string $name)
     {
         parent::__construct($name);
 
-        $this->apiKey = $apiKey;
-
+        $this->apiKey = null;
         $this->direction = null;
 
         $this->setDefinition([
             new InputArgument('target_languages', InputArgument::REQUIRED, 'Target language(s), comma separated'),
             new InputArgument('directory', InputArgument::REQUIRED, 'Translation file directory'),
-            new InputArgument('yandex_translate_api_key', null !== $apiKey ? InputArgument::OPTIONAL : InputArgument::REQUIRED, 'Yandex Translate API key'),
+            new InputArgument('yandex_translate_api_key', InputArgument::REQUIRED, 'Yandex Translate API key'),
             new InputOption('source_language', 's', InputOption::VALUE_OPTIONAL, 'Source language', 'en'),
         ]);
     }
@@ -71,9 +69,8 @@ class TranslateTranslationsCommand extends Command
         $apiKey = $input->getArgument('yandex_translate_api_key');
         $io     = new SymfonyStyle($input, $output);
 
-        if (null !== $apiKey) {
-            $this->apiKey = $apiKey;
-        }
+        $this->apiKey = $apiKey;
+
         foreach (array_map('trim', explode(',', $input->getArgument('target_languages'))) as $to) {
             $io->section($to);
 
