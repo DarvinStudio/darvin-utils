@@ -51,6 +51,7 @@ class VarnishCacheClearer implements VarnishCacheClearerInterface
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->method);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->timeout);
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
         if (false === curl_exec($curl)) {
             throw new \RuntimeException(curl_error($curl), curl_errno($curl));
