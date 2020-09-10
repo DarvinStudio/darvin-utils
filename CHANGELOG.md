@@ -109,3 +109,5 @@
 7.3.17: Add HTTP cache clear command.
 
 7.3.18: Remove integration with yandex translate API.
+
+7.3.19: Add Varnish cache clear command.
