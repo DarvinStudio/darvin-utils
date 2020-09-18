@@ -112,4 +112,4 @@
 
 7.3.19: Add Varnish cache clear command.
 
-7.3.21: Add QueryBuilderUtil::findJoinByName().
+7.3.22: Add QueryBuilderUtil::findOrCreateJoin().
