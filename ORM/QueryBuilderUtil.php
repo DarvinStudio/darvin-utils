@@ -41,4 +41,31 @@ class QueryBuilderUtil
 
         return null;
     }
+
+    /**
+     * @param \Doctrine\ORM\QueryBuilder $qb        Query builder
+     * @param string                     $rootAlias Root alias
+     * @param string                     $joinName  Join name
+     *
+     * @return \Doctrine\ORM\Query\Expr\Join
+     */
+    public static function findJoinByName(QueryBuilder $qb, string $rootAlias, string $joinName): ?Join
+    {
+        $dqlParts = $qb->getDQLParts();
+
+        if (!isset($dqlParts['join'][$rootAlias])) {
+            return null;
+        }
+        if (false === strpos($joinName, '.')) {
+            $joinName = implode('.', [$rootAlias, $joinName]);
+        }
+        /** @var \Doctrine\ORM\Query\Expr\Join $join */
+        foreach ($dqlParts['join'][$rootAlias] as $join) {
+            if ($joinName === $join->getJoin()) {
+                return $join;
+            }
+        }
+
+        return null;
+    }
 }
