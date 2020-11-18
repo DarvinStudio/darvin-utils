@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\RegexValidator;
  */
 class Phone extends Regex
 {
-    private const PATTERN = '/^\+?\d+\s*(\(\d+\))?\s*(\d+(-|\s+))*\d+$/';
+    private const PATTERN = '/^\+?\d+\s*(\(\s*\d+\s*\))?\s*(\d+(-|\s+))*\d+$/';
 
     /**
      * @var string
