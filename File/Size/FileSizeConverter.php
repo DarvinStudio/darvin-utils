@@ -35,7 +35,7 @@ class FileSizeConverter
             return new FileSize($bytes / pow($base, array_search($targetUnit, FileSize::UNITS)), $targetUnit);
         }
 
-        $value = $bytes;
+        $value = abs($bytes);
         $units = FileSize::UNITS;
 
         $currentUnit = reset($units);
@@ -48,6 +48,9 @@ class FileSizeConverter
             $currentUnit = current($units);
 
             $value /= $base;
+        }
+        if ($bytes < 0) {
+            $value *= -1;
         }
 
         return new FileSize($value, $currentUnit);
