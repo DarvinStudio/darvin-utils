@@ -16,25 +16,25 @@ namespace Darvin\Utils\File\Size;
 class FileSizeConverter
 {
     /**
-     * @param int         $bytes      Size in bytes
+     * @param mixed       $size       Size
      * @param string|null $targetUnit Target unit
+     * @param string      $sourceUnit Source unit
      * @param int         $base       Base
      *
      * @return \Darvin\Utils\File\Size\FileSize
      */
-    public static function convertSize(int $bytes, ?string $targetUnit = null, int $base = 1024): FileSize
+    public static function convert($size, ?string $targetUnit = null, string $sourceUnit = FileSize::UNIT_BYTE, int $base = 1024): FileSize
     {
+        self::validateUnit($targetUnit);
+        self::validateUnit($sourceUnit);
+
+        $bytes = (float)$size * pow($base, array_search($sourceUnit, FileSize::UNITS));
+
         if (null !== $targetUnit) {
-            $exponent = array_search($targetUnit, FileSize::UNITS);
-
-            if (false === $exponent) {
-                throw new \InvalidArgumentException(sprintf('Unit "%s" is not supported.', $targetUnit));
-            }
-
-            return new FileSize($bytes / pow($base, $exponent), $targetUnit);
+            return new FileSize($bytes / pow($base, array_search($targetUnit, FileSize::UNITS)), $targetUnit);
         }
 
-        $value = (float)$bytes;
+        $value = $bytes;
         $units = FileSize::UNITS;
 
         $currentUnit = reset($units);
@@ -50,5 +50,17 @@ class FileSizeConverter
         }
 
         return new FileSize($value, $currentUnit);
+    }
+
+    /**
+     * @param string|null $unit Unit to validate
+     *
+     * @throws \InvalidArgumentException
+     */
+    private static function validateUnit(?string $unit): void
+    {
+        if (null !== $unit && !in_array($unit, FileSize::UNITS)) {
+            throw new \InvalidArgumentException(sprintf('Unit "%s" is not supported.', $unit));
+        }
     }
 }
