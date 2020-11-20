@@ -22,6 +22,7 @@ class FileSizeConverter
      * @param int         $base       Base
      *
      * @return \Darvin\Utils\File\Size\FileSize
+     * @throws \InvalidArgumentException
      */
     public static function convert($size, ?string $targetUnit = null, string $sourceUnit = FileSize::UNIT_BYTE, int $base = 1024): FileSize
     {
