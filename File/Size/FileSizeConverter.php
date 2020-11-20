@@ -39,7 +39,7 @@ class FileSizeConverter
 
         $currentUnit = reset($units);
 
-        while ($value > $base) {
+        while ($value >= $base) {
             if (false === next($units)) {
                 break;
             }

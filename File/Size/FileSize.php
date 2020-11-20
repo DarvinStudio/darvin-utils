@@ -64,6 +64,14 @@ class FileSize
     }
 
     /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('%.2f %s', $this->value, $this->unit);
+    }
+
+    /**
      * @return float
      */
     public function getValue(): float
