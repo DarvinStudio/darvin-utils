@@ -15,24 +15,25 @@ namespace Darvin\Utils\File\Size;
  */
 class FileSizeConverter
 {
+    private const BASE = 1024;
+
     /**
      * @param mixed       $size       Size
      * @param string|null $targetUnit Target unit
      * @param string      $sourceUnit Source unit
-     * @param int         $base       Base
      *
      * @return \Darvin\Utils\File\Size\FileSize
      * @throws \InvalidArgumentException
      */
-    public static function convert($size, ?string $targetUnit = null, string $sourceUnit = FileSize::UNIT_BYTE, int $base = 1024): FileSize
+    public static function convert($size, ?string $targetUnit = null, string $sourceUnit = FileSize::UNIT_BYTE): FileSize
     {
         self::validateUnit($targetUnit);
         self::validateUnit($sourceUnit);
 
-        $bytes = (float)$size * pow($base, array_search($sourceUnit, FileSize::UNITS));
+        $bytes = (float)$size * pow(self::BASE, array_search($sourceUnit, FileSize::UNITS));
 
         if (null !== $targetUnit) {
-            return new FileSize($bytes / pow($base, array_search($targetUnit, FileSize::UNITS)), $targetUnit);
+            return new FileSize($bytes / pow(self::BASE, array_search($targetUnit, FileSize::UNITS)), $targetUnit);
         }
 
         $value = abs($bytes);
@@ -40,14 +41,14 @@ class FileSizeConverter
 
         $currentUnit = reset($units);
 
-        while ($value >= $base) {
+        while ($value >= self::BASE) {
             if (false === next($units)) {
                 break;
             }
 
             $currentUnit = current($units);
 
-            $value /= $base;
+            $value /= self::BASE;
         }
         if ($bytes < 0) {
             $value *= -1;
