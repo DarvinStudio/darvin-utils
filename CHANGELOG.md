@@ -113,3 +113,5 @@
 7.3.19: Add Varnish cache clear command.
 
 7.3.22: Add QueryBuilderUtil::findOrCreateJoin().
+
+7.3.25: Add file size converter.
