@@ -34,7 +34,7 @@ class FileSizeConverterTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        FileSizeConverter::convert(123, 'fgsdfdsf', FileSize::UNIT_BYTE);
+        FileSizeConverter::convert(123, 'fgsdfdsf');
     }
 
     public function testConvertSourceUnitInvalidException()
