@@ -36,7 +36,10 @@ class FileSizeConverterTest extends TestCase
     public function dataProviderConvert(): array
     {
         return [
-            [null, FileSize::UNIT_BYTE, FileSize::UNIT_BYTE, new FileSize(0.0, FileSize::UNIT_BYTE)],
+            [null, FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(0.0,          FileSize::UNIT_BYTE)],
+            [123,  FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(123.0,        FileSize::UNIT_BYTE)],
+            [1,    FileSize::UNIT_BYTE,     FileSize::UNIT_KILOBYTE, new FileSize(0.0009765625, FileSize::UNIT_KILOBYTE)],
+            [2,    FileSize::UNIT_MEGABYTE, FileSize::UNIT_KILOBYTE, new FileSize(2048.0,       FileSize::UNIT_KILOBYTE)],
         ];
     }
 }
