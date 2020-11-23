@@ -30,16 +30,32 @@ class FileSizeConverterTest extends TestCase
         $this->assertEquals($expected, FileSizeConverter::convert($size, $targetUnit, $sourceUnit));
     }
 
+    public function testConvertTargetUnitInvalidException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        FileSizeConverter::convert(123, 'fgsdfdsf', FileSize::UNIT_BYTE);
+    }
+
+    public function testConvertSourceUnitInvalidException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        FileSizeConverter::convert(123, FileSize::UNIT_BYTE, 'dsfsdf');
+    }
+
     /**
      * @return array
      */
     public function dataProviderConvert(): array
     {
         return [
-            [null, FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(0.0,          FileSize::UNIT_BYTE)],
-            [123,  FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(123.0,        FileSize::UNIT_BYTE)],
+            [2048, FileSize::UNIT_BYTE,     null,                    new FileSize(2.0,          FileSize::UNIT_KILOBYTE)],
+            [2048, FileSize::UNIT_KILOBYTE, null,                    new FileSize(2.0,          FileSize::UNIT_MEGABYTE)],
+            [123,  FileSize::UNIT_KILOBYTE, FileSize::UNIT_KILOBYTE, new FileSize(123.0,        FileSize::UNIT_KILOBYTE)],
             [1,    FileSize::UNIT_BYTE,     FileSize::UNIT_KILOBYTE, new FileSize(0.0009765625, FileSize::UNIT_KILOBYTE)],
             [2,    FileSize::UNIT_MEGABYTE, FileSize::UNIT_KILOBYTE, new FileSize(2048.0,       FileSize::UNIT_KILOBYTE)],
+            [null, FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(0.0,          FileSize::UNIT_BYTE)],
         ];
     }
 }
