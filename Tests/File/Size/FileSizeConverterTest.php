@@ -20,12 +20,12 @@ class FileSizeConverterTest extends TestCase
     /**
      * @dataProvider dataProviderConvert
      *
-     * @param \Darvin\Utils\File\Size\FileSize $expected   Expected
      * @param mixed                            $size       Size
-     * @param string|null                      $targetUnit Target unit
      * @param string                           $sourceUnit Source unit
+     * @param string|null                      $targetUnit Target unit
+     * @param \Darvin\Utils\File\Size\FileSize $expected   Expected
      */
-    public function testConvert(FileSize $expected, $size, ?string $targetUnit = null, string $sourceUnit = FileSize::UNIT_BYTE): void
+    public function testConvert($size, string $sourceUnit, ?string $targetUnit, FileSize $expected): void
     {
         $this->assertEquals($expected, FileSizeConverter::convert($size, $targetUnit, $sourceUnit));
     }
@@ -36,7 +36,7 @@ class FileSizeConverterTest extends TestCase
     public function dataProviderConvert(): array
     {
         return [
-            [new FileSize(0.0, FileSize::UNIT_BYTE), null],
+            [null, FileSize::UNIT_BYTE, FileSize::UNIT_BYTE, new FileSize(0.0, FileSize::UNIT_BYTE)],
         ];
     }
 }
