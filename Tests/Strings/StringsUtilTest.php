@@ -23,7 +23,7 @@ class StringsUtilTest extends TestCase
     public function testIsUppercase()
     {
         $positive = ['', 'TEST', 'ТЕСТ', 'ТЕСТ ТЕСТ', '!@#$%^&*', '123123123', ' ТЕСТ '];
-        $negative = [null, 123456789, -1234567890, 123.3366, 'test', 'тест', 'Тест', NAN];
+        $negative = [null, 'test', 'тест', 'Тест'];
 
         foreach ($positive as $item) {
             self::assertTrue(StringsUtil::isUppercase($item));
