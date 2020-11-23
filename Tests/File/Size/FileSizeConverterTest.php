@@ -57,6 +57,8 @@ class FileSizeConverterTest extends TestCase
             [2,                                       FileSize::UNIT_MEGABYTE, FileSize::UNIT_KILOBYTE, new FileSize(2048.0,            FileSize::UNIT_KILOBYTE)],
             [null,                                    FileSize::UNIT_BYTE,     FileSize::UNIT_BYTE,     new FileSize(0.0,               FileSize::UNIT_BYTE)],
             ['1231239018432509834958349058345809345', FileSize::UNIT_BYTE,     null,                    new FileSize(1018457045466.192, FileSize::UNIT_YOTTABYTE)],
+            [-2048,                                   FileSize::UNIT_BYTE,     null,                    new FileSize(-2.0,              FileSize::UNIT_KILOBYTE)],
+            [-2,                                      FileSize::UNIT_MEGABYTE, FileSize::UNIT_KILOBYTE, new FileSize(-2048.0,           FileSize::UNIT_KILOBYTE)],
         ];
     }
 }
