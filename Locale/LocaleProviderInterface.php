@@ -19,4 +19,9 @@ interface LocaleProviderInterface
      * @return string
      */
     public function getCurrentLocale(): string;
+
+    /**
+     * @return string
+     */
+    public function getDefaultLocale(): string;
 }

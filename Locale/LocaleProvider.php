@@ -46,4 +46,12 @@ class LocaleProvider implements LocaleProviderInterface
 
         return null !== $request ? $request->getLocale() : $this->defaultLocale;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDefaultLocale(): string
+    {
+        return $this->defaultLocale;
+    }
 }
