@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Metadata factory
@@ -36,7 +36,7 @@ interface MetadataFactoryInterface
     /**
      * @param object|string $objectOrClass Object or class
      *
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return \Doctrine\Persistence\Mapping\ClassMetadata
      * @throws \Darvin\Utils\Mapping\MappingException
      */
     public function getDoctrineMetadata($objectOrClass): ClassMetadata;

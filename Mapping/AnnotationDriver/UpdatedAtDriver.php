@@ -11,7 +11,7 @@
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\UpdatedAt;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Types;
 
 /**

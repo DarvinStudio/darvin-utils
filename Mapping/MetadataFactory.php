@@ -12,8 +12,8 @@ namespace Darvin\Utils\Mapping;
 
 use Darvin\Utils\Mapping\AnnotationDriver\AnnotationDriverInterface;
 use Darvin\Utils\Service\ServiceProviderInterface;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Common\Util\ClassUtils;
 
 /**
@@ -32,12 +32,12 @@ class MetadataFactory implements MetadataFactoryInterface
     private $annotationDrivers;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var \Doctrine\Persistence\ObjectManager
      */
     private $om;
 
     /**
-     * @var \Doctrine\Common\Persistence\Mapping\ClassMetadata[]
+     * @var \Doctrine\Persistence\Mapping\ClassMetadata[]
      */
     private $doctrineMeta;
 
@@ -136,7 +136,7 @@ class MetadataFactory implements MetadataFactoryInterface
         if (!isset($this->doctrineMeta[$class])) {
             try {
                 $this->doctrineMeta[$class] = $this->getObjectManager()->getClassMetadata($class);
-            } catch (\Doctrine\Common\Persistence\Mapping\MappingException $ex) {
+            } catch (\Doctrine\Persistence\Mapping\MappingException $ex) {
                 throw new MappingException(
                     sprintf('Unable to get Doctrine metadata for class "%s": %s.', $class, lcfirst($ex->getMessage()))
                 );
@@ -147,8 +147,8 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
-     * @param array                                              $extendedMeta Extended metadata
+     * @param \Doctrine\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
+     * @param array                                       $extendedMeta Extended metadata
      */
     private function readExtendedMetadata(ClassMetadata $doctrineMeta, array &$extendedMeta): void
     {
@@ -168,7 +168,7 @@ class MetadataFactory implements MetadataFactoryInterface
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\ObjectManager
+     * @return \Doctrine\Persistence\ObjectManager
      */
     private function getObjectManager(): ObjectManager
     {

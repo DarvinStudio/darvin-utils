@@ -10,7 +10,6 @@
 
 namespace Darvin\Utils\Strings;
 
-
 use PHPUnit\Framework\TestCase;
 
 /**

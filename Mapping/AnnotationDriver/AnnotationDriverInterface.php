@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Annotation driver
@@ -18,8 +18,8 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 interface AnnotationDriverInterface
 {
     /**
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
-     * @param array                                              $meta         Metadata
+     * @param \Doctrine\Persistence\Mapping\ClassMetadata $doctrineMeta Doctrine metadata
+     * @param array                                       $meta         Metadata
      */
     public function readMetadata(ClassMetadata $doctrineMeta, array &$meta): void;
 }

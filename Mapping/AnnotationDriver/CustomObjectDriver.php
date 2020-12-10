@@ -11,7 +11,7 @@
 namespace Darvin\Utils\Mapping\AnnotationDriver;
 
 use Darvin\Utils\Mapping\Annotation\CustomObject;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Custom object annotation driver

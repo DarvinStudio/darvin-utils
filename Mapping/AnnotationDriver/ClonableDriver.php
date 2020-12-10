@@ -13,7 +13,7 @@ namespace Darvin\Utils\Mapping\AnnotationDriver;
 use Darvin\Utils\Mapping\Annotation\Clonable\Clonable;
 use Darvin\Utils\Mapping\Annotation\Clonable\Copy;
 use Darvin\Utils\Mapping\Annotation\Clonable\Skip;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Clonable annotation driver

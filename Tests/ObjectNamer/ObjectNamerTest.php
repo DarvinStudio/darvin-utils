@@ -10,7 +10,6 @@
 
 namespace Darvin\Utils\ObjectNamer;
 
-
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\CssSelector\XPath\Translator;
 
