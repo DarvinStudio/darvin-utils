@@ -14,6 +14,7 @@ use Darvin\ContentBundle\Translatable\TranslatableManagerInterface;
 use Darvin\Utils\Override\Config\Model\Subject;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslationInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 
@@ -108,7 +109,7 @@ class EntityOverrider implements OverriderInterface
         $translatable = null;
         $translation  = null;
 
-        if ($this->translatableManager->isTranslation($fqcn)) {
+        if (is_a($fqcn, TranslationInterface::class, true)) {
             $translatable = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslatableClass($fqcn));
         }
         if (is_a($fqcn, TranslatableInterface::class, true)) {
