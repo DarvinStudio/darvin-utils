@@ -10,7 +10,6 @@
 
 namespace Darvin\Utils\Override\Overrider;
 
-use Darvin\ContentBundle\Translatable\TranslatableManagerInterface;
 use Darvin\Utils\Override\Config\Model\Subject;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
@@ -36,11 +35,6 @@ class EntityOverrider implements OverriderInterface
     private $filesystem;
 
     /**
-     * @var \Darvin\ContentBundle\Translatable\TranslatableManagerInterface
-     */
-    private $translatableManager;
-
-    /**
      * @var \Twig\Environment
      */
     private $twig;
@@ -56,24 +50,21 @@ class EntityOverrider implements OverriderInterface
     private $projectDir;
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface                            $em                  Entity manager
-     * @param \Symfony\Component\Filesystem\Filesystem                        $filesystem          Filesystem
-     * @param \Darvin\ContentBundle\Translatable\TranslatableManagerInterface $translatableManager Translatable manager
-     * @param \Twig\Environment                                               $twig                Twig
-     * @param array                                                           $bundlesMeta         Bundles metadata
-     * @param string                                                          $projectDir          Project directory
+     * @param \Doctrine\ORM\EntityManagerInterface     $em          Entity manager
+     * @param \Symfony\Component\Filesystem\Filesystem $filesystem  Filesystem
+     * @param \Twig\Environment                        $twig        Twig
+     * @param array                                    $bundlesMeta Bundles metadata
+     * @param string                                   $projectDir  Project directory
      */
     public function __construct(
         EntityManagerInterface $em,
         Filesystem $filesystem,
-        TranslatableManagerInterface $translatableManager,
         Environment $twig,
         array $bundlesMeta,
         string $projectDir
     ) {
         $this->em = $em;
         $this->filesystem = $filesystem;
-        $this->translatableManager = $translatableManager;
         $this->twig = $twig;
         $this->bundlesMeta = $bundlesMeta;
         $this->projectDir = $projectDir;
@@ -110,10 +101,12 @@ class EntityOverrider implements OverriderInterface
         $translation  = null;
 
         if (is_a($fqcn, TranslationInterface::class, true)) {
-            $translatable = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslatableClass($fqcn));
+            /** @var \Knp\DoctrineBehaviors\Contract\Entity\TranslationInterface $fqcn */
+            $translatable = preg_replace('/.*\\\\/', '', $fqcn::getTranslatableEntityClass());
         }
         if (is_a($fqcn, TranslatableInterface::class, true)) {
-            $translation = preg_replace('/.*\\\\/', '', $this->translatableManager->getTranslationClass($fqcn));
+            /** @var \Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface $fqcn */
+            $translation = preg_replace('/.*\\\\/', '', $fqcn::getTranslationEntityClass());
         }
 
         $this->renderFile(
@@ -146,7 +139,8 @@ class EntityOverrider implements OverriderInterface
             );
         }
         if (is_a($fqcn, TranslatableInterface::class, true)) {
-            $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $this->translatableManager->getTranslationClass($fqcn));
+            /** @var \Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface $fqcn */
+            $translationEntity = str_replace(sprintf('%s\\Entity\\', $bundleNamespace), '', $fqcn::getTranslationEntityClass());
 
             $this->overrideEntity($translationEntity, $bundleName, $bundleNamespace, $output);
         }
