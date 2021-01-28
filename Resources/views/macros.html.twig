@@ -95,55 +95,55 @@
 
 {% macro plain_property(name, title, value, trans_domain) %}
 
-    {% if value is not same as(null) and value is not same as('') and not (value is iterable and value is empty) %}
+    {%- if value is not same as(null) and value is not same as('') and not (value is iterable and value is empty) -%}
 
-        {% import _self as that %}
+        {%- import _self as that -%}
 
-        {% if trans_domain is defined %}
+        {%- if trans_domain is defined -%}
 
-            {% trans_default_domain trans_domain %}
+            {%- trans_default_domain trans_domain -%}
 
-        {% endif %}
+        {%- endif -%}
 
-        {% if name %}
+        {%- if name -%}
 
-            {% if value is iterable %}
-                {{ (title ~ '.title')|trans }}
-            {% else %}
-                {{ title|trans }}
-            {% endif %}
+            {%- if value is iterable -%}
+                {{- (title ~ '.title')|trans -}}
+            {%- else -%}
+                {{- title|trans -}}
+            {%- endif -%}
 
-        {% endif %}
+        {%- endif -%}
 
-        {% if value is iterable %}
+        {%- if value is iterable -%}
 
-            {% set keys = value|keys %}
+            {%- set keys = value|keys -%}
 
-            {% if keys is same as(keys|keys) %}
+            {%- if keys is same as(keys|keys) -%}
 
-                {% for item_name, item_value in value %}
+                {%- for item_name, item_value in value -%}
 
-                    {{ that.div_property(null, title, item_value, trans_domain) }}
+                    {{- that.div_property(null, title, item_value, trans_domain) -}}
 
-                {% endfor %}
+                {%- endfor -%}
 
-            {% else %}
+            {%- else -%}
 
-                {% for item_name, item_value in value %}
+                {%- for item_name, item_value in value -%}
 
-                    {{ that.div_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) }}
+                    {{- that.div_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) -}}
 
-                {% endfor %}
+                {%- endfor -%}
 
-            {% endif %}
+            {%- endif -%}
 
-        {% elseif value is same as(true) or value is same as(false) %}
-            {{ ('boolean.' ~ (value ? 'yes' : 'no'))|trans }}
-        {% else %}
-            {{ value|trans|raw }}
-        {% endif %}
+        {%- elseif value is same as(true) or value is same as(false) -%}
+            {{- ('boolean.' ~ (value ? 'yes' : 'no'))|trans -}}
+        {%- else -%}
+            {{- value|trans|raw -}}
+        {%- endif -%}
 
-    {% endif %}
+    {%- endif -%}
 
 {% endmacro %}
 
