@@ -9,13 +9,13 @@
 
 {% macro plain_data(data, trans_prefix, trans_domain) %}
 
-    {% import _self as that %}
+    {%- import _self as that -%}
 
-    {% for name, value in data %}
+    {%- for name, value in data -%}
 
-        {{ that.plain_property(name, trans_prefix ~ name, value, trans_domain) }}
+        {{- that.plain_property(name, trans_prefix ~ name, value, trans_domain) -}}
 
-    {% endfor %}
+    {%- endfor -%}
 
 {% endmacro %}
 
