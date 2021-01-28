@@ -11,11 +11,11 @@
 
     {%- import _self as that -%}
 
-    {%- for name, value in data -%}
+    {% for name, value in data %}
 
-        {{- that.plain_property(name, trans_prefix ~ name, value, trans_domain) -}}
+{{ that.plain_property(name, trans_prefix ~ name, value, trans_domain) -}}
 
-    {%- endfor -%}
+    {% endfor %}
 
 {% endmacro %}
 
@@ -113,6 +113,8 @@
                 {{- title|trans -}}
             {%- endif -%}
 
+            {{- ' - ' -}}
+
         {%- endif -%}
 
         {%- if value is iterable -%}
@@ -123,7 +125,11 @@
 
                 {%- for item_name, item_value in value -%}
 
-                    {{- that.div_property(null, title, item_value, trans_domain) -}}
+                    {{- that.plain_property(null, title, item_value, trans_domain) -}}
+
+                    {%- if not loop.last -%}
+                        {{- ', ' -}}
+                    {%- endif -%}
 
                 {%- endfor -%}
 
@@ -131,7 +137,11 @@
 
                 {%- for item_name, item_value in value -%}
 
-                    {{- that.div_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) -}}
+                    {{- that.plain_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) -}}
+
+                    {%- if not loop.last -%}
+                        {{- ', ' -}}
+                    {%- endif -%}
 
                 {%- endfor -%}
 
@@ -140,7 +150,7 @@
         {%- elseif value is same as(true) or value is same as(false) -%}
             {{- ('boolean.' ~ (value ? 'yes' : 'no'))|trans -}}
         {%- else -%}
-            {{- value|trans|raw -}}
+            {{- value|trans|striptags -}}
         {%- endif -%}
 
     {%- endif -%}

@@ -117,3 +117,5 @@
 7.3.25: Add file size converter.
 
 7.3.28: Add LocaleProviderInterface::getDefaultLocale().
+
+7.3.30: Add plain_data() macro.
