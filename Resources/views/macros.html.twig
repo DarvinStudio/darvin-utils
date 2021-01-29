@@ -11,11 +11,17 @@
 
     {%- import _self as that -%}
 
-    {% for name, value in data %}
+    {%- for name, value in data -%}
 
-{{ that.plain_property(name, trans_prefix ~ name, value, trans_domain) -}}
+        {%- set property = that.plain_property(name, trans_prefix ~ name, value, trans_domain)|trim -%}
 
-    {% endfor %}
+        {%- if property is not same as('') %}
+
+{{ property -}}
+
+        {%- endif -%}
+
+    {%- endfor -%}
 
 {% endmacro %}
 
