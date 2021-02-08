@@ -91,6 +91,11 @@
                        style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
                         {{ value }}
                     </a>
+                {% elseif '://' in value %}
+                    <a href="{{ value }}"
+                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                        {{ value }}
+                    </a>
                 {% else %}
                     {{ value|trans|raw }}
                 {% endif %}
@@ -209,6 +214,11 @@
                     </a>
                 {% elseif 'phone' in name|lower %}
                     <a href="tel:{{ value }}"
+                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                        {{ value }}
+                    </a>
+                {% elseif '://' in value %}
+                    <a href="{{ value }}"
                        style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
                         {{ value }}
                     </a>
