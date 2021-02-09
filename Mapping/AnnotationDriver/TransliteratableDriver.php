@@ -30,15 +30,6 @@ class TransliteratableDriver extends AbstractDriver
             $transliteratableAnnotation = $this->reader->getPropertyAnnotation($reflectionProperty, Transliteratable::class);
 
             if ($transliteratableAnnotation instanceof Transliteratable) {
-                if (!$doctrineMeta->hasField($reflectionProperty->getName())) {
-                    throw $this->createPropertyAnnotationInvalidException(
-                        Transliteratable::class,
-                        $doctrineMeta->getName(),
-                        $reflectionProperty->getName(),
-                        'property must be mapped field'
-                    );
-                }
-
                 $meta['transliteratable'][$reflectionProperty->getName()] = get_object_vars(
                     $transliteratableAnnotation
                 );

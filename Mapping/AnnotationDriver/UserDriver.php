@@ -44,14 +44,6 @@ class UserDriver extends AbstractDriver
                     sprintf('property "%s" is already annotated with this annotation', $meta['user']['property'])
                 );
             }
-            if (!$doctrineMeta->hasAssociation($property->getName())) {
-                throw $this->createPropertyAnnotationInvalidException(
-                    User::class,
-                    $doctrineMeta->getName(),
-                    $property->getName(),
-                    'property must be mapped association'
-                );
-            }
 
             $meta['user'] = [
                 'property' => $property->getName(),

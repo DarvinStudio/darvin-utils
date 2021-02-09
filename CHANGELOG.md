@@ -121,3 +121,5 @@
 7.3.30: Add plain_data() macro.
 
 7.3.32: Render links in property macros.
+
+7.3.33: Remove some checks from annotation drivers to support mapped superclasses.

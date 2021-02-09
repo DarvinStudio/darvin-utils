@@ -44,14 +44,6 @@ class NewObjectFlagDriver extends AbstractDriver
                     sprintf('property "%s" is already marked as new object flag', $meta['newObjectFlag']['property'])
                 );
             }
-            if (!$doctrineMeta->hasField($property)) {
-                throw $this->createPropertyAnnotationInvalidException(
-                    NewObjectFlag::class,
-                    $class,
-                    $property,
-                    'property must be mapped field'
-                );
-            }
 
             $meta['newObjectFlag'] = array_merge(get_object_vars($annotation), [
                 'property' => $property,
