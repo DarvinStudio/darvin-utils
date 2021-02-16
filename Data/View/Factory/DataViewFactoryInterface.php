@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\View\Data\Factory;
+namespace Darvin\Utils\Data\View\Factory;
 
-use Darvin\Utils\View\Data\Model\DataView;
+use Darvin\Utils\Data\View\Model\DataView;
 
 /**
  * Data view factory
@@ -21,7 +21,7 @@ interface DataViewFactoryInterface
      * @param mixed       $data Data
      * @param string|null $name Name
      *
-     * @return \Darvin\Utils\View\Data\Model\DataView
+     * @return \Darvin\Utils\Data\View\Model\DataView
      */
     public function createView($data, ?string $name = null): DataView;
 }

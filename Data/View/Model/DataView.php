@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\View\Data\Model;
+namespace Darvin\Utils\Data\View\Model;
 
 /**
  * Data view

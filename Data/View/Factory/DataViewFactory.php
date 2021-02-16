@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Darvin\Utils\View\Data\Factory;
+namespace Darvin\Utils\Data\View\Factory;
 
+use Darvin\Utils\Data\View\Model\DataView;
 use Darvin\Utils\Strings\Stringifier\StringifierInterface;
-use Darvin\Utils\View\Data\Model\DataView;
 
 /**
  * Data view factory
@@ -42,9 +42,9 @@ class DataViewFactory implements DataViewFactoryInterface
     /**
      * @param mixed                                       $data   Data
      * @param string|null                                 $name   Name
-     * @param \Darvin\Utils\View\Data\Model\DataView|null $parent Parent
+     * @param \Darvin\Utils\Data\View\Model\DataView|null $parent Parent
      *
-     * @return \Darvin\Utils\View\Data\Model\DataView
+     * @return \Darvin\Utils\Data\View\Model\DataView
      */
     private function buildView($data, ?string $name, ?DataView $parent = null): DataView
     {
@@ -71,7 +71,7 @@ class DataViewFactory implements DataViewFactoryInterface
 
     /**
      * @param string                                 $key    Child key
-     * @param \Darvin\Utils\View\Data\Model\DataView $parent Parent
+     * @param \Darvin\Utils\Data\View\Model\DataView $parent Parent
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class DataViewFactory implements DataViewFactoryInterface
     }
 
     /**
-     * @param \Darvin\Utils\View\Data\Model\DataView $view View
+     * @param \Darvin\Utils\Data\View\Model\DataView $view View
      *
      * @return string|null
      */
