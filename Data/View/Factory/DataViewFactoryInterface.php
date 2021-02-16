@@ -18,10 +18,11 @@ use Darvin\Utils\Data\View\Model\DataView;
 interface DataViewFactoryInterface
 {
     /**
-     * @param mixed       $data Data
-     * @param string|null $name Name
+     * @param mixed       $data        Data
+     * @param string|null $name        Name
+     * @param string|null $transDomain Translation domain
      *
      * @return \Darvin\Utils\Data\View\Model\DataView
      */
-    public function createView($data, ?string $name = null): DataView;
+    public function createView($data, ?string $name = null, ?string $transDomain = null): DataView;
 }

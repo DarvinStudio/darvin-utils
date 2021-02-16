@@ -12,6 +12,7 @@ namespace Darvin\Utils\Data\View\Factory;
 
 use Darvin\Utils\Data\View\Model\DataView;
 use Darvin\Utils\Strings\Stringifier\StringifierInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Data view factory
@@ -24,29 +25,37 @@ class DataViewFactory implements DataViewFactoryInterface
     private $stringifier;
 
     /**
-     * @param \Darvin\Utils\Strings\Stringifier\StringifierInterface $stringifier Stringifier
+     * @var \Symfony\Contracts\Translation\TranslatorInterface
      */
-    public function __construct(StringifierInterface $stringifier)
+    private $translator;
+
+    /**
+     * @param \Darvin\Utils\Strings\Stringifier\StringifierInterface $stringifier Stringifier
+     * @param \Symfony\Contracts\Translation\TranslatorInterface     $translator  Translator
+     */
+    public function __construct(StringifierInterface $stringifier, TranslatorInterface $translator)
     {
         $this->stringifier = $stringifier;
+        $this->translator = $translator;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function createView($data, ?string $name = null): DataView
+    public function createView($data, ?string $name = null, ?string $transDomain = null): DataView
     {
-        return $this->buildView($data, $name);
+        return $this->buildView($data, $name, $transDomain);
     }
 
     /**
-     * @param mixed                                       $data   Data
-     * @param string|null                                 $name   Name
-     * @param \Darvin\Utils\Data\View\Model\DataView|null $parent Parent
+     * @param mixed                                       $data        Data
+     * @param string|null                                 $name        Name
+     * @param string|null                                 $transDomain Translation domain
+     * @param \Darvin\Utils\Data\View\Model\DataView|null $parent      Parent
      *
      * @return \Darvin\Utils\Data\View\Model\DataView
      */
-    private function buildView($data, ?string $name, ?DataView $parent = null): DataView
+    private function buildView($data, ?string $name, ?string $transDomain, ?DataView $parent = null): DataView
     {
         $name = $this->prepareName($name);
         $view = new DataView($parent);
@@ -61,11 +70,17 @@ class DataViewFactory implements DataViewFactoryInterface
             $view->setAssociated(array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
-                $view->addChild($this->buildView($value, $this->nameChild((string)$key, $view, $name), $view));
+                $view->addChild($this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $view));
             }
         }
 
-        $view->setTitle($this->buildTitle($view, $name));
+        $title = $this->buildTitle($view, $name);
+
+        if (null !== $title && null !== $transDomain) {
+            $title = $this->translator->trans($title, [], $transDomain);
+        }
+
+        $view->setTitle($title);
 
         return $view;
     }
