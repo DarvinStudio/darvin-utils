@@ -53,7 +53,7 @@
             {% if name %}
                 <span class="details-list__property-name"
                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
-                    {% if value is iterable %}
+                    {% if value is iterable and '.' not in title %}
                         {{ (title ~ '.title')|trans }}
                     {% else %}
                         {{ title|trans }}
@@ -75,7 +75,7 @@
                     {% else %}
                         <ul>
                             {% for item_name, item_value in value %}
-                                <li>{{ that.div_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) }}</li>
+                                <li>{{ that.div_property(item_name, '.' in item_name ? item_name : (title ~ '.item.' ~ item_name), item_value, trans_domain) }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -118,7 +118,7 @@
 
         {%- if name -%}
 
-            {%- if value is iterable -%}
+            {%- if value is iterable and '.' not in title -%}
                 {{- (title ~ '.title')|trans -}}
             {%- else -%}
                 {{- title|trans -}}
@@ -148,7 +148,7 @@
 
                 {%- for item_name, item_value in value -%}
 
-                    {{- that.plain_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) -}}
+                    {{- that.plain_property(item_name, '.' in item_name ? item_name : (title ~ '.item.' ~ item_name), item_value, trans_domain) -}}
 
                     {%- if not loop.last -%}
                         {{- ', ' -}}
@@ -182,7 +182,7 @@
         <tr>
             {% if name %}
                 <th>
-                    {% if value is iterable %}
+                    {% if value is iterable and '.' not in title %}
                         {{ (title ~ '.title')|trans }}
                     {% else %}
                         {{ title|trans }}
@@ -201,7 +201,7 @@
                             {% endfor %}
                         {% else %}
                             {% for item_name, item_value in value %}
-                                {{ that.table_property(item_name, title ~ '.item.' ~ item_name, item_value, trans_domain) }}
+                                {{ that.table_property(item_name, '.' in item_name ? item_name : (title ~ '.item.' ~ item_name), item_value, trans_domain) }}
                             {% endfor %}
                         {% endif %}
                     </table>
