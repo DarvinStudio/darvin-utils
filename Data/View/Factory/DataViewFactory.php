@@ -48,7 +48,8 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildView($data, ?string $name, ?DataView $parent = null): DataView
     {
-        $view = new DataView($this->prepareName($name), $parent);
+        $name = $this->prepareName($name);
+        $view = new DataView($parent);
 
         if (!is_iterable($data)) {
             $view->setValue($this->stringifier->stringify($data));
@@ -60,27 +61,28 @@ class DataViewFactory implements DataViewFactoryInterface
             $view->setAssociated(array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
-                $view->addChild($this->buildView($value, $this->nameChild((string)$key, $view), $view));
+                $view->addChild($this->buildView($value, $this->nameChild((string)$key, $view, $name), $view));
             }
         }
 
-        $view->setTitle($this->buildViewTitle($view));
+        $view->setTitle($this->buildViewTitle($view, $name));
 
         return $view;
     }
 
     /**
-     * @param string                                 $key    Child key
-     * @param \Darvin\Utils\Data\View\Model\DataView $parent Parent
+     * @param string                                 $key        Child key
+     * @param \Darvin\Utils\Data\View\Model\DataView $parent     Parent
+     * @param string|null                            $parentName Parent name
      *
      * @return string
      */
-    private function nameChild(string $key, DataView $parent): string
+    private function nameChild(string $key, DataView $parent, ?string $parentName): string
     {
         $parts = [];
 
-        if (null !== $parent->getName()) {
-            $parts[] = $parent->getName();
+        if (null !== $parentName) {
+            $parts[] = $parentName;
         }
         if ($parent->isAssociated()) {
             if ($parent->hasParent()) {
@@ -95,19 +97,20 @@ class DataViewFactory implements DataViewFactoryInterface
 
     /**
      * @param \Darvin\Utils\Data\View\Model\DataView $view View
+     * @param string|null                            $name Name
      *
      * @return string|null
      */
-    private function buildViewTitle(DataView $view): ?string
+    private function buildViewTitle(DataView $view, ?string $name): ?string
     {
-        if (null === $view->getName() || !$view->hasParent() || !$view->getParent()->isAssociated()) {
+        if (null === $name || !$view->hasParent() || !$view->getParent()->isAssociated()) {
             return null;
         }
         if (!$view->hasChildren()) {
-            return $view->getName();
+            return $name;
         }
 
-        return implode('.', [$view->getName(), 'title']);
+        return implode('.', [$name, 'title']);
     }
 
     /**
