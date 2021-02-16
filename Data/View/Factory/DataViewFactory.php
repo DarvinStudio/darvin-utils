@@ -65,7 +65,7 @@ class DataViewFactory implements DataViewFactoryInterface
             }
         }
 
-        $view->setTitle($this->buildViewTitle($view, $name));
+        $view->setTitle($this->buildTitle($view, $name));
 
         return $view;
     }
@@ -101,7 +101,7 @@ class DataViewFactory implements DataViewFactoryInterface
      *
      * @return string|null
      */
-    private function buildViewTitle(DataView $view, ?string $name): ?string
+    private function buildTitle(DataView $view, ?string $name): ?string
     {
         if (null === $name || !$view->hasParent() || !$view->getParent()->isAssociated()) {
             return null;
