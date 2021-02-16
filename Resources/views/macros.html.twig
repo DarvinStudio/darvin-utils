@@ -3,7 +3,7 @@
     {% import _self as that %}
 
     {% for name, value in data %}
-        {{ that.div_property(name, trans_prefix ~ name, value, trans_domain) }}
+        {{ that.div_property(name, '.' in name ? name : (trans_prefix ~ name), value, trans_domain) }}
     {% endfor %}
 {% endmacro %}
 
@@ -13,7 +13,7 @@
 
     {%- for name, value in data -%}
 
-        {%- set property = that.plain_property(name, trans_prefix ~ name, value, trans_domain)|trim -%}
+        {%- set property = that.plain_property(name, '.' in name ? name : (trans_prefix ~ name), value, trans_domain)|trim -%}
 
         {%- if property is not same as('') %}
 
@@ -32,7 +32,7 @@
     {% if data is not empty %}
         <table>
             {% for name, value in data %}
-                {{ that.table_property(name, trans_prefix ~ name, value, trans_domain) }}
+                {{ that.table_property(name, '.' in name ? name : (trans_prefix ~ name), value, trans_domain) }}
             {% endfor %}
         </table>
     {% endif %}

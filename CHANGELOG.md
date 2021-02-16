@@ -123,3 +123,5 @@
 7.3.32: Render links in property macros.
 
 7.3.33: Remove some checks from annotation drivers to support mapped superclasses.
+
+7.3.34: Data macros: support translation IDs in data keys.
