@@ -53,7 +53,7 @@
             {% if name %}
                 <span class="details-list__property-name"
                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
-                    {% if value is iterable and '.' not in title %}
+                    {% if value is iterable and '.' not in name %}
                         {{ (title ~ '.title')|trans }}
                     {% else %}
                         {{ title|trans }}
@@ -118,7 +118,7 @@
 
         {%- if name -%}
 
-            {%- if value is iterable and '.' not in title -%}
+            {%- if value is iterable and '.' not in name -%}
                 {{- (title ~ '.title')|trans -}}
             {%- else -%}
                 {{- title|trans -}}
@@ -182,7 +182,7 @@
         <tr>
             {% if name %}
                 <th>
-                    {% if value is iterable and '.' not in title %}
+                    {% if value is iterable and '.' not in name %}
                         {{ (title ~ '.title')|trans }}
                     {% else %}
                         {{ title|trans }}
