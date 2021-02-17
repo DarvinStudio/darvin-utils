@@ -67,14 +67,6 @@ class DataView
     /**
      * @return bool
      */
-    public function hasParent(): bool
-    {
-        return null !== $this->parent;
-    }
-
-    /**
-     * @return bool
-     */
     public function hasTitle(): bool
     {
         return null !== $this->title;

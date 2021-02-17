@@ -111,7 +111,7 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildTitle(DataView $view, ?string $name): ?string
     {
-        if (null === $name || !$view->hasParent() || !$view->getParent()->isAssociative()) {
+        if (null === $name || null === $view->getParent() || !$view->getParent()->isAssociative()) {
             return null;
         }
         if (!$view->hasChildren()) {
@@ -164,7 +164,7 @@ class DataViewFactory implements DataViewFactoryInterface
             $parts[] = $parentName;
         }
         if ($parent->isAssociative()) {
-            if ($parent->hasParent()) {
+            if (null !== $parent->getParent()) {
                 $parts[] = 'item';
             }
 
