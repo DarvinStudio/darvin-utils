@@ -21,8 +21,9 @@ interface DataViewFactoryInterface
      * @param mixed       $data        Data
      * @param string|null $name        Name
      * @param string|null $transDomain Translation domain
+     * @param bool        $allowEmpty  Whether to allow empty view
      *
      * @return \Darvin\Utils\Data\View\Model\DataView|null
      */
-    public function createView($data, ?string $name = null, ?string $transDomain = null): ?DataView;
+    public function createView($data, ?string $name = null, ?string $transDomain = null, bool $allowEmpty = false): ?DataView;
 }

@@ -42,11 +42,11 @@ class DataViewFactory implements DataViewFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createView($data, ?string $name = null, ?string $transDomain = null): ?DataView
+    public function createView($data, ?string $name = null, ?string $transDomain = null, bool $allowEmpty = false): ?DataView
     {
-        $view = $this->buildView($data, $this->trimName($name), $transDomain);
+        $view = $this->buildView($data, $this->trimName($name), $transDomain, $allowEmpty);
 
-        if (!$this->isEmpty($view)) {
+        if ($allowEmpty || !$this->isEmpty($view)) {
             return $view;
         }
 
@@ -57,11 +57,12 @@ class DataViewFactory implements DataViewFactoryInterface
      * @param mixed                                       $data        Data
      * @param string|null                                 $name        Name
      * @param string|null                                 $transDomain Translation domain
+     * @param bool                                        $allowEmpty  Whether to allow empty view
      * @param \Darvin\Utils\Data\View\Model\DataView|null $parent      Parent
      *
      * @return \Darvin\Utils\Data\View\Model\DataView
      */
-    private function buildView($data, ?string $name, ?string $transDomain, ?DataView $parent = null): DataView
+    private function buildView($data, ?string $name, ?string $transDomain, bool $allowEmpty, ?DataView $parent = null): DataView
     {
         $view = new DataView($parent);
 
@@ -87,12 +88,12 @@ class DataViewFactory implements DataViewFactoryInterface
                 $data = iterator_to_array($data);
             }
 
-            $view->setAssociative(array_keys($data) !== range(0, count($data) - 1));
+            $view->setAssociative(!empty($data) && array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
-                $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $view);
+                $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $allowEmpty, $view);
 
-                if (!$this->isEmpty($child)) {
+                if ($allowEmpty || !$this->isEmpty($child)) {
                     $view->addChild($child);
                 }
             }
