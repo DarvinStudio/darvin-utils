@@ -38,15 +38,18 @@ class ViewExtension extends AbstractExtension
      */
     public function getFunctions(): array
     {
-        $options = [
-            'needs_environment' => true,
-            'is_safe'           => ['html'],
-        ];
-
         return [
-            new TwigFunction('utils_data_block', [$this, 'renderBlock'], $options),
-            new TwigFunction('utils_data_table', [$this, 'renderTable'], $options),
-            new TwigFunction('utils_data_text', [$this, 'renderText'], $options),
+            new TwigFunction('utils_data_block', [$this, 'renderBlock'], [
+                'needs_environment' => true,
+                'is_safe'           => ['html'],
+            ]),
+            new TwigFunction('utils_data_table', [$this, 'renderTable'], [
+                'needs_environment' => true,
+                'is_safe'           => ['html'],
+            ]),
+            new TwigFunction('utils_data_text', [$this, 'renderText'], [
+                'needs_environment' => true,
+            ]),
         ];
     }
 
@@ -60,9 +63,7 @@ class ViewExtension extends AbstractExtension
      */
     public function renderBlock(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
     {
-        return $twig->render('@DarvinUtils/data/view/block.html.twig', [
-            'view' => $this->factory->createView($data, $name, $transDomain),
-        ]);
+        return $this->render($twig, $data, $name, $transDomain, '@DarvinUtils/data/view/block.html.twig');
     }
 
     /**
@@ -75,9 +76,7 @@ class ViewExtension extends AbstractExtension
      */
     public function renderTable(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
     {
-        return $twig->render('@DarvinUtils/data/view/table.html.twig', [
-            'view' => $this->factory->createView($data, $name, $transDomain),
-        ]);
+        return $this->render($twig, $data, $name, $transDomain, '@DarvinUtils/data/view/table.html.twig');
     }
 
     /**
@@ -90,7 +89,21 @@ class ViewExtension extends AbstractExtension
      */
     public function renderText(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
     {
-        return $twig->render('@DarvinUtils/data/view/text.txt.twig', [
+        return $this->render($twig, $data, $name, $transDomain, '@DarvinUtils/data/view/text.txt.twig');
+    }
+
+    /**
+     * @param \Twig\Environment $twig        Twig
+     * @param mixed             $data        Data
+     * @param string|null       $name        Name
+     * @param string|null       $transDomain Translation domain
+     * @param string            $template    Template
+     *
+     * @return string
+     */
+    private function render(Environment $twig, $data, ?string $name, ?string $transDomain, string $template): string
+    {
+        return $twig->render($template, [
             'view' => $this->factory->createView($data, $name, $transDomain),
         ]);
     }
