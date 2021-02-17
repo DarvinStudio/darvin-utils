@@ -60,7 +60,7 @@ class DataViewFactory implements DataViewFactoryInterface
         $view = new DataView($parent);
 
         if (!is_iterable($data)) {
-            $view->setValue($this->stringifier->stringify($data));
+            $view->setValue($this->translate($this->stringifier->stringify($data), $transDomain));
         } else {
             if (!is_array($data)) {
                 $data = iterator_to_array($data);
@@ -73,13 +73,7 @@ class DataViewFactory implements DataViewFactoryInterface
             }
         }
 
-        $title = $this->buildTitle($view, $name);
-
-        if (null !== $title && null !== $transDomain) {
-            $title = $this->translator->trans($title, [], $transDomain);
-        }
-
-        $view->setTitle($title);
+        $view->setTitle($this->translate($this->buildTitle($view, $name), $transDomain));
 
         return $view;
     }
@@ -153,5 +147,23 @@ class DataViewFactory implements DataViewFactoryInterface
         }
 
         return rtrim($name, '.');
+    }
+
+    /**
+     * @param string|null $id     Translation ID
+     * @param string|null $domain Translation domain
+     *
+     * @return string|null
+     */
+    private function translate(?string $id, ?string $domain): ?string
+    {
+        if (null === $id) {
+            return null;
+        }
+        if (null === $domain) {
+            return $id;
+        }
+
+        return $this->translator->trans($id, [], $domain);
     }
 }
