@@ -44,7 +44,7 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     public function createView($data, ?string $name = null, ?string $transDomain = null): DataView
     {
-        return $this->buildView($data, $name, $transDomain);
+        return $this->buildView($data, $this->prepareName($name), $transDomain);
     }
 
     /**
@@ -57,7 +57,6 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildView($data, ?string $name, ?string $transDomain, ?DataView $parent = null): DataView
     {
-        $name = $this->prepareName($name);
         $view = new DataView($parent);
 
         if (!is_iterable($data)) {
@@ -94,6 +93,10 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function nameChild(string $key, DataView $parent, ?string $parentName): string
     {
+        if ($this->isTranslationId($key)) {
+            return $key;
+        }
+
         $parts = [];
 
         if (null !== $parentName) {
@@ -126,6 +129,16 @@ class DataViewFactory implements DataViewFactoryInterface
         }
 
         return implode('.', [$name, 'title']);
+    }
+
+    /**
+     * @param string $text Text
+     *
+     * @return bool
+     */
+    private function isTranslationId(string $text): bool
+    {
+        return false !== strpos($text, '.');
     }
 
     /**
