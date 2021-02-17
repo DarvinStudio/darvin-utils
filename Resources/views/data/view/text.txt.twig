@@ -1,4 +1,4 @@
-{%- macro text(view, inline = true) -%}
+{%- macro text(view, level = 0) -%}
 
     {%- if view.hasTitle -%}
         {{- view.title ~ ': ' -}}
@@ -10,27 +10,11 @@
 
         {%- if view.hasChildren -%}
 
-            {%- if inline -%}
+            {%- for child in view.children %}
 
-                {%- for child in view.children %}
+{% if level > 0 %}{% for i in 1..level %}{{ '    ' }}{% endfor %}{% endif %}{{ _self.text(child, level + 1) -}}
 
-                    {{- _self.text(child) -}}
-
-                    {%- if not loop.last -%}
-                        {{- ', ' -}}
-                    {%- endif -%}
-
-                {%- endfor -%}
-
-            {%- else -%}
-
-                {%- for child in view.children %}
-
-{{ _self.text(child) -}}
-
-                {%- endfor -%}
-
-            {%- endif -%}
+            {%- endfor -%}
 
         {%- endif -%}
 
@@ -44,6 +28,6 @@
 
 {%- if view -%}
 
-    {{- _self.text(view, false) -}}
+    {{- _self.text(view) -}}
 
 {%- endif -%}
