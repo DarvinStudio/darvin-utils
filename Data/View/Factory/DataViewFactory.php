@@ -62,14 +62,17 @@ class DataViewFactory implements DataViewFactoryInterface
         if (!is_iterable($data)) {
             $value = $this->stringifier->stringify($data);
 
-            $url = $this->buildUrl($value, $name);
+            if ('' !== $value) {
+                $url = $this->buildUrl($value, $name);
 
-            if (null === $url) {
-                $value = $this->translate($value, $transDomain);
+                if (null === $url) {
+                    $value = $this->translate($value, $transDomain);
+                }
+
+                $view->setUrl($url);
             }
 
             $view->setValue($value);
-            $view->setUrl($url);
         } else {
             if (!is_array($data)) {
                 $data = iterator_to_array($data);
@@ -113,9 +116,6 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildUrl(string $value, ?string $name): ?string
     {
-        if ('' === $value) {
-            return null;
-        }
         if (false !== strpos($value, '://')) {
             return $value;
         }
@@ -141,8 +141,6 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function nameChild(string $key, DataView $parent, ?string $parentName): string
     {
-        $key = mb_strtolower($key);
-
         if ($this->isTranslationId($key)) {
             return $key;
         }
