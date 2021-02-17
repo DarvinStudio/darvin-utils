@@ -16,6 +16,11 @@ namespace Darvin\Utils\Data\View\Model;
 class DataView
 {
     /**
+     * @var string|null
+     */
+    private $name;
+
+    /**
      * @var DataView|null
      */
     private $parent;
@@ -46,10 +51,12 @@ class DataView
     private $url;
 
     /**
+     * @param string|null   $name   Name
      * @param DataView|null $parent Parent
      */
-    public function __construct(?DataView $parent)
+    public function __construct(?string $name, ?DataView $parent)
     {
+        $this->name = $name;
         $this->parent = $parent;
 
         $this->children = [];
@@ -94,6 +101,14 @@ class DataView
     public function hasValue(): bool
     {
         return null !== $this->value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
     }
 
     /**

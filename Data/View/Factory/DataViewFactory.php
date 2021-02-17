@@ -64,7 +64,9 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildView($data, ?string $name, ?string $transDomain, bool $allowEmpty, ?DataView $parent = null): DataView
     {
-        $view = new DataView($parent);
+        $normalizedName = $this->normalizeName($name);
+
+        $view = new DataView($normalizedName, $parent);
 
         if (!is_iterable($data)) {
             $value = $this->stringifier->stringify($data);
@@ -73,7 +75,7 @@ class DataViewFactory implements DataViewFactoryInterface
                 $value = null;
             }
             if (null !== $value) {
-                $url = $this->buildUrl($value, $name);
+                $url = $this->buildUrl($value, $normalizedName);
 
                 if (null === $url) {
                     $value = $this->translate($value, $transDomain);
@@ -123,20 +125,17 @@ class DataViewFactory implements DataViewFactoryInterface
     }
 
     /**
-     * @param string      $value Value
-     * @param string|null $name  Name
+     * @param string      $value          Value
+     * @param string|null $normalizedName Normalized name
      *
      * @return string|null
      */
-    private function buildUrl(string $value, ?string $name): ?string
+    private function buildUrl(string $value, ?string $normalizedName): ?string
     {
         if (false !== strpos($value, '://')) {
             return $value;
         }
-
-        $suffix = preg_replace('/^.*\./', '', $name);
-
-        switch ($suffix) {
+        switch ($normalizedName) {
             case 'email':
                 return sprintf('mailto:%s', $value);
             case 'phone':
@@ -183,6 +182,20 @@ class DataViewFactory implements DataViewFactoryInterface
     private function isTranslationId(string $text): bool
     {
         return false !== strpos($text, '.');
+    }
+
+    /**
+     * @param string|null $name Name
+     *
+     * @return string|null
+     */
+    private function normalizeName(?string $name): ?string
+    {
+        if (null === $name) {
+            return null;
+        }
+
+        return preg_replace('/^.*\./', '', $name);
     }
 
     /**
