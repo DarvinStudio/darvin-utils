@@ -44,7 +44,7 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     public function createView($data, ?string $name = null, ?string $transDomain = null): DataView
     {
-        return $this->buildView($data, $this->prepareName($name), $transDomain);
+        return $this->buildView($data, $this->trimName($name), $transDomain);
     }
 
     /**
@@ -60,7 +60,16 @@ class DataViewFactory implements DataViewFactoryInterface
         $view = new DataView($parent);
 
         if (!is_iterable($data)) {
-            $view->setValue($this->translate($this->stringifier->stringify($data), $transDomain));
+            $value = $this->stringifier->stringify($data);
+
+            $url = $this->buildUrl($value, $name);
+
+            if (null === $url) {
+                $value = $this->translate($value, $transDomain);
+            }
+
+            $view->setValue($value);
+            $view->setUrl($url);
         } else {
             if (!is_array($data)) {
                 $data = iterator_to_array($data);
@@ -76,35 +85,6 @@ class DataViewFactory implements DataViewFactoryInterface
         $view->setTitle($this->translate($this->buildTitle($view, $name), $transDomain));
 
         return $view;
-    }
-
-    /**
-     * @param string                                 $key        Child key
-     * @param \Darvin\Utils\Data\View\Model\DataView $parent     Parent
-     * @param string|null                            $parentName Parent name
-     *
-     * @return string
-     */
-    private function nameChild(string $key, DataView $parent, ?string $parentName): string
-    {
-        if ($this->isTranslationId($key)) {
-            return $key;
-        }
-
-        $parts = [];
-
-        if (null !== $parentName) {
-            $parts[] = $parentName;
-        }
-        if ($parent->isAssociated()) {
-            if ($parent->hasParent()) {
-                $parts[] = 'item';
-            }
-
-            $parts[] = $key;
-        }
-
-        return implode('.', $parts);
     }
 
     /**
@@ -126,6 +106,64 @@ class DataViewFactory implements DataViewFactoryInterface
     }
 
     /**
+     * @param string      $value Value
+     * @param string|null $name  Name
+     *
+     * @return string|null
+     */
+    private function buildUrl(string $value, ?string $name): ?string
+    {
+        if ('' === $value) {
+            return null;
+        }
+        if (false !== strpos($value, '://')) {
+            return $value;
+        }
+
+        $suffix = preg_replace('/^.*\./', '', $name);
+
+        switch ($suffix) {
+            case 'email':
+                return sprintf('mailto:%s', $value);
+            case 'phone':
+                return sprintf('tel:%s', $value);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * @param string                                 $key        Child key
+     * @param \Darvin\Utils\Data\View\Model\DataView $parent     Parent
+     * @param string|null                            $parentName Parent name
+     *
+     * @return string
+     */
+    private function nameChild(string $key, DataView $parent, ?string $parentName): string
+    {
+        $key = mb_strtolower($key);
+
+        if ($this->isTranslationId($key)) {
+            return $key;
+        }
+
+        $parts = [];
+
+        if (null !== $parentName) {
+            $parts[] = $parentName;
+        }
+        if ($parent->isAssociated()) {
+            if ($parent->hasParent()) {
+                $parts[] = 'item';
+            }
+
+            $parts[] = $key;
+        }
+
+        return implode('.', $parts);
+    }
+
+    /**
      * @param string $text Text
      *
      * @return bool
@@ -133,20 +171,6 @@ class DataViewFactory implements DataViewFactoryInterface
     private function isTranslationId(string $text): bool
     {
         return false !== strpos($text, '.');
-    }
-
-    /**
-     * @param string|null $name Name
-     *
-     * @return string|null
-     */
-    private function prepareName(?string $name): ?string
-    {
-        if (null === $name) {
-            return null;
-        }
-
-        return rtrim($name, '.');
     }
 
     /**
@@ -165,5 +189,19 @@ class DataViewFactory implements DataViewFactoryInterface
         }
 
         return $this->translator->trans($id, [], $domain);
+    }
+
+    /**
+     * @param string|null $name Name
+     *
+     * @return string|null
+     */
+    private function trimName(?string $name): ?string
+    {
+        if (null === $name) {
+            return null;
+        }
+
+        return rtrim($name, '.');
     }
 }

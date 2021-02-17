@@ -41,6 +41,11 @@ class DataView
     private $value;
 
     /**
+     * @var string|null
+     */
+    private $url;
+
+    /**
      * @param DataView|null $parent Parent
      */
     public function __construct(?DataView $parent)
@@ -137,5 +142,21 @@ class DataView
     public function setValue(?string $value): void
     {
         $this->value = $value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url url
+     */
+    public function setUrl(?string $url): void
+    {
+        $this->url = $url;
     }
 }
