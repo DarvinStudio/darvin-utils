@@ -59,6 +59,14 @@ class DataView
     /**
      * @return bool
      */
+    public function isEmpty(): bool
+    {
+        return !$this->hasChildren() && !$this->hasValue();
+    }
+
+    /**
+     * @return bool
+     */
     public function hasChildren(): bool
     {
         return !empty($this->children);

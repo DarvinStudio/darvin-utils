@@ -11,37 +11,43 @@
         <span class="details-list__property-value"
               style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
 
-            {% if view.hasChildren %}
+            {% if view.empty %}
+                &mdash;
+            {% else %}
 
-                {% if view.associative %}
-                    <ul>
+                {% if view.hasChildren %}
 
-                        {% for child in view.children %}
-                            <li>{{ _self.block(child) }}</li>
-                        {% endfor %}
+                    {% if view.associative %}
+                        <ul>
 
-                    </ul>
-                {% else %}
-                    <ol>
+                            {% for child in view.children %}
+                                <li>{{ _self.block(child) }}</li>
+                            {% endfor %}
 
-                        {% for child in view.children %}
-                            <li>{{ _self.block(child) }}</li>
-                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <ol>
 
-                    </ol>
+                            {% for child in view.children %}
+                                <li>{{ _self.block(child) }}</li>
+                            {% endfor %}
+
+                        </ol>
+                    {% endif %}
+
                 {% endif %}
 
-            {% endif %}
+                {% if view.hasValue %}
 
-            {% if view.hasValue %}
+                    {% if view.hasUrl %}
+                        <a href="{{ view.url }}"
+                           style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                            {{ view.value }}
+                        </a>
+                    {% else %}
+                        {{ view.value|raw }}
+                    {% endif %}
 
-                {% if view.hasUrl %}
-                    <a href="{{ view.url }}"
-                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                        {{ view.value }}
-                    </a>
-                {% else %}
-                    {{ view.value|raw }}
                 {% endif %}
 
             {% endif %}

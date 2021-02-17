@@ -46,7 +46,7 @@ class DataViewFactory implements DataViewFactoryInterface
     {
         $view = $this->buildView($data, $this->trimName($name), $transDomain, $allowEmpty);
 
-        if ($allowEmpty || !$this->isEmpty($view)) {
+        if ($allowEmpty || !$view->isEmpty()) {
             return $view;
         }
 
@@ -93,7 +93,7 @@ class DataViewFactory implements DataViewFactoryInterface
             foreach ($data as $key => $value) {
                 $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $allowEmpty, $view);
 
-                if ($allowEmpty || !$this->isEmpty($child)) {
+                if ($allowEmpty || !$child->isEmpty()) {
                     $view->addChild($child);
                 }
             }
@@ -173,16 +173,6 @@ class DataViewFactory implements DataViewFactoryInterface
         }
 
         return implode('.', $parts);
-    }
-
-    /**
-     * @param \Darvin\Utils\Data\View\Model\DataView $view View
-     *
-     * @return bool
-     */
-    private function isEmpty(DataView $view): bool
-    {
-        return !$view->hasChildren() && !$view->hasValue();
     }
 
     /**

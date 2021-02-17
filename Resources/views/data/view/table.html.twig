@@ -23,17 +23,23 @@
 
         <td>
 
-            {{ _self.table(view) }}
+            {% if view.empty %}
+                &mdash;
+            {% else %}
 
-            {% if view.hasValue %}
+                {{ _self.table(view) }}
 
-                {% if view.hasUrl %}
-                    <a href="{{ view.url }}"
-                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                        {{ view.value }}
-                    </a>
-                {% else %}
-                    {{ view.value|raw }}
+                {% if view.hasValue %}
+
+                    {% if view.hasUrl %}
+                        <a href="{{ view.url }}"
+                           style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                            {{ view.value }}
+                        </a>
+                    {% else %}
+                        {{ view.value|raw }}
+                    {% endif %}
+
                 {% endif %}
 
             {% endif %}
