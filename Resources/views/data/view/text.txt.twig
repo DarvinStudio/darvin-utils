@@ -1,0 +1,43 @@
+{%- macro text(view, inline = true) -%}
+
+    {%- if view.hasTitle -%}
+        {{- view.title ~ ' - ' -}}
+    {%- endif -%}
+
+    {%- if view.hasChildren -%}
+
+        {%- if inline -%}
+
+            {%- for child in view.children %}
+
+                {{- _self.text(child) -}}
+
+                {%- if not loop.last -%}
+                    {{- ', ' -}}
+                {%- endif -%}
+
+            {%- endfor -%}
+
+        {%- else -%}
+
+            {%- for child in view.children %}
+
+{{ _self.text(child) -}}
+
+            {%- endfor -%}
+
+        {%- endif -%}
+
+    {%- endif -%}
+
+    {%- if view.hasValue -%}
+        {{- view.value|striptags -}}
+    {%- endif -%}
+
+{%- endmacro -%}
+
+{%- if view -%}
+
+    {{- _self.text(view, false) -}}
+
+{%- endif -%}
