@@ -28,7 +28,7 @@ class DataView
     /**
      * @var bool
      */
-    private $associated;
+    private $associative;
 
     /**
      * @var string|null
@@ -53,7 +53,7 @@ class DataView
         $this->parent = $parent;
 
         $this->children = [];
-        $this->associated = false;
+        $this->associative = false;
     }
 
     /**
@@ -75,9 +75,25 @@ class DataView
     /**
      * @return bool
      */
+    public function hasTitle(): bool
+    {
+        return null !== $this->title;
+    }
+
+    /**
+     * @return bool
+     */
     public function hasUrl(): bool
     {
         return null !== $this->url;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasValue(): bool
+    {
+        return null !== $this->value;
     }
 
     /**
@@ -107,17 +123,21 @@ class DataView
     /**
      * @return bool
      */
-    public function isAssociated(): bool
+    public function isAssociative(): bool
     {
-        return $this->associated;
+        return $this->associative;
     }
 
     /**
-     * @param bool $associated associated
+     * @param bool $associative associative
+     *
+     * @return DataView
      */
-    public function setAssociated(bool $associated): void
+    public function setAssociative(bool $associative): DataView
     {
-        $this->associated = $associated;
+        $this->associative = $associative;
+
+        return $this;
     }
 
     /**

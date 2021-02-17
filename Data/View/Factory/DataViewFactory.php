@@ -87,7 +87,7 @@ class DataViewFactory implements DataViewFactoryInterface
                 $data = iterator_to_array($data);
             }
 
-            $view->setAssociated(array_keys($data) !== range(0, count($data) - 1));
+            $view->setAssociative(array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
                 $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $view);
@@ -111,7 +111,7 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function buildTitle(DataView $view, ?string $name): ?string
     {
-        if (null === $name || !$view->hasParent() || !$view->getParent()->isAssociated()) {
+        if (null === $name || !$view->hasParent() || !$view->getParent()->isAssociative()) {
             return null;
         }
         if (!$view->hasChildren()) {
@@ -163,7 +163,7 @@ class DataViewFactory implements DataViewFactoryInterface
         if (null !== $parentName) {
             $parts[] = $parentName;
         }
-        if ($parent->isAssociated()) {
+        if ($parent->isAssociative()) {
             if ($parent->hasParent()) {
                 $parts[] = 'item';
             }
@@ -181,7 +181,7 @@ class DataViewFactory implements DataViewFactoryInterface
      */
     private function isEmpty(DataView $view): bool
     {
-        return !$view->hasChildren() && null === $view->getValue();
+        return !$view->hasChildren() && !$view->hasValue();
     }
 
     /**

@@ -1,10 +1,65 @@
-{% macro div_data(data, trans_prefix, trans_domain) %}
+{% macro div_data(data, name, trans_domain = 'messages') %}
 
-    {% import _self as that %}
+    {% set view = data|utils_data_to_view(name, trans_domain) %}
 
-    {% for name, value in data %}
-        {{ that.div_property(name, '.' in name ? name : (trans_prefix ~ name), value, trans_domain) }}
-    {% endfor %}
+    {% if view %}
+
+        {{ _self.div_data_view(view) }}
+
+    {% endif %}
+
+{% endmacro %}
+
+{% macro div_data_view(view) %}
+    <div class="details-list__property">
+
+        {% if view.hasTitle %}
+            <span class="details-list__property-name"
+                  style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
+                {{ view.title }}
+            </span>
+        {% endif %}
+
+        <span class="details-list__property-value"
+              style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+
+            {% if view.hasChildren %}
+
+                {% if view.associative %}
+                    <ul>
+
+                        {% for child in view.children %}
+                            <li>{{ _self.div_data_view(child) }}</li>
+                        {% endfor %}
+
+                    </ul>
+                {% else %}
+                    <ol>
+
+                        {% for child in view.children %}
+                            <li>{{ _self.div_data_view(child) }}</li>
+                        {% endfor %}
+
+                    </ol>
+                {% endif %}
+
+            {% endif %}
+
+            {% if view.hasValue %}
+
+                {% if view.hasUrl %}
+                    <a href="{{ view.url }}"
+                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                        {{ view.value }}
+                    </a>
+                {% else %}
+                    {{ view.value|raw }}
+                {% endif %}
+
+            {% endif %}
+
+        </span>
+    </div>
 {% endmacro %}
 
 {% macro plain_data(data, trans_prefix, trans_domain) %}
@@ -35,72 +90,6 @@
                 {{ that.table_property(name, '.' in name ? name : (trans_prefix ~ name), value, trans_domain) }}
             {% endfor %}
         </table>
-    {% endif %}
-{% endmacro %}
-
-{% macro div_property(name, title, value, trans_domain) %}
-    {% if value is not same as(null) and value is not same as('') and not (value is iterable and value is empty) %}
-
-        {% import _self as that %}
-
-        {% if trans_domain is defined %}
-
-            {% trans_default_domain trans_domain %}
-
-        {% endif %}
-
-        <div class="details-list__property">
-            {% if name %}
-                <span class="details-list__property-name"
-                      style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
-                    {% if value is iterable %}
-                        {{ (title ~ '.title')|trans }}
-                    {% else %}
-                        {{ title|trans }}
-                    {% endif %}
-                </span>
-            {% endif %}
-            <span class="details-list__property-value"
-                  style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                {% if value is iterable %}
-
-                    {% set keys = value|keys %}
-
-                    {% if keys is same as(keys|keys) %}
-                        <ol>
-                            {% for item_name, item_value in value %}
-                                <li>{{ that.div_property(null, title, item_value, trans_domain) }}</li>
-                            {% endfor %}
-                        </ol>
-                    {% else %}
-                        <ul>
-                            {% for item_name, item_value in value %}
-                                <li>{{ that.div_property(item_name, '.' in item_name ? item_name : (title ~ '.item.' ~ item_name), item_value, trans_domain) }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                {% elseif value is same as(true) or value is same as(false) %}
-                    {{ ('boolean.' ~ (value ? 'yes' : 'no'))|trans }}
-                {% elseif 'email' in name|lower %}
-                    <a href="mailto:{{ value }}"
-                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                        {{ value }}
-                    </a>
-                {% elseif 'phone' in name|lower %}
-                    <a href="tel:{{ value }}"
-                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                        {{ value }}
-                    </a>
-                {% elseif '://' in value %}
-                    <a href="{{ value }}"
-                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
-                        {{ value }}
-                    </a>
-                {% else %}
-                    {{ value|trans|raw }}
-                {% endif %}
-            </span>
-        </div>
     {% endif %}
 {% endmacro %}
 
