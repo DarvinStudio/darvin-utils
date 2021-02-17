@@ -1,0 +1,49 @@
+{% macro row(view) %}
+    <tr>
+
+        {% if view.hasTitle %}
+            <th>{{ view.title }}</th>
+        {% endif %}
+
+        <td>
+
+            {% if view.hasChildren %}
+                <table>
+
+                    {% for child in view.children %}
+
+                        {{ _self.row(child) }}
+
+                    {% endfor %}
+
+                </table>
+            {% endif %}
+
+            {% if view.hasValue %}
+
+                {% if view.hasUrl %}
+                    <a href="{{ view.url }}"
+                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                        {{ view.value }}
+                    </a>
+                {% else %}
+                    {{ view.value|raw }}
+                {% endif %}
+
+            {% endif %}
+
+        </td>
+    <tr>
+{% endmacro %}
+
+{% if view and view.hasChildren %}
+    <table>
+
+        {% for child in view.children %}
+
+            {{ _self.row(child) }}
+
+        {% endfor %}
+
+    </table>
+{% endif %}

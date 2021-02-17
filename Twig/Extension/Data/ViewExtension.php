@@ -11,8 +11,9 @@
 namespace Darvin\Utils\Twig\Extension\Data;
 
 use Darvin\Utils\Data\View\Factory\DataViewFactoryInterface;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 /**
  * Data view Twig extension
@@ -35,10 +36,62 @@ class ViewExtension extends AbstractExtension
     /**
      * {@inheritDoc}
      */
-    public function getFilters(): array
+    public function getFunctions(): array
     {
-        return [
-            new TwigFilter('utils_data_to_view', [$this->factory, 'createView']),
+        $options = [
+            'needs_environment' => true,
+            'is_safe'           => ['html'],
         ];
+
+        return [
+            new TwigFunction('utils_data_block', [$this, 'renderBlock'], $options),
+            new TwigFunction('utils_data_table', [$this, 'renderTable'], $options),
+            new TwigFunction('utils_data_text', [$this, 'renderText'], $options),
+        ];
+    }
+
+    /**
+     * @param \Twig\Environment $twig        Twig
+     * @param mixed             $data        Data
+     * @param string|null       $name        Name
+     * @param string|null       $transDomain Translation domain
+     *
+     * @return string
+     */
+    public function renderBlock(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
+    {
+        return $twig->render('@DarvinUtils/data/view/block.html.twig', [
+            'view' => $this->factory->createView($data, $name, $transDomain),
+        ]);
+    }
+
+    /**
+     * @param \Twig\Environment $twig        Twig
+     * @param mixed             $data        Data
+     * @param string|null       $name        Name
+     * @param string|null       $transDomain Translation domain
+     *
+     * @return string
+     */
+    public function renderTable(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
+    {
+        return $twig->render('@DarvinUtils/data/view/table.html.twig', [
+            'view' => $this->factory->createView($data, $name, $transDomain),
+        ]);
+    }
+
+    /**
+     * @param \Twig\Environment $twig        Twig
+     * @param mixed             $data        Data
+     * @param string|null       $name        Name
+     * @param string|null       $transDomain Translation domain
+     *
+     * @return string
+     */
+    public function renderText(Environment $twig, $data, ?string $name = null, ?string $transDomain = null): string
+    {
+        return $twig->render('@DarvinUtils/data/view/text.txt.twig', [
+            'view' => $this->factory->createView($data, $name, $transDomain),
+        ]);
     }
 }

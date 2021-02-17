@@ -1,0 +1,57 @@
+{% macro block(view) %}
+    <div class="details-list__property">
+
+        {% if view.hasTitle %}
+            <span class="details-list__property-name"
+                  style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
+                {{ view.title }}
+            </span>
+        {% endif %}
+
+        <span class="details-list__property-value"
+              style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+
+            {% if view.hasChildren %}
+
+                {% if view.associative %}
+                    <ul>
+
+                        {% for child in view.children %}
+                            <li>{{ _self.block(child) }}</li>
+                        {% endfor %}
+
+                    </ul>
+                {% else %}
+                    <ol>
+
+                        {% for child in view.children %}
+                            <li>{{ _self.block(child) }}</li>
+                        {% endfor %}
+
+                    </ol>
+                {% endif %}
+
+            {% endif %}
+
+            {% if view.hasValue %}
+
+                {% if view.hasUrl %}
+                    <a href="{{ view.url }}"
+                       style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #333333;">
+                        {{ view.value }}
+                    </a>
+                {% else %}
+                    {{ view.value|raw }}
+                {% endif %}
+
+            {% endif %}
+
+        </span>
+    </div>
+{% endmacro %}
+
+{% if view %}
+
+    {{ _self.block(view) }}
+
+{% endif %}
