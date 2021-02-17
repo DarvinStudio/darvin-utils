@@ -73,6 +73,14 @@ class DataView
     }
 
     /**
+     * @return bool
+     */
+    public function hasUrl(): bool
+    {
+        return null !== $this->url;
+    }
+
+    /**
      * @return DataView|null
      */
     public function getParent(): ?DataView
