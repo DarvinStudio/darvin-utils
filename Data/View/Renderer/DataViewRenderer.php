@@ -10,7 +10,7 @@
 
 namespace Darvin\Utils\Data\View\Renderer;
 
-use Darvin\Utils\Data\View\Factory\DataViewFactoryInterface;
+use Darvin\Utils\Data\View\Model\DataView;
 use Twig\Environment;
 
 /**
@@ -19,61 +19,52 @@ use Twig\Environment;
 class DataViewRenderer implements DataViewRendererInterface
 {
     /**
-     * @var \Darvin\Utils\Data\View\Factory\DataViewFactoryInterface
-     */
-    private $factory;
-
-    /**
      * @var \Twig\Environment
      */
     private $twig;
 
     /**
-     * @param \Darvin\Utils\Data\View\Factory\DataViewFactoryInterface $factory Data view factory
-     * @param \Twig\Environment                                        $twig    Twig
+     * @param \Twig\Environment $twig Twig
      */
-    public function __construct(DataViewFactoryInterface $factory, Environment $twig)
+    public function __construct(Environment $twig)
     {
-        $this->factory = $factory;
         $this->twig = $twig;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function renderBlock($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderBlock(DataView $view): string
     {
-        return $this->render($data, $name, $transDomain, '@DarvinUtils/data/view/block.html.twig');
+        return $this->render($view, '@DarvinUtils/data/view/block.html.twig');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function renderTable($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderTable(DataView $view): string
     {
-        return $this->render($data, $name, $transDomain, '@DarvinUtils/data/view/table.html.twig');
+        return $this->render($view, '@DarvinUtils/data/view/table.html.twig');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function renderText($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderText(DataView $view): string
     {
-        return $this->render($data, $name, $transDomain, '@DarvinUtils/data/view/text.txt.twig');
+        return $this->render($view, '@DarvinUtils/data/view/text.txt.twig');
     }
 
     /**
-     * @param mixed       $data        Data
-     * @param string|null $name        Name
-     * @param string|null $transDomain Translation domain
-     * @param string      $template    Template
+     * @param \Darvin\Utils\Data\View\Model\DataView $view     View
+     * @param string                                 $template Template
      *
      * @return string
      */
-    private function render($data, ?string $name, ?string $transDomain, string $template): string
+    private function render(DataView $view, string $template): string
     {
         return $this->twig->render($template, [
-            'view' => $this->factory->createView($data, $name, $transDomain),
+            'view' => $view,
         ]);
     }
 }

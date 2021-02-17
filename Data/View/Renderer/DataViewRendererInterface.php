@@ -10,35 +10,31 @@
 
 namespace Darvin\Utils\Data\View\Renderer;
 
+use Darvin\Utils\Data\View\Model\DataView;
+
 /**
  * Data view renderer
  */
 interface DataViewRendererInterface
 {
     /**
-     * @param mixed       $data        Data
-     * @param string|null $name        Name
-     * @param string|null $transDomain Translation domain
+     * @param \Darvin\Utils\Data\View\Model\DataView $view View
      *
      * @return string
      */
-    public function renderBlock($data, ?string $name = null, ?string $transDomain = null): string;
+    public function renderBlock(DataView $view): string;
 
     /**
-     * @param mixed       $data        Data
-     * @param string|null $name        Name
-     * @param string|null $transDomain Translation domain
+     * @param \Darvin\Utils\Data\View\Model\DataView $view View
      *
      * @return string
      */
-    public function renderTable($data, ?string $name = null, ?string $transDomain = null): string;
+    public function renderTable(DataView $view): string;
 
     /**
-     * @param mixed       $data        Data
-     * @param string|null $name        Name
-     * @param string|null $transDomain Translation domain
+     * @param \Darvin\Utils\Data\View\Model\DataView $view View
      *
      * @return string
      */
-    public function renderText($data, ?string $name = null, ?string $transDomain = null): string;
+    public function renderText(DataView $view): string;
 }
