@@ -42,9 +42,15 @@ class DataViewFactory implements DataViewFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function createView($data, ?string $name = null, ?string $transDomain = null): DataView
+    public function createView($data, ?string $name = null, ?string $transDomain = null): ?DataView
     {
-        return $this->buildView($data, $this->trimName($name), $transDomain);
+        $view = $this->buildView($data, $this->trimName($name), $transDomain);
+
+        if (!$this->isEmpty($view)) {
+            return $view;
+        }
+
+        return null;
     }
 
     /**
@@ -62,7 +68,10 @@ class DataViewFactory implements DataViewFactoryInterface
         if (!is_iterable($data)) {
             $value = $this->stringifier->stringify($data);
 
-            if ('' !== $value) {
+            if ('' === $value) {
+                $value = null;
+            }
+            if (null !== $value) {
                 $url = $this->buildUrl($value, $name);
 
                 if (null === $url) {
@@ -81,7 +90,11 @@ class DataViewFactory implements DataViewFactoryInterface
             $view->setAssociated(array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
-                $view->addChild($this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $view));
+                $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $view);
+
+                if (!$this->isEmpty($child)) {
+                    $view->addChild($child);
+                }
             }
         }
 
@@ -159,6 +172,16 @@ class DataViewFactory implements DataViewFactoryInterface
         }
 
         return implode('.', $parts);
+    }
+
+    /**
+     * @param \Darvin\Utils\Data\View\Model\DataView $view View
+     *
+     * @return bool
+     */
+    private function isEmpty(DataView $view): bool
+    {
+        return !$view->hasChildren() && null === $view->getValue();
     }
 
     /**

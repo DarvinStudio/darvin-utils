@@ -22,7 +22,7 @@ interface DataViewFactoryInterface
      * @param string|null $name        Name
      * @param string|null $transDomain Translation domain
      *
-     * @return \Darvin\Utils\Data\View\Model\DataView
+     * @return \Darvin\Utils\Data\View\Model\DataView|null
      */
-    public function createView($data, ?string $name = null, ?string $transDomain = null): DataView;
+    public function createView($data, ?string $name = null, ?string $transDomain = null): ?DataView;
 }
