@@ -18,7 +18,7 @@ class DataView
     /**
      * @var string|null
      */
-    private $name;
+    private $id;
 
     /**
      * @var DataView|null
@@ -51,12 +51,12 @@ class DataView
     private $url;
 
     /**
-     * @param string|null   $name   Name
+     * @param string|null   $id     ID
      * @param DataView|null $parent Parent
      */
-    public function __construct(?string $name, ?DataView $parent)
+    public function __construct(?string $id = null, ?DataView $parent = null)
     {
-        $this->name = $name;
+        $this->id = $id;
         $this->parent = $parent;
 
         $this->children = [];
@@ -106,9 +106,9 @@ class DataView
     /**
      * @return string|null
      */
-    public function getName(): ?string
+    public function getId(): ?string
     {
-        return $this->name;
+        return $this->id;
     }
 
     /**

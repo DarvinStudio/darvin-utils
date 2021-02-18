@@ -58,15 +58,18 @@ class DataViewFactory implements DataViewFactoryInterface
      * @param string|null                                 $name        Name
      * @param string|null                                 $transDomain Translation domain
      * @param bool                                        $allowEmpty  Whether to allow empty view
+     * @param string|null                                 $id          ID
      * @param \Darvin\Utils\Data\View\Model\DataView|null $parent      Parent
      *
      * @return \Darvin\Utils\Data\View\Model\DataView
      */
-    private function buildView($data, ?string $name, ?string $transDomain, bool $allowEmpty, ?DataView $parent = null): DataView
+    private function buildView($data, ?string $name, ?string $transDomain, bool $allowEmpty, ?string $id = null, ?DataView $parent = null): DataView
     {
-        $normalizedName = $this->normalizeName($name);
+        if (null === $id) {
+            $id = $name;
+        }
 
-        $view = new DataView($normalizedName, $parent);
+        $view = new DataView($id, $parent);
 
         if (!is_iterable($data)) {
             $value = $this->stringifier->stringify($data);
@@ -75,7 +78,7 @@ class DataViewFactory implements DataViewFactoryInterface
                 $value = null;
             }
             if (null !== $value) {
-                $url = $this->buildUrl($value, $normalizedName);
+                $url = $this->buildUrl($value, $name);
 
                 if (null === $url) {
                     $value = $this->translate($value, $transDomain);
@@ -93,7 +96,9 @@ class DataViewFactory implements DataViewFactoryInterface
             $view->setAssociative(!empty($data) && array_keys($data) !== range(0, count($data) - 1));
 
             foreach ($data as $key => $value) {
-                $child = $this->buildView($value, $this->nameChild((string)$key, $view, $name), $transDomain, $allowEmpty, $view);
+                $key = (string)$key;
+
+                $child = $this->buildView($value, $this->nameChild($key, $view, $name), $transDomain, $allowEmpty, $this->identifyChild($key, $view), $view);
 
                 if ($allowEmpty || !$child->isEmpty()) {
                     $view->addChild($child);
@@ -125,17 +130,23 @@ class DataViewFactory implements DataViewFactoryInterface
     }
 
     /**
-     * @param string      $value          Value
-     * @param string|null $normalizedName Normalized name
+     * @param string      $value Value
+     * @param string|null $name  Name
      *
      * @return string|null
      */
-    private function buildUrl(string $value, ?string $normalizedName): ?string
+    private function buildUrl(string $value, ?string $name): ?string
     {
         if (false !== strpos($value, '://')) {
             return $value;
         }
-        switch ($normalizedName) {
+        if (null === $name) {
+            return null;
+        }
+
+        $suffix = preg_replace('/^.*\./', '', $name);
+
+        switch ($suffix) {
             case 'email':
                 return sprintf('mailto:%s', $value);
             case 'phone':
@@ -143,6 +154,25 @@ class DataViewFactory implements DataViewFactoryInterface
             default:
                 return null;
         }
+    }
+
+    /**
+     * @param string                                 $key    Child key
+     * @param \Darvin\Utils\Data\View\Model\DataView $parent Parent
+     *
+     * @return string
+     */
+    private function identifyChild(string $key, DataView $parent): string
+    {
+        $parts = [];
+
+        if (null !== $parent->getId()) {
+            $parts[] = $parent->getId();
+        }
+
+        $parts[] = $key;
+
+        return implode('.', $parts);
     }
 
     /**
@@ -182,20 +212,6 @@ class DataViewFactory implements DataViewFactoryInterface
     private function isTranslationId(string $text): bool
     {
         return false !== strpos($text, '.');
-    }
-
-    /**
-     * @param string|null $name Name
-     *
-     * @return string|null
-     */
-    private function normalizeName(?string $name): ?string
-    {
-        if (null === $name) {
-            return null;
-        }
-
-        return preg_replace('/^.*\./', '', $name);
     }
 
     /**
