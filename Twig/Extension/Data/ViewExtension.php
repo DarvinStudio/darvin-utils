@@ -56,35 +56,59 @@ class ViewExtension extends AbstractExtension
      * @param mixed       $data        Data
      * @param string|null $name        Name
      * @param string|null $transDomain Translation domain
+     * @param bool        $allowEmpty  Whether to allow empty view
+     * @param array       $options     Options
      *
      * @return string
      */
-    public function renderBlock($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderBlock($data, ?string $name = null, ?string $transDomain = null, bool $allowEmpty = false, array $options = []): string
     {
-        return $this->renderer->renderBlock($this->factory->createView($data, $name, $transDomain));
+        $view = $this->factory->createView($data, $name, $transDomain, $allowEmpty);
+
+        if (null !== $view) {
+            return $this->renderer->renderBlock($view, $options);
+        }
+
+        return '';
     }
 
     /**
      * @param mixed       $data        Data
      * @param string|null $name        Name
      * @param string|null $transDomain Translation domain
+     * @param bool        $allowEmpty  Whether to allow empty view
+     * @param array       $options     Options
      *
      * @return string
      */
-    public function renderTable($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderTable($data, ?string $name = null, ?string $transDomain = null, bool $allowEmpty = false, array $options = []): string
     {
-        return $this->renderer->renderTable($this->factory->createView($data, $name, $transDomain));
+        $view = $this->factory->createView($data, $name, $transDomain, $allowEmpty);
+
+        if (null !== $view) {
+            return $this->renderer->renderTable($view, $options);
+        }
+
+        return '';
     }
 
     /**
      * @param mixed       $data        Data
      * @param string|null $name        Name
      * @param string|null $transDomain Translation domain
+     * @param bool        $allowEmpty  Whether to allow empty view
+     * @param array       $options     Options
      *
      * @return string
      */
-    public function renderText($data, ?string $name = null, ?string $transDomain = null): string
+    public function renderText($data, ?string $name = null, ?string $transDomain = null, bool $allowEmpty = false, array $options = []): string
     {
-        return $this->renderer->renderText($this->factory->createView($data, $name, $transDomain));
+        $view = $this->factory->createView($data, $name, $transDomain, $allowEmpty);
+
+        if (null !== $view) {
+            return $this->renderer->renderText($view, $options);
+        }
+
+        return '';
     }
 }
