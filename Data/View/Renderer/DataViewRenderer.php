@@ -34,37 +34,39 @@ class DataViewRenderer implements DataViewRendererInterface
     /**
      * {@inheritDoc}
      */
-    public function renderBlock(DataView $view): string
+    public function renderBlock(DataView $view, array $options = []): string
     {
-        return $this->render($view, '@DarvinUtils/data/view/block.html.twig');
+        return $this->render($view, $options, '@DarvinUtils/data/view/block.html.twig');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function renderTable(DataView $view): string
+    public function renderTable(DataView $view, array $options = []): string
     {
-        return $this->render($view, '@DarvinUtils/data/view/table.html.twig');
+        return $this->render($view, $options, '@DarvinUtils/data/view/table.html.twig');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function renderText(DataView $view): string
+    public function renderText(DataView $view, array $options = []): string
     {
-        return $this->render($view, '@DarvinUtils/data/view/text.txt.twig');
+        return $this->render($view, $options, '@DarvinUtils/data/view/text.txt.twig');
     }
 
     /**
      * @param \Darvin\Utils\Data\View\Model\DataView $view     View
+     * @param array                                  $options  Options
      * @param string                                 $template Template
      *
      * @return string
      */
-    private function render(DataView $view, string $template): string
+    private function render(DataView $view, array $options, string $template): string
     {
         return $this->twig->render($template, [
-            'view' => $view,
+            'options' => $options,
+            'view'    => $view,
         ]);
     }
 }
