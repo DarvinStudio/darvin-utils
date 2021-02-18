@@ -18,6 +18,12 @@ use Twig\Environment;
  */
 class DataViewRenderer implements DataViewRendererInterface
 {
+    private const TEMPLATES = [
+        DataViewRendererInterface::TEMPLATE_BLOCK => '@DarvinUtils/data/view/block.html.twig',
+        DataViewRendererInterface::TEMPLATE_TABLE => '@DarvinUtils/data/view/table.html.twig',
+        DataViewRendererInterface::TEMPLATE_TEXT  => '@DarvinUtils/data/view/text.txt.twig',
+    ];
+
     /**
      * @var \Twig\Environment
      */
@@ -34,39 +40,11 @@ class DataViewRenderer implements DataViewRendererInterface
     /**
      * {@inheritDoc}
      */
-    public function renderBlock(DataView $view, array $options = []): string
+    public function render(string $template, DataView $view, array $options = []): string
     {
-        return $this->render($view, $options, '@DarvinUtils/data/view/block.html.twig');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function renderTable(DataView $view, array $options = []): string
-    {
-        return $this->render($view, $options, '@DarvinUtils/data/view/table.html.twig');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function renderText(DataView $view, array $options = []): string
-    {
-        return $this->render($view, $options, '@DarvinUtils/data/view/text.txt.twig');
-    }
-
-    /**
-     * @param \Darvin\Utils\Data\View\Model\DataView $view     View
-     * @param array                                  $options  Options
-     * @param string                                 $template Template
-     *
-     * @return string
-     */
-    private function render(DataView $view, array $options, string $template): string
-    {
-        return $this->twig->render($template, [
-            'options' => $options,
+        return $this->twig->render(self::TEMPLATES[$template] ?? $template, [
             'view'    => $view,
+            'options' => $options,
         ]);
     }
 }

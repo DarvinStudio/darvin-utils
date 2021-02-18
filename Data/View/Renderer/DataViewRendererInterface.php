@@ -17,27 +17,16 @@ use Darvin\Utils\Data\View\Model\DataView;
  */
 interface DataViewRendererInterface
 {
-    /**
-     * @param \Darvin\Utils\Data\View\Model\DataView $view    View
-     * @param array                                  $options Options
-     *
-     * @return string
-     */
-    public function renderBlock(DataView $view, array $options = []): string;
+    public const TEMPLATE_BLOCK = 'block';
+    public const TEMPLATE_TABLE = 'table';
+    public const TEMPLATE_TEXT  = 'text';
 
     /**
-     * @param \Darvin\Utils\Data\View\Model\DataView $view    View
-     * @param array                                  $options Options
+     * @param string                                 $template Template
+     * @param \Darvin\Utils\Data\View\Model\DataView $view     View
+     * @param array                                  $options  Options
      *
      * @return string
      */
-    public function renderTable(DataView $view, array $options = []): string;
-
-    /**
-     * @param \Darvin\Utils\Data\View\Model\DataView $view    View
-     * @param array                                  $options Options
-     *
-     * @return string
-     */
-    public function renderText(DataView $view, array $options = []): string;
+    public function render(string $template, DataView $view, array $options = []): string;
 }
