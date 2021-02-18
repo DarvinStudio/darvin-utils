@@ -1,6 +1,6 @@
 {%- macro text(view, level = 0) -%}
 
-    {%- if view.hasTitle -%}
+    {%- if level > 0 and view.hasTitle -%}
         {{- view.title ~ ': ' -}}
     {%- endif -%}
 

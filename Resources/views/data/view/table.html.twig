@@ -1,23 +1,7 @@
-{% macro table(view) %}
-
-    {% if view.hasChildren %}
-        <table>
-
-            {% for child in view.children %}
-
-                {{ _self.row(child) }}
-
-            {% endfor %}
-
-        </table>
-    {% endif %}
-
-{% endmacro %}
-
-{% macro row(view) %}
+{% macro row(view, show_title = true) %}
     <tr>
 
-        {% if view.hasTitle %}
+        {% if show_title and view.hasTitle %}
             <th>{{ view.title }}</th>
         {% endif %}
 
@@ -27,7 +11,17 @@
                 &mdash;
             {% else %}
 
-                {{ _self.table(view) }}
+                {% if view.hasChildren %}
+                    <table>
+
+                        {% for child in view.children %}
+
+                            {{ _self.row(child) }}
+
+                        {% endfor %}
+
+                    </table>
+                {% endif %}
 
                 {% if view.hasValue %}
 
@@ -49,7 +43,21 @@
 {% endmacro %}
 
 {% if view %}
+    <table>
 
-    {{ _self.table(view) }}
+        {% if view.hasChildren %}
 
+            {% for child in view.children %}
+
+                {{ _self.row(child) }}
+
+            {% endfor %}
+
+        {% else %}
+
+            {{ _self.row(view, false) }}
+
+        {% endif %}
+
+    </table>
 {% endif %}

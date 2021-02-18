@@ -1,7 +1,7 @@
-{% macro block(view) %}
+{% macro block(view, show_title = true) %}
     <div class="details-list__property">
 
-        {% if view.hasTitle %}
+        {% if show_title and view.hasTitle %}
             <span class="details-list__property-name"
                   style="font-family: Arial, sans-serif; font-size: 15px; line-height: 23px; color: #7e7e7e;">
                 {{ view.title }}
@@ -58,6 +58,6 @@
 
 {% if view %}
 
-    {{ _self.block(view) }}
+    {{ _self.block(view, false) }}
 
 {% endif %}
