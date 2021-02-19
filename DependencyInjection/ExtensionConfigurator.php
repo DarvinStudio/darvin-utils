@@ -44,7 +44,7 @@ class ExtensionConfigurator
     }
 
     /**
-     * @param array|string $extensions Extension aliases
+     * @param string[]|string $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
@@ -53,10 +53,8 @@ class ExtensionConfigurator
         if (!is_array($extensions)) {
             $extensions = [$extensions];
         }
-        foreach ($extensions as $filename => $extension) {
-            if (is_int($filename)) {
-                $filename = $extension;
-            }
+        foreach ($extensions as $extension) {
+            $filename = $extension;
 
             $extension = preg_replace('/\/.*$/', '', $extension);
 
