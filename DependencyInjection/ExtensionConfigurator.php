@@ -53,20 +53,23 @@ class ExtensionConfigurator
         if (!is_array($extensions)) {
             $extensions = [$extensions];
         }
-        foreach ($extensions as $extension) {
+        foreach ($extensions as $filename => $extension) {
+            if (is_int($filename)) {
+                $filename = $extension;
+            }
             if (!$this->container->hasExtension($extension)) {
                 continue;
             }
             try {
-                $filename = $this->fileLocator->locate($extension.self::FILE_EXTENSION);
+                $pathname = $this->fileLocator->locate($filename.self::FILE_EXTENSION);
             } catch (\Exception $ex) {
                 throw new UnableToConfigureExtensionException($extension, $ex->getMessage());
             }
 
-            $yaml = @file_get_contents($filename);
+            $yaml = @file_get_contents($pathname);
 
             if (false === $yaml) {
-                throw new UnableToConfigureExtensionException($extension, sprintf('unable to read file "%s"', $filename));
+                throw new UnableToConfigureExtensionException($extension, sprintf('unable to read file "%s"', $pathname));
             }
             try {
                 $config = Yaml::parse($yaml);

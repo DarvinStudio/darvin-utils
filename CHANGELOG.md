@@ -127,3 +127,5 @@
 7.3.34: Data macros: support translation IDs in data keys.
 
 7.4.0: Add data view services.
+
+7.4.2: Extension configurator: allow multiple configs for same extension.
