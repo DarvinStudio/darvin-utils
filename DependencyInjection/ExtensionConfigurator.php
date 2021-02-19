@@ -44,7 +44,7 @@ class ExtensionConfigurator
     }
 
     /**
-     * @param array $extensions Extension aliases
+     * @param array|string $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
@@ -57,6 +57,9 @@ class ExtensionConfigurator
             if (is_int($filename)) {
                 $filename = $extension;
             }
+
+            $extension = preg_replace('/\/.*$/', '', $extension);
+
             if (!$this->container->hasExtension($extension)) {
                 continue;
             }
