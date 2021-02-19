@@ -44,7 +44,7 @@ class ExtensionConfigurator
     }
 
     /**
-     * @param string[]|string $extensions Extension aliases
+     * @param array $extensions Extension aliases
      *
      * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToConfigureExtensionException
      */
