@@ -129,3 +129,5 @@
 7.4.0: Add data view services.
 
 7.4.2: Extension configurator: allow multiple configs for same extension.
+
+7.4.5: Pass prise as pluralization parameter. 

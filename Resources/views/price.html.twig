@@ -1,5 +1,5 @@
 {% if price > 0 %}
-    {{ ('price.value.' ~ options.format)|trans({'%price%': price|number_format(0, null, options.thousands_separator)})|raw }}
+    {{ ('price.value.' ~ options.format)|trans({'%price%': price|number_format(0, null, options.thousands_separator), '%count%': price|number_format(0)})|raw }}
 {% else %}
     {{ ('price.empty.' ~ options.empty_format)|trans|raw }}
 {% endif %}
