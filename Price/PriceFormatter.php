@@ -36,6 +36,9 @@ class PriceFormatter implements PriceFormatterInterface
      */
     public function format($price, array $options = []): string
     {
+        if (!isset($options['allow_empty'])) {
+            $options['allow_empty'] = false;
+        }
         if (!isset($options['format'])) {
             $options['format'] = 'default';
         }
