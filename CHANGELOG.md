@@ -131,3 +131,5 @@
 7.4.2: Extension configurator: allow multiple configs for same extension.
 
 7.4.5: Pass price as pluralization parameter.
+
+7.4.7: Add "allow_empty" option to price formatter.
