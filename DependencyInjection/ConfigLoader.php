@@ -1,0 +1,179 @@
+<?php
+/**
+ * @author    Igor Nikolaev <igor.sv.n@gmail.com>
+ * @copyright Copyright (c) 2019, Darvin Studio
+ * @link      https://www.darvin-studio.ru
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Darvin\Utils\DependencyInjection;
+
+use Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+/**
+ * Configuration loader
+ */
+class ConfigLoader
+{
+    const PARAM_BUNDLE    = 'bundle';
+    const PARAM_CALLBACK  = 'callback';
+    const PARAM_CLASS     = 'class';
+    const PARAM_ENV       = 'env';
+    const PARAM_EXTENSION = 'extension';
+    const PARAM_INTERFACE = 'interface';
+
+    const DEFAULT_FILE_EXTENSION = '.yaml';
+
+    /**
+     * @var string
+     */
+    private $dir;
+
+    /**
+     * @var array
+     */
+    private $bundles;
+
+    /**
+     * @var string
+     */
+    private $env;
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\Loader\YamlFileLoader
+     */
+    private $loader;
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container Container builder
+     * @param string                                                  $dir       Configuration file directory
+     */
+    public function __construct(ContainerBuilder $container, $dir)
+    {
+        $this->dir = $dir;
+
+        $this->bundles = $container->getParameter('kernel.bundles');
+        $this->env     = $container->getParameter('kernel.environment');
+        $this->loader  = new YamlFileLoader($container, new FileLocator($dir));
+    }
+
+    /**
+     * @param array|string $configs Configuration files
+     *
+     * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException
+     */
+    public function load($configs)
+    {
+        if (!is_array($configs)) {
+            $configs = [$configs];
+        }
+        foreach ($configs as $name => $params) {
+            if (!is_array($params)) {
+                $name   = $params;
+                $params = [];
+            }
+            if (!preg_match('/\.[0-9a-z]+$/i', $name)) {
+                $name .= self::DEFAULT_FILE_EXTENSION;
+            }
+            if ($this->isLoadable($name, $params)) {
+                try {
+                    $this->loader->load($name);
+                } catch (\Exception $ex) {
+                    throw new UnableToLoadConfigException($name, $this->dir, $ex->getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $name   Configuration filename
+     * @param array  $params Parameters
+     *
+     * @return bool
+     * @throws \Darvin\Utils\DependencyInjection\Exception\UnableToLoadConfigException
+     */
+    private function isLoadable($name, array $params)
+    {
+        foreach ($params as $key => $value) {
+            switch ($key) {
+                case self::PARAM_BUNDLE:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $bundle) {
+                        if (!isset($this->bundles[$bundle])) {
+                            return false;
+                        }
+                    }
+
+                    break;
+                case self::PARAM_CALLBACK:
+                    if (!is_callable($value)) {
+                        throw new UnableToLoadConfigException($name, $this->dir, '"callback" parameter\'s value is not callable');
+                    }
+
+                    $result = $value();
+
+                    if (!is_bool($result)) {
+                        throw new UnableToLoadConfigException($name, $this->dir, sprintf('callback must return boolean, got "%s"', gettype($result)));
+                    }
+                    if (!$result) {
+                        return false;
+                    }
+
+                    break;
+                case self::PARAM_CLASS:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $class) {
+                        if (!class_exists($class)) {
+                            return false;
+                        }
+                    }
+
+                    break;
+                case self::PARAM_ENV:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    if (!in_array($this->env, $value)) {
+                        return false;
+                    }
+
+                    break;
+                case self::PARAM_EXTENSION:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $extension) {
+                        if (!extension_loaded($extension)) {
+                            return false;
+                        }
+                    }
+
+                    break;
+                case self::PARAM_INTERFACE:
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
+                    foreach ($value as $interface) {
+                        if (!interface_exists($interface)) {
+                            return false;
+                        }
+                    }
+
+                    break;
+                default:
+                    throw new UnableToLoadConfigException($name, $this->dir, sprintf('parameter "%s" is not supported', $key));
+            }
+        }
+
+        return true;
+    }
+}
