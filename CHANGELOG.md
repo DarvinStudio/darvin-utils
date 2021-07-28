@@ -133,3 +133,5 @@
 7.4.5: Pass price as pluralization parameter.
 
 7.4.7: Add "allow_empty" option to price formatter.
+
+7.5.0: Move templates to Utils Bundle to make them overridable.
