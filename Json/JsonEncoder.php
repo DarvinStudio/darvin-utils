@@ -18,7 +18,7 @@ class JsonEncoder implements JsonEncoderInterface
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * @param bool $debug Is debug mode enabled
@@ -45,7 +45,7 @@ class JsonEncoder implements JsonEncoderInterface
     /**
      * @return int
      */
-    private function getOptions(): int
+    protected function getOptions(): int
     {
         if ($this->debug) {
             return JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
