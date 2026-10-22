@@ -6,8 +6,6 @@
     <testsuites>
         <testsuite name="darvin-utils">
             <directory>Tests</directory>
-            <!-- TODO: ObjectNamer::name(null) throws TypeError on PHP 8 (tracked in STATUS.md as a separate breakage) -->
-            <exclude>Tests/ObjectNamer</exclude>
         </testsuite>
     </testsuites>
 </phpunit>
