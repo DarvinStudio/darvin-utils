@@ -27,7 +27,7 @@ class NumberToLocalizedStringTransformer extends BaseNumberToLocalizedStringTran
     /**
      * {@inheritDoc}
      */
-    public function __construct(int $scale = null, ?bool $grouping = false, ?int $roundingMode = self::ROUND_HALF_UP, string $locale = null)
+    public function __construct(?int $scale = null, ?bool $grouping = false, ?int $roundingMode = self::ROUND_HALF_UP, ?string $locale = null)
     {
         parent::__construct($scale, $grouping, $roundingMode, $locale);
 

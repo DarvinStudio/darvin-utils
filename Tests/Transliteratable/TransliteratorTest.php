@@ -27,7 +27,7 @@ class TransliteratorTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->transliterator = new Transliterator();
     }
@@ -35,7 +35,7 @@ class TransliteratorTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->transliterator = null;
     }
