@@ -25,7 +25,7 @@ class ObjectNamerTest extends TestCase
      */
     private $objectNamer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectNamer = new ObjectNamer();
     }

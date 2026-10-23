@@ -136,4 +136,16 @@ class StringsUtilTest extends TestCase
             ['123123', '123_123'],
         ];
     }
+
+    /**
+     * html_entity_decode() default flags changed in PHP 8.1: the output must stay as on PHP 7.x (single quote entities
+     * are not decoded, invalid UTF-8 is not substituted).
+     */
+    public function testTruncateDecodesEntitiesAsOnPhp7()
+    {
+        $this->assertSame('It&#039;s ...', StringsUtil::truncate('It&#039;s a <b>very</b> long text', 13));
+        $this->assertSame('a "b" & ...', StringsUtil::truncate('a &quot;b&quot; &amp; c long text', 11));
+        $this->assertSame('short', StringsUtil::truncate('short', 10));
+        $this->assertNull(StringsUtil::truncate(null, 10));
+    }
 }
