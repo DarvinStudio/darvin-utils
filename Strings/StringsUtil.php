@@ -111,7 +111,7 @@ class StringsUtil
         $text = (string)$text;
 
         if (mb_strlen($text) > $length) {
-            return mb_substr(html_entity_decode(strip_tags($text)), 0, $length - mb_strlen($suffix)).$suffix;
+            return mb_substr(html_entity_decode(strip_tags($text), ENT_COMPAT | ENT_HTML401), 0, $length - mb_strlen($suffix)).$suffix;
         }
 
         return $text;
